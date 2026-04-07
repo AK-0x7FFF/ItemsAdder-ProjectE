@@ -1,0 +1,75 @@
+info:
+  namespace: projecte
+items:
+  alchemical_chest:
+    display_name: <lang:block.projecte.alchemical_chest>
+    resource:
+      generate: false
+      model_path: block/alchemical_chest
+      material: PHANTOM_MEMBRANE
+    specific_properties:
+      block:
+        placed_model:
+          type: REAL_TRANSPARENT
+          cancel_drop: false
+          break_particles: ITEM
+
+#  alchemical_chest_south:
+#    display_name: alchemical_chest_south
+#    resource:
+#      generate: false
+#      model_path: block/alchemical_chest_south
+#      material: PHANTOM_MEMBRANE
+#    specific_properties:
+#      block:
+#        placed_model:
+#          type: REAL_TRANSPARENT
+#
+#  alchemical_chest_west:
+#    display_name: alchemical_chest_west
+#    resource:
+#      generate: false
+#      model_path: block/alchemical_chest_west
+#      material: PHANTOM_MEMBRANE
+#    specific_properties:
+#      block:
+#        placed_model:
+#          type: REAL_TRANSPARENT
+#
+#  alchemical_chest_east:
+#    display_name: alchemical_chest_east
+#    resource:
+#      generate: false
+#      model_path: block/alchemical_chest_east
+#      material: PHANTOM_MEMBRANE
+#    specific_properties:
+#      block:
+#        placed_model:
+#          type: REAL_TRANSPARENT
+#
+#  alchemical_chest_north:
+#    display_name: alchemical_chest_north
+#    resource:
+#      generate: false
+#      model_path: block/alchemical_chest_north
+#      material: PHANTOM_MEMBRANE
+#    specific_properties:
+#      block:
+#        placed_model:
+#          type: REAL_TRANSPARENT
+
+
+#    behaviours:
+#      furniture:
+#        entity: ITEM_DISPLAY
+#        display_transformation:
+#          transform: HEAD
+#        fixed_rotation: true
+#        solid: true
+#        hitbox:
+#          length: 1
+#          width: 1
+#          height: 1
+#          length_offset: 0
+#          width_offset: 0
+#          height_offset: 0

@@ -1,0 +1,23 @@
+info:
+  namespace: projecte
+items:
+  condenser_template:
+    template: true
+    display_name: <lang:block.projecte.condenser_mk1>
+    resource:
+      generate: false
+      model_path: block/condenser
+      material: PHANTOM_MEMBRANE
+    specific_properties:
+      block:
+        placed_model:
+          type: REAL_TRANSPARENT
+          cancel_drop: false
+          break_particles: ITEM
+
+  condenser_mk1:
+    variant_of: condenser_template
+
+  condenser_mk2:
+    variant_of: condenser_template
+    display_name: <lang:block.projecte.condenser_mk2>

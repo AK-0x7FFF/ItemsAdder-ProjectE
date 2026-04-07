@@ -1,0 +1,13 @@
+name: ItemsAdder-ProjectE
+version: '$version'
+
+main: ak.ak32767.projecte.ProjectE
+api-version: '1.21.5'
+load: POSTWORLD
+depend:
+  - ItemsAdder
+  - ProtocolLib
+
+commands:
+  getemc:
+    usage: /<command> [material]

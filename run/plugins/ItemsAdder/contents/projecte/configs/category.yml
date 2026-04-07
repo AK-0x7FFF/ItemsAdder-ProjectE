@@ -1,0 +1,13 @@
+info:
+  namespace: projecte
+categories:
+  food:
+    enabled: true
+    icon: "minecraft:diamond"
+    name: <lang:misc.projecte.mod_name>
+    items:
+      - "projecte:collector_mk1"
+      - "projecte:collector_mk2"
+      - "projecte:collector_mk3"
+      - "projecte:condenser_mk1"
+      - "projecte:condenser_mk2"

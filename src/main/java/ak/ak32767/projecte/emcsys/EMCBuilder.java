@@ -118,7 +118,7 @@ public class EMCBuilder {
 
                     BigInteger minEmc = null;
                     for (Object item : choices) {
-                        BigInteger curr = this.getEmc(item);
+                        BigInteger curr = this.getEMC(item);
 
                         // 未迭代或無EMC
                         if (curr.equals(BigInteger.ZERO))
@@ -173,7 +173,7 @@ public class EMCBuilder {
         return this.emcValues.get(item);
     }
 
-    public BigInteger getEmc(Object item) {
+    public BigInteger getEMC(Object item) {
         if (item instanceof Material) {
             long fixedValue = this.getFixedMaterialEmc((Material) item);
             if (fixedValue > 0)

@@ -40,7 +40,7 @@ public class CommandGetEMC implements CommandExecutor {
             return false;
         }
 
-        sender.sendMessage("Material [" + name + "] EMC: " + this.plugin.getEmcBuilder().getEmc(target).toString());
+        sender.sendMessage("Material [" + name + "] EMC: " + this.plugin.getEmcBuilder().getEMC(target).toString());
         return true;
     }
 }

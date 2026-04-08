@@ -3,7 +3,6 @@ package ak.ak32767.projecte.data;
 import dev.lone.itemsadder.api.CustomStack;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 public class IAItemWrapper {

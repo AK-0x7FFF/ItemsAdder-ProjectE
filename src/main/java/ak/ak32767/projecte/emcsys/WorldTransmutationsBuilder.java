@@ -1,11 +1,9 @@
 package ak.ak32767.projecte.emcsys;
 
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 public class WorldTransmutationsBuilder {

@@ -1,0 +1,10 @@
+info:
+  namespace: projecte
+items:
+  philosophers_stone:
+    variant_of: regular_item_template
+    display_name: <lang:item.projecte.philosophers_stone>
+    resource:
+      textures:
+        - projecte:item/philosophers_stone.png
+    max_stack_size: 1

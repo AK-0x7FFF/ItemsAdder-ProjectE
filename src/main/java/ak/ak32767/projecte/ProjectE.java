@@ -1,28 +1,16 @@
 package ak.ak32767.projecte;
 
+import ak.ak32767.projecte.commands.CommandCalcEMC;
 import ak.ak32767.projecte.commands.CommandGetEMC;
 import ak.ak32767.projecte.emcsys.EMCBuilder;
 import ak.ak32767.projecte.emcsys.WorldTransmutationsBuilder;
 import ak.ak32767.projecte.listener.IABlockBreakListener;
 import ak.ak32767.projecte.listener.IABlockInteractListener;
 import ak.ak32767.projecte.listener.IABlockPlaceListener;
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import ak.ak32767.projecte.listener.IALoadedListener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 public final class ProjectE extends JavaPlugin {
@@ -32,22 +20,23 @@ public final class ProjectE extends JavaPlugin {
 
     @Override
     public void onEnable() {
-//        this.logger.setLevel(Level.ALL);
+        PluginManager pluginManager = getServer().getPluginManager();
 
         this.worldTransmutationBuilder = new WorldTransmutationsBuilder();
         this.worldTransmutationBuilder.build();
 
+        // 在 `IALoadedListener.java` 中進行BUILD
         this.emcBuilder = new EMCBuilder(this);
-        this.emcBuilder.build(this.worldTransmutationBuilder);
 
         // listener register
-        PluginManager pluginManager = getServer().getPluginManager();
+        pluginManager.registerEvents(new IALoadedListener(this), this);
         pluginManager.registerEvents(new IABlockPlaceListener(this), this);
         pluginManager.registerEvents(new IABlockBreakListener(this), this);
         pluginManager.registerEvents(new IABlockInteractListener(this), this);
 
         // command register
         getCommand("getemc").setExecutor(new CommandGetEMC(this));
+        getCommand("calcemc").setExecutor(new CommandCalcEMC(this));
 
 //        // protocollib rejister
 //        var protocolManager = ProtocolLibrary.getProtocolManager();

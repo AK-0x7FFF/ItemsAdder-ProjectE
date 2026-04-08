@@ -1,5 +1,6 @@
 package ak.ak32767.projecte.emcsys;
 
+import ak.ak32767.projecte.data.ExactItemWrapper;
 import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap;
 import org.bukkit.Material;
 
@@ -7,30 +8,30 @@ import java.util.Collections;
 import java.util.Set;
 
 public class ConversionBuilder<PARENT> {
-    private static final Set<Material> BLANK = Collections.singleton(Material.AIR);
+    private static final Set<Object> BLANK = Collections.singleton(Material.AIR);
 
     private final PARENT parent;
-    private final Material material;
+    private final Object result;
     private final long amount;
-    private final Object2LongLinkedOpenHashMap<Set<Material>> ingredients;
+    private final Object2LongLinkedOpenHashMap<Set<Object>> ingredients;
 
-    public ConversionBuilder(PARENT emcBuilder, Material materials, long amount) {
+    public ConversionBuilder(PARENT emcBuilder, Object result, long amount) {
         this.parent = emcBuilder;
-        this.material = materials;
+        this.result = result;
         this.amount = amount;
         this.ingredients = new Object2LongLinkedOpenHashMap<>();
         this.ingredients.defaultReturnValue(0);
     }
 
-    public Material getMaterial() {
-        return material;
+    public Object getResult() {
+        return result;
     }
 
     public long getAmount() {
         return amount;
     }
 
-    public final Object2LongLinkedOpenHashMap<Set<Material>> getIngredients() {
+    public final Object2LongLinkedOpenHashMap<Set<Object>> getIngredients() {
         return ingredients;
     }
 
@@ -39,24 +40,21 @@ public class ConversionBuilder<PARENT> {
         return this;
     }
 
-    public ConversionBuilder<PARENT> addIngredient(Material ingredient) {
-        this.ingredients.addTo(Collections.singleton(ingredient), 1);
-        return this;
+    public ConversionBuilder<PARENT> addIngredient(Object ingredient) {
+        return this.addIngredient(ingredient, 1);
     }
 
-    public ConversionBuilder<PARENT> addIngredient(Material ingredient, long amount) {
+    public ConversionBuilder<PARENT> addIngredient(Object ingredient, long amount) {
         this.ingredients.addTo(Collections.singleton(ingredient), amount);
         return this;
     }
 
-    public ConversionBuilder<PARENT> addIngredientsGroup(Set<Material> ingredients) {
-        Set<Material> immutSet = Set.copyOf(ingredients);
-        this.ingredients.addTo(immutSet, 1);
-        return this;
+    public ConversionBuilder<PARENT> addIngredientsGroup(Set<Object> ingredients) {
+        return this.addIngredientsGroup(ingredients, 1);
     }
 
-    public ConversionBuilder<PARENT> addIngredientsGroup(Set<Material> ingredients, long amount) {
-        Set<Material> immutSet = Set.copyOf(ingredients);
+    public ConversionBuilder<PARENT> addIngredientsGroup(Set<Object> ingredients, long amount) {
+        Set<Object> immutSet = Set.copyOf(ingredients);
         this.ingredients.addTo(immutSet, amount);
         return this;
     }

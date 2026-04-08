@@ -1,12 +1,14 @@
 package ak.ak32767.projecte.commands;
 
 import ak.ak32767.projecte.ProjectE;
+import ak.ak32767.projecte.data.ExactItemWrapper;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class CommandGetEMC implements CommandExecutor {
@@ -18,22 +20,27 @@ public class CommandGetEMC implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        Material material = null;
+        Object target = null;
+        String name = "NULL";
 
         if (args.length == 0) {
-            if (sender instanceof Player player)
-                material = player.getInventory().getItemInMainHand().getType();
-            else
+            if (sender instanceof Player player) {
+                ItemStack item = player.getInventory().getItemInMainHand();
+                target = ExactItemWrapper.of(item);
+//                plugin.logger.info(target.getClass().toString());
+                name = PlainTextComponentSerializer.plainText().serialize(item.displayName());
+            } else
                 return false;
-        } else
-            material = Material.getMaterial(args[0].toUpperCase());
+        } else {
+            target = Material.getMaterial(args[0].toUpperCase());
+            name = args[0].toUpperCase();
+        }
 
-        if (material == null) {
+        if (target == null) {
             return false;
         }
 
-        String materialName = material.name();
-        sender.sendMessage("Material [" + materialName + "] EMC: " + this.plugin.getEmcBuilder().getItemEmc(material).toString());
+        sender.sendMessage("Material [" + name + "] EMC: " + this.plugin.getEmcBuilder().getEmc(target).toString());
         return true;
     }
 }

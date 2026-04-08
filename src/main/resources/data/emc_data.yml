@@ -1,0 +1,1316 @@
+fixed:
+  - type: MATERIAL
+    name: IRON_INGOT
+    value: 256
+  - type: MATERIAL
+    name: AMETHYST_SHARD
+    value: 32
+  - type: MATERIAL
+    name: COBBLESTONE
+    value: 1
+  - type: MATERIAL
+    name: GRANITE
+    value: 16
+  - type: MATERIAL
+    name: DIORITE
+    value: 16
+  - type: MATERIAL
+    name: ANDESITE
+    value: 16
+  - type: MATERIAL
+    name: POINTED_DRIPSTONE
+    value: 16
+  - type: MATERIAL
+    name: END_STONE
+    value: 1
+  - type: MATERIAL
+    name: NETHERRACK
+    value: 1
+  - type: MATERIAL
+    name: BASALT
+    value: 4
+  - type: MATERIAL
+    name: BLACKSTONE
+    value: 4
+  - type: MATERIAL
+    name: COBBLED_DEEPSLATE
+    value: 2
+  - type: MATERIAL
+    name: TUFF
+    value: 4
+  - type: MATERIAL
+    name: CALCITE
+    value: 32
+  - type: MATERIAL
+    name: DIRT
+    value: 1
+  - type: MATERIAL
+    name: SAND
+    value: 1
+  - type: MATERIAL
+    name: RED_SAND
+    value: 1
+  - type: MATERIAL
+    name: SNOW
+    value: 1
+  - type: MATERIAL
+    name: ICE
+    value: 1
+  - type: MATERIAL
+    name: DEAD_BUSH
+    value: 1
+  - type: MATERIAL
+    name: GRAVEL
+    value: 4
+  - type: MATERIAL
+    name: CACTUS
+    value: 8
+  - type: MATERIAL
+    name: VINE
+    value: 8
+  - type: MATERIAL
+    name: MOSS_BLOCK
+    value: 12
+  - type: MATERIAL
+    name: COBWEB
+    value: 12
+  - type: MATERIAL
+    name: PINK_PETALS
+    value: 4
+  - type: MATERIAL
+    name: LILY_PAD
+    value: 16
+  - type: MATERIAL
+    name: SMALL_DRIPLEAF
+    value: 24
+  - type: MATERIAL
+    name: BIG_DRIPLEAF
+    value: 32
+  - type: TAG
+    name: FLOWERS
+    value: 32
+  - type: TAG
+    name: SMALL_FLOWERS
+    value: 16
+  - type: MATERIAL
+    name: RED_MUSHROOM
+    value: 32
+  - type: MATERIAL
+    name: BROWN_MUSHROOM
+    value: 32
+  - type: MATERIAL
+    name: SUGAR_CANE
+    value: 32
+  - type: MATERIAL
+    name: BAMBOO
+    value: 32
+  - type: MATERIAL
+    name: SOUL_SAND
+    value: 49
+  - type: MATERIAL
+    name: OBSIDIAN
+    value: 64
+  - type: MATERIAL
+    name: CRYING_OBSIDIAN
+    value: 768
+  - type: MATERIAL
+    name: SPONGE
+    value: 128
+  - type: MATERIAL
+    name: SHORT_GRASS
+    value: 1
+  - type: MATERIAL
+    name: SEAGRASS
+    value: 1
+  - type: MATERIAL
+    name: KELP
+    value: 1
+  - type: MATERIAL
+    name: SEA_PICKLE
+    value: 16
+  - type: MATERIAL
+    name: TALL_GRASS
+    value: 1
+  - type: MATERIAL
+    name: FERN
+    value: 1
+  - type: MATERIAL
+    name: LARGE_FERN
+    value: 1
+  - type: MATERIAL
+    name: MAGMA_BLOCK
+    value: 128
+  - type: MATERIAL
+    name: NETHER_SPROUTS
+    value: 1
+  - type: MATERIAL
+    name: CRIMSON_ROOTS
+    value: 1
+  - type: MATERIAL
+    name: WARPED_ROOTS
+    value: 1
+  - type: MATERIAL
+    name: WEEPING_VINES
+    value: 8
+  - type: MATERIAL
+    name: TWISTING_VINES
+    value: 8
+  - type: MATERIAL
+    name: GLOW_LICHEN
+    value: 8
+  - type: MATERIAL
+    name: CRIMSON_FUNGUS
+    value: 32
+  - type: MATERIAL
+    name: WARPED_FUNGUS
+    value: 32
+  - type: MATERIAL
+    name: SPORE_BLOSSOM
+    value: 64
+  - type: MATERIAL
+    name: TUBE_CORAL_BLOCK
+    value: 64
+  - type: MATERIAL
+    name: BRAIN_CORAL_BLOCK
+    value: 64
+  - type: MATERIAL
+    name: BUBBLE_CORAL_BLOCK
+    value: 64
+  - type: MATERIAL
+    name: FIRE_CORAL_BLOCK
+    value: 64
+  - type: MATERIAL
+    name: HORN_CORAL_BLOCK
+    value: 64
+  - type: MATERIAL
+    name: DEAD_TUBE_CORAL_BLOCK
+    value: 4
+  - type: MATERIAL
+    name: DEAD_BRAIN_CORAL_BLOCK
+    value: 4
+  - type: MATERIAL
+    name: DEAD_BUBBLE_CORAL_BLOCK
+    value: 4
+  - type: MATERIAL
+    name: DEAD_FIRE_CORAL_BLOCK
+    value: 4
+  - type: MATERIAL
+    name: DEAD_HORN_CORAL_BLOCK
+    value: 4
+  - type: MATERIAL
+    name: TUBE_CORAL_FAN
+    value: 16
+  - type: MATERIAL
+    name: BRAIN_CORAL_FAN
+    value: 16
+  - type: MATERIAL
+    name: BUBBLE_CORAL_FAN
+    value: 16
+  - type: MATERIAL
+    name: FIRE_CORAL_FAN
+    value: 16
+  - type: MATERIAL
+    name: HORN_CORAL_FAN
+    value: 16
+  - type: MATERIAL
+    name: DEAD_TUBE_CORAL_FAN
+    value: 1
+  - type: MATERIAL
+    name: DEAD_BRAIN_CORAL_FAN
+    value: 1
+  - type: MATERIAL
+    name: DEAD_BUBBLE_CORAL_FAN
+    value: 1
+  - type: MATERIAL
+    name: DEAD_FIRE_CORAL_FAN
+    value: 1
+  - type: MATERIAL
+    name: DEAD_HORN_CORAL_FAN
+    value: 1
+  - type: MATERIAL
+    name: TUBE_CORAL
+    value: 16
+  - type: MATERIAL
+    name: BRAIN_CORAL
+    value: 16
+  - type: MATERIAL
+    name: BUBBLE_CORAL
+    value: 16
+  - type: MATERIAL
+    name: FIRE_CORAL
+    value: 16
+  - type: MATERIAL
+    name: HORN_CORAL
+    value: 16
+  - type: MATERIAL
+    name: DEAD_TUBE_CORAL
+    value: 1
+  - type: MATERIAL
+    name: DEAD_BRAIN_CORAL
+    value: 1
+  - type: MATERIAL
+    name: DEAD_BUBBLE_CORAL
+    value: 1
+  - type: MATERIAL
+    name: DEAD_FIRE_CORAL
+    value: 1
+  - type: MATERIAL
+    name: DEAD_HORN_CORAL
+    value: 1
+  - type: MATERIAL
+    name: CHORUS_PLANT
+    value: 64
+  - type: MATERIAL
+    name: CHORUS_FLOWER
+    value: 96
+  - type: MATERIAL
+    name: CHORUS_FRUIT
+    value: 192
+  - type: MATERIAL
+    name: SCULK_VEIN
+    value: 4
+  - type: MATERIAL
+    name: SCULK_CATALYST
+    value: 8040
+  - type: MATERIAL
+    name: WHEAT_SEEDS
+    value: 16
+  - type: MATERIAL
+    name: PUMPKIN_SEEDS
+    value: 16
+  - type: MATERIAL
+    name: MELON_SEEDS
+    value: 16
+  - type: MATERIAL
+    name: BEETROOT_SEEDS
+    value: 16
+  - type: MATERIAL
+    name: TORCHFLOWER_SEEDS
+    value: 16
+  - type: MATERIAL
+    name: PITCHER_POD
+    value: 16
+  - type: MATERIAL
+    name: MELON_SLICE
+    value: 16
+  - type: MATERIAL
+    name: SWEET_BERRIES
+    value: 16
+  - type: MATERIAL
+    name: GLOW_BERRIES
+    value: 16
+  - type: MATERIAL
+    name: WHEAT
+    value: 24
+  - type: MATERIAL
+    name: NETHER_WART
+    value: 24
+  - type: MATERIAL
+    name: APPLE
+    value: 128
+  - type: MATERIAL
+    name: PUMPKIN
+    value: 144
+  - type: MATERIAL
+    name: HONEY_BOTTLE
+    value: 48
+  - type: MATERIAL
+    name: PORKCHOP
+    value: 64
+  - type: MATERIAL
+    name: BEEF
+    value: 64
+  - type: MATERIAL
+    name: CHICKEN
+    value: 64
+  - type: MATERIAL
+    name: RABBIT
+    value: 64
+  - type: MATERIAL
+    name: MUTTON
+    value: 64
+  - type: MATERIAL
+    name: COD
+    value: 64
+  - type: MATERIAL
+    name: SALMON
+    value: 64
+  - type: MATERIAL
+    name: TROPICAL_FISH
+    value: 64
+  - type: MATERIAL
+    name: PUFFERFISH
+    value: 64
+  - type: MATERIAL
+    name: CARROT
+    value: 64
+  - type: MATERIAL
+    name: BEETROOT
+    value: 64
+  - type: MATERIAL
+    name: POTATO
+    value: 64
+  - type: MATERIAL
+    name: POISONOUS_POTATO
+    value: 64
+  - type: MATERIAL
+    name: STRING
+    value: 12
+  - type: MATERIAL
+    name: ROTTEN_FLESH
+    value: 32
+  - type: MATERIAL
+    name: SLIME_BALL
+    value: 32
+  - type: MATERIAL
+    name: EGG
+    value: 32
+  - type: MATERIAL
+    name: TURTLE_SCUTE
+    value: 96
+  - type: MATERIAL
+    name: TURTLE_EGG
+    value: 192
+  - type: TAG
+    name: SNAPS_GOAT_HORN
+    value: 192
+  - type: MATERIAL
+    name: FEATHER
+    value: 48
+  - type: MATERIAL
+    name: RABBIT_HIDE
+    value: 16
+  - type: MATERIAL
+    name: RABBIT_FOOT
+    value: 128
+  - type: MATERIAL
+    name: SPIDER_EYE
+    value: 128
+  - type: MATERIAL
+    name: PHANTOM_MEMBRANE
+    value: 192
+  - type: MATERIAL
+    name: GUNPOWDER
+    value: 192
+  - type: MATERIAL
+    name: SKELETON_SKULL
+    value: 256
+  - type: MATERIAL
+    name: ZOMBIE_HEAD
+    value: 256
+  - type: MATERIAL
+    name: CREEPER_HEAD
+    value: 256
+  - type: MATERIAL
+    name: PIGLIN_HEAD
+    value: 256
+  - type: MATERIAL
+    name: PIGLIN_BANNER_PATTERN
+    value: 512
+  - type: MATERIAL
+    name: FLOW_BANNER_PATTERN
+    value: 20480
+  - type: MATERIAL
+    name: GUSTER_BANNER_PATTERN
+    value: 12224
+  - type: MATERIAL
+    name: ENDER_PEARL
+    value: 1024
+  - type: MATERIAL
+    name: NAUTILUS_SHELL
+    value: 1024
+  - type: MATERIAL
+    name: BLAZE_ROD
+    value: 1536
+  - type: MATERIAL
+    name: BREEZE_ROD
+    value: 2304
+  - type: MATERIAL
+    name: SHULKER_SHELL
+    value: 2048
+  - type: MATERIAL
+    name: SNIFFER_EGG
+    value: 2048
+  - type: MATERIAL
+    name: GHAST_TEAR
+    value: 4096
+  - type: MATERIAL
+    name: TRIDENT
+    value: 16398
+  - type: MATERIAL
+    name: HEART_OF_THE_SEA
+    value: 32768
+  - type: MATERIAL
+    name: HEAVY_CORE
+    value: 40960
+  - type: MATERIAL
+    name: DRAGON_EGG
+    value: 262144
+  - type: MATERIAL
+    name: SADDLE
+    value: 192
+  - type: MATERIAL
+    name: ECHO_SHARD
+    value: 192
+  - type: MATERIAL
+    name: NAME_TAG
+    value: 192
+  - type: MATERIAL
+    name: MUSIC_DISC_13
+    value: 2048
+  - type: MATERIAL
+    name: MUSIC_DISC_CAT
+    value: 2048
+  - type: MATERIAL
+    name: MUSIC_DISC_BLOCKS
+    value: 2048
+  - type: MATERIAL
+    name: MUSIC_DISC_CHIRP
+    value: 2048
+  - type: MATERIAL
+    name: MUSIC_DISC_FAR
+    value: 2048
+  - type: MATERIAL
+    name: MUSIC_DISC_MALL
+    value: 2048
+  - type: MATERIAL
+    name: MUSIC_DISC_MELLOHI
+    value: 2048
+  - type: MATERIAL
+    name: MUSIC_DISC_STAL
+    value: 2048
+  - type: MATERIAL
+    name: MUSIC_DISC_STRAD
+    value: 2048
+  - type: MATERIAL
+    name: MUSIC_DISC_WARD
+    value: 2048
+  - type: MATERIAL
+    name: MUSIC_DISC_11
+    value: 2048
+  - type: MATERIAL
+    name: MUSIC_DISC_WAIT
+    value: 2048
+  - type: MATERIAL
+    name: DISC_FRAGMENT_5
+    value: 192
+  - type: MATERIAL
+    name: MUSIC_DISC_CREATOR
+    value: 40960
+  - type: MATERIAL
+    name: MUSIC_DISC_CREATOR_MUSIC_BOX
+    value: 8192
+  - type: MATERIAL
+    name: MUSIC_DISC_OTHERSIDE
+    value: 6144
+  - type: MATERIAL
+    name: MUSIC_DISC_PIGSTEP
+    value: 8192
+  - type: MATERIAL
+    name: MUSIC_DISC_PRECIPICE
+    value: 12224
+  - type: MATERIAL
+    name: MUSIC_DISC_RELIC
+    value: 10176
+  - type: MATERIAL
+    name: FLINT
+    value: 4
+  - type: MATERIAL
+    name: COAL
+    value: 128
+  - type: MATERIAL
+    name: QUARTZ
+    value: 256
+  - type: MATERIAL
+    name: PRISMARINE_SHARD
+    value: 256
+  - type: MATERIAL
+    name: PRISMARINE_CRYSTALS
+    value: 512
+  - type: MATERIAL
+    name: INK_SAC
+    value: 16
+  - type: MATERIAL
+    name: COCOA_BEANS
+    value: 64
+  - type: MATERIAL
+    name: LAPIS_LAZULI
+    value: 864
+  - type: MATERIAL
+    name: EMERALD
+    value: 16384
+  - type: MATERIAL
+    name: NETHER_STAR
+    value: 139264
+  - type: MATERIAL
+    name: CLAY_BALL
+    value: 16
+  - type: MATERIAL
+    name: ANGLER_POTTERY_SHERD
+    value: 216
+  - type: MATERIAL
+    name: ARCHER_POTTERY_SHERD
+    value: 216
+  - type: MATERIAL
+    name: ARMS_UP_POTTERY_SHERD
+    value: 216
+  - type: MATERIAL
+    name: BLADE_POTTERY_SHERD
+    value: 216
+  - type: MATERIAL
+    name: BREWER_POTTERY_SHERD
+    value: 216
+  - type: MATERIAL
+    name: BURN_POTTERY_SHERD
+    value: 216
+  - type: MATERIAL
+    name: DANGER_POTTERY_SHERD
+    value: 216
+  - type: MATERIAL
+    name: EXPLORER_POTTERY_SHERD
+    value: 216
+  - type: MATERIAL
+    name: FRIEND_POTTERY_SHERD
+    value: 216
+  - type: MATERIAL
+    name: GUSTER_POTTERY_SHERD
+    value: 216
+  - type: MATERIAL
+    name: HEART_POTTERY_SHERD
+    value: 216
+  - type: MATERIAL
+    name: HEARTBREAK_POTTERY_SHERD
+    value: 216
+  - type: MATERIAL
+    name: HOWL_POTTERY_SHERD
+    value: 216
+  - type: MATERIAL
+    name: MINER_POTTERY_SHERD
+    value: 216
+  - type: MATERIAL
+    name: MOURNER_POTTERY_SHERD
+    value: 216
+  - type: MATERIAL
+    name: PLENTY_POTTERY_SHERD
+    value: 216
+  - type: MATERIAL
+    name: PRIZE_POTTERY_SHERD
+    value: 216
+  - type: MATERIAL
+    name: SHEAF_POTTERY_SHERD
+    value: 216
+  - type: MATERIAL
+    name: SHELTER_POTTERY_SHERD
+    value: 216
+  - type: MATERIAL
+    name: SKULL_POTTERY_SHERD
+    value: 216
+  - type: MATERIAL
+    name: SNORT_POTTERY_SHERD
+    value: 216
+  - type: MATERIAL
+    name: BONE
+    value: 144
+  - type: MATERIAL
+    name: SNOWBALL
+    value: 1
+  - type: MATERIAL
+    name: FILLED_MAP
+    value: 1472
+  - type: TAG
+    name: LOGS
+    value: 32
+  - type: TAG
+    name: PLANKS
+    value: 8
+  - type: TAG
+    name: SAPLINGS
+    value: 32
+  - type: MATERIAL
+    name: STICK
+    value: 4
+  - type: TAG
+    name: LEAVES
+    value: 1
+  - type: MATERIAL
+    name: MANGROVE_ROOTS
+    value: 4
+  - type: TAG
+    name: WOOL
+    value: 48
+  - type: MATERIAL
+    name: ARMADILLO_SCUTE
+    value: 48
+  - type: MATERIAL
+    name: NETHERITE_SCRAP
+    value: 12288
+  - type: MATERIAL
+    name: DIAMOND
+    value: 8192
+  - type: MATERIAL
+    name: REDSTONE
+    value: 64
+  - type: MATERIAL
+    name: GLOWSTONE_DUST
+    value: 384
+  - type: MATERIAL
+    name: NETHERITE_UPGRADE_SMITHING_TEMPLATE
+    value: 7497
+  - type: MATERIAL
+    name: EYE_ARMOR_TRIM_SMITHING_TEMPLATE
+    value: 23017
+  - type: MATERIAL
+    name: SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE
+    value: 57345
+  - type: MATERIAL
+    name: DUNE_ARMOR_TRIM_SMITHING_TEMPLATE
+    value: 53898
+  - type: MATERIAL
+    name: VEX_ARMOR_TRIM_SMITHING_TEMPLATE
+    value: 51917
+  - type: MATERIAL
+    name: WILD_ARMOR_TRIM_SMITHING_TEMPLATE
+    value: 42641
+  - type: MATERIAL
+    name: SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE
+    value: 39465
+  - type: MATERIAL
+    name: TIDE_ARMOR_TRIM_SMITHING_TEMPLATE
+    value: 22116
+  - type: MATERIAL
+    name: WARD_ARMOR_TRIM_SMITHING_TEMPLATE
+    value: 19677
+  - type: MATERIAL
+    name: SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE
+    value: 18588
+  - type: MATERIAL
+    name: COAST_ARMOR_TRIM_SMITHING_TEMPLATE
+    value: 12271
+  - type: MATERIAL
+    name: RIB_ARMOR_TRIM_SMITHING_TEMPLATE
+    value: 10310
+  - type: MATERIAL
+    name: WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE
+    value: 10176
+  - type: MATERIAL
+    name: SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE
+    value: 10176
+  - type: MATERIAL
+    name: HOST_ARMOR_TRIM_SMITHING_TEMPLATE
+    value: 10176
+  - type: MATERIAL
+    name: RAISER_ARMOR_TRIM_SMITHING_TEMPLATE
+    value: 10176
+  - type: MATERIAL
+    name: SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE
+    value: 7533
+  - type: MATERIAL
+    name: FLOW_ARMOR_TRIM_SMITHING_TEMPLATE
+    value: 30528
+  - type: MATERIAL
+    name: BOLT_ARMOR_TRIM_SMITHING_TEMPLATE
+    value: 10176
+conversion:
+  - type: MATERIAL
+    name: GOLD_INGOT
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: IRON_INGOT
+        amount: 8
+  - type: MATERIAL
+    name: COPPER_INGOT
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: IRON_INGOT
+        amount: 1
+  - type: MATERIAL
+    name: GRASS_BLOCK
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: DIRT
+        amount: 2
+  - type: MATERIAL
+    name: PODZOL
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: DIRT
+        amount: 2
+  - type: MATERIAL
+    name: ROOTED_DIRT
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: DIRT
+        amount: 1
+      - type: MATERIAL
+        name: HANGING_ROOTS
+        amount: 1
+  - type: MATERIAL
+    name: MYCELIUM
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: DIRT
+        amount: 2
+  - type: MATERIAL
+    name: MUD
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: DIRT
+        amount: 1
+      - type: MATERIAL
+        name: POTION
+        amount: 1
+      - type: MATERIAL
+        name: GLASS_BOTTLE
+        amount: -1
+  - type: MATERIAL
+    name: CRIMSON_NYLIUM
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: NETHERRACK
+        amount: 2
+  - type: MATERIAL
+    name: WARPED_NYLIUM
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: NETHERRACK
+        amount: 2
+  - type: MATERIAL
+    name: IRON_HORSE_ARMOR
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: IRON_INGOT
+        amount: 8
+  - type: MATERIAL
+    name: GOLDEN_HORSE_ARMOR
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: GOLD_INGOT
+        amount: 8
+  - type: MATERIAL
+    name: DIAMOND_HORSE_ARMOR
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: DIAMOND
+        amount: 8
+  - type: MATERIAL
+    name: CARVED_PUMPKIN
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: PUMPKIN
+        amount: 1
+  - type: MATERIAL
+    name: TORCHFLOWER_SEEDS
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: TORCHFLOWER
+        amount: 1
+  - type: MATERIAL
+    name: PITCHER_POD
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: PITCHER_PLANT
+        amount: 1
+  - type: MATERIAL
+    name: WRITTEN_BOOK
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: WRITABLE_BOOK
+        amount: 1
+  - type: MATERIAL
+    name: ENCHANTED_BOOK
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: BOOK
+        amount: 1
+  - type: MATERIAL
+    name: ENCHANTED_GOLDEN_APPLE
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: APPLE
+        amount: 1
+      - type: MATERIAL
+        name: GOLD_BLOCK
+        amount: 8
+  - type: MATERIAL
+    name: STRIPPED_BAMBOO_BLOCK
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: BAMBOO_BLOCK
+        amount: 1
+  - type: MATERIAL
+    name: GLOBE_BANNER_PATTERN
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: EMERALD
+        amount: 3
+  - type: MATERIAL
+    name: SKULL_BANNER_PATTERN
+    amount: 3
+    ingredient:
+      - type: MATERIAL
+        name: PAPER
+        amount: 3
+      - type: MATERIAL
+        name: NETHER_STAR
+        amount: 1
+      - type: MATERIAL
+        name: SOUL_SAND
+        amount: -4
+  - type: MATERIAL
+    name: FIREWORK_STAR
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: GUNPOWDER
+        amount: 1
+  - type: MATERIAL
+    name: FIREWORK_ROCKET
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: PAPER
+        amount: 1
+      - type: MATERIAL
+        name: GUNPOWDER
+        amount: 1
+  - type: MATERIAL
+    name: SUSPICIOUS_GRAVEL
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: GRAVEL
+        amount: 1
+  - type: MATERIAL
+    name: SUSPICIOUS_SAND
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: SAND
+        amount: 1
+  - type: MATERIAL
+    name: WET_SPONGE
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: SPONGE
+        amount: 1
+  - type: MATERIAL
+    name: BELL
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: GOLD_INGOT
+        amount: 7
+  - type: MATERIAL
+    name: HONEYCOMB
+    amount: 3
+    ingredient:
+      - type: MATERIAL
+        name: HONEY_BOTTLE
+        amount: 1
+  - type: MATERIAL
+    name: POWDER_SNOW_BUCKET
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: BUCKET
+        amount: 1
+      - type: MATERIAL
+        name: SNOW_BLOCK
+        amount: 4
+  - type: MATERIAL
+    name: GLOW_INK_SAC
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: INK_SAC
+        amount: 1
+      - type: MATERIAL
+        name: GLOWSTONE_DUST
+        amount: 1
+  - type: MATERIAL
+    name: HANGING_ROOTS
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: STICK
+        amount: 1
+  - type: MATERIAL
+    name: SUSPICIOUS_STEW
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: BOWL
+        amount: 1
+      - type: MATERIAL
+        name: BROWN_MUSHROOM
+        amount: 1
+      - type: MATERIAL
+        name: RED_MUSHROOM
+        amount: 1
+      - type: MATERIAL
+        name: WITHER_ROSE
+        amount: 1
+  - type: MATERIAL
+    name: PUFFERFISH_BUCKET
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: WATER_BUCKET
+        amount: 1
+      - type: MATERIAL
+        name: PUFFERFISH
+        amount: 1
+  - type: MATERIAL
+    name: SALMON_BUCKET
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: WATER_BUCKET
+        amount: 1
+      - type: MATERIAL
+        name: SALMON
+        amount: 1
+  - type: MATERIAL
+    name: COD_BUCKET
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: WATER_BUCKET
+        amount: 1
+      - type: MATERIAL
+        name: COD
+        amount: 1
+  - type: MATERIAL
+    name: TROPICAL_FISH_BUCKET
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: WATER_BUCKET
+        amount: 1
+      - type: MATERIAL
+        name: TROPICAL_FISH
+        amount: 1
+  - type: MATERIAL
+    name: DRAGON_BREATH
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: GLASS_BOTTLE
+        amount: 1
+      - type: ADD
+        value: 1
+  - type: MATERIAL
+    name: SOUL_SOIL
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: SOUL_SAND
+        amount: 1
+  - type: MATERIAL
+    name: WARPED_WART_BLOCK
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: NETHER_WART_BLOCK
+        amount: 1
+  - type: MATERIAL
+    name: SHROOMLIGHT
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: GLOWSTONE_DUST
+        amount: 1
+      - type: MATERIAL
+        name: RED_MUSHROOM
+        amount: 1
+  - type: MATERIAL
+    name: OCHRE_FROGLIGHT
+    amount: 3
+    ingredient:
+      - type: MATERIAL
+        name: MAGMA_CREAM
+        amount: 1
+  - type: MATERIAL
+    name: PEARLESCENT_FROGLIGHT
+    amount: 3
+    ingredient:
+      - type: MATERIAL
+        name: MAGMA_CREAM
+        amount: 1
+  - type: MATERIAL
+    name: VERDANT_FROGLIGHT
+    amount: 3
+    ingredient:
+      - type: MATERIAL
+        name: MAGMA_CREAM
+        amount: 1
+  - type: MATERIAL
+    name: SCULK
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: SCULK_VEIN
+        amount: 4
+  - type: MATERIAL
+    name: SCULK_SENSOR
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: COMPARATOR
+        amount: 4
+      - type: MATERIAL
+        name: REPEATER
+        amount: 4
+      - type: MATERIAL
+        name: SCULK
+        amount: 1
+  - type: MATERIAL
+    name: SCULK_SHRIEKER
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: SCULK_CATALYST
+        amount: 4
+  - type: MATERIAL
+    name: DIRT_PATH
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: GRASS_BLOCK
+        amount: 1
+  - type: MATERIAL
+    name: DIRT_PATH
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: DIRT
+        amount: 1
+  - type: MATERIAL
+    name: DIRT_PATH
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: PODZOL
+        amount: 1
+  - type: MATERIAL
+    name: DIRT_PATH
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: COARSE_DIRT
+        amount: 1
+  - type: MATERIAL
+    name: DIRT_PATH
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: MYCELIUM
+        amount: 1
+  - type: MATERIAL
+    name: DIRT_PATH
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: ROOTED_DIRT
+        amount: 1
+  - type: MATERIAL
+    name: CHAINMAIL_HELMET
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: IRON_HELMET
+        amount: 1
+  - type: MATERIAL
+    name: CHAINMAIL_CHESTPLATE
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: IRON_CHESTPLATE
+        amount: 1
+  - type: MATERIAL
+    name: CHAINMAIL_LEGGINGS
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: IRON_LEGGINGS
+        amount: 1
+  - type: MATERIAL
+    name: CHAINMAIL_BOOTS
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: IRON_BOOTS
+        amount: 1
+  - type: MATERIAL
+    name: WHITE_CONCRETE
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: WHITE_CONCRETE_POWDER
+        amount: 1
+  - type: MATERIAL
+    name: ORANGE_CONCRETE
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: ORANGE_CONCRETE_POWDER
+        amount: 1
+  - type: MATERIAL
+    name: MAGENTA_CONCRETE
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: MAGENTA_CONCRETE_POWDER
+        amount: 1
+  - type: MATERIAL
+    name: LIGHT_BLUE_CONCRETE
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: LIGHT_BLUE_CONCRETE_POWDER
+        amount: 1
+  - type: MATERIAL
+    name: YELLOW_CONCRETE
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: YELLOW_CONCRETE_POWDER
+        amount: 1
+  - type: MATERIAL
+    name: LIME_CONCRETE
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: LIME_CONCRETE_POWDER
+        amount: 1
+  - type: MATERIAL
+    name: PINK_CONCRETE
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: PINK_CONCRETE_POWDER
+        amount: 1
+  - type: MATERIAL
+    name: GRAY_CONCRETE
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: GRAY_CONCRETE_POWDER
+        amount: 1
+  - type: MATERIAL
+    name: LIGHT_GRAY_CONCRETE
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: LIGHT_GRAY_CONCRETE_POWDER
+        amount: 1
+  - type: MATERIAL
+    name: CYAN_CONCRETE
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: CYAN_CONCRETE_POWDER
+        amount: 1
+  - type: MATERIAL
+    name: PURPLE_CONCRETE
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: PURPLE_CONCRETE_POWDER
+        amount: 1
+  - type: MATERIAL
+    name: BLUE_CONCRETE
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: BLUE_CONCRETE_POWDER
+        amount: 1
+  - type: MATERIAL
+    name: BROWN_CONCRETE
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: BROWN_CONCRETE_POWDER
+        amount: 1
+  - type: MATERIAL
+    name: GREEN_CONCRETE
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: GREEN_CONCRETE_POWDER
+        amount: 1
+  - type: MATERIAL
+    name: RED_CONCRETE
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: RED_CONCRETE_POWDER
+        amount: 1
+  - type: MATERIAL
+    name: BLACK_CONCRETE
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: BLACK_CONCRETE_POWDER
+        amount: 1
+  - type: MATERIAL
+    name: CHIPPED_ANVIL
+    amount: 25
+    ingredient:
+      - type: MATERIAL
+        name: ANVIL
+        amount: 16
+  - type: MATERIAL
+    name: DAMAGED_ANVIL
+    amount: 25
+    ingredient:
+      - type: MATERIAL
+        name: ANVIL
+        amount: 7
+  - type: MATERIAL
+    name: WATER_BUCKET
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: BUCKET
+        amount: 1
+  - type: MATERIAL
+    name: LAVA_BUCKET
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: BUCKET
+        amount: 1
+      - type: MATERIAL
+        name: OBSIDIAN
+        amount: 1
+  - type: MATERIAL
+    name: MILK_BUCKET
+    amount: 1
+    ingredient:
+      - type: MATERIAL
+        name: BUCKET
+        amount: 1
+      - type: ADD
+        value: 16

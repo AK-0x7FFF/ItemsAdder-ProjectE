@@ -1,0 +1,16 @@
+info:
+  namespace: projecte
+items:
+  dark_matter:
+    variant_of: projecte:regular_item_template
+    display_name: <lang:item.projecte.dark_matter>
+    resource:
+      textures:
+        - projecte:item/matters/dark.png
+
+  red_matter:
+    variant_of: projecte:regular_item_template
+    display_name: <lang:item.projecte.red_matter>
+    resource:
+      textures:
+        - projecte:item/matters/red.png

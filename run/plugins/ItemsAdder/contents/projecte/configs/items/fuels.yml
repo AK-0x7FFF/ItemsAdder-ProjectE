@@ -1,0 +1,38 @@
+info:
+  namespace: projecte
+items:
+  fuel_template:
+    template: true
+    display_name: <lang:item.projecte.alchemical_coal>
+    resource:
+      generate: true
+      textures:
+        - projecte:item/fuels/alchemical_coal.png
+      material: CHARCOAL
+    behaviours:
+      fuel:
+        burn_ticks: 6400
+
+  alchemical_coal:
+    variant_of: projecte:fuel_template
+
+  mobius_fuel:
+    variant_of: projecte:fuel_template
+    display_name: <lang:item.projecte.mobius_fuel>
+    resource:
+      textures:
+        - projecte:item/fuels/mobius.png
+    behaviours:
+      fuel:
+        burn_ticks: 25600
+
+  aeternalis_fuel:
+    variant_of: projecte:fuel_template
+    display_name: <lang:item.projecte.aeternalis_fuel>
+    resource:
+      textures:
+        - projecte:item/fuels/aeternalis.png
+    behaviours:
+      fuel:
+        burn_ticks: 102400
+

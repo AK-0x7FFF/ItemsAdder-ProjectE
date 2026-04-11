@@ -3,14 +3,14 @@ info:
 items:
   collector_template:
     template: true
-    display_name: <lang:block.projecte.collector_mk1>
+    display_name: <lang:block.projecte.collector> MK I
     resource:
       textures:
         - projecte:block/collectors/other.png
         - projecte:block/collectors/other.png
         - projecte:block/collectors/front.png
         - projecte:block/collectors/other.png
-        - projecte:block/collectors/top_1.png
+        - projecte:block/collectors/basic.png
         - projecte:block/collectors/other.png
       generate: true
       material: PHANTOM_MEMBRANE
@@ -26,25 +26,25 @@ items:
 
   collector_mk2:
     variant_of: collector_template
-    display_name: <lang:block.projecte.collector_mk2>
+    display_name: <lang:block.projecte.collector> MK II
     resource:
       textures:
         - projecte:block/collectors/other.png
         - projecte:block/collectors/other.png
         - projecte:block/collectors/front.png
         - projecte:block/collectors/other.png
-        - projecte:block/collectors/top_2.png
+        - projecte:block/collectors/dark.png
         - projecte:block/collectors/other.png
 
   collector_mk3:
     variant_of: collector_template
-    display_name: <lang:block.projecte.collector_mk3>
+    display_name: <lang:block.projecte.collector> MK III
     resource:
       textures:
         - projecte:block/collectors/other.png
         - projecte:block/collectors/other.png
         - projecte:block/collectors/front.png
         - projecte:block/collectors/other.png
-        - projecte:block/collectors/top_3.png
+        - projecte:block/collectors/red.png
         - projecte:block/collectors/other.png
 

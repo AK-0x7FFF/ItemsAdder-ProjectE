@@ -1,0 +1,86 @@
+info:
+  namespace: projecte
+items:
+  orange_matter:
+    variant_of: projecte:regular_item_template
+    display_name: <lang:item.projecte.orange_matter>
+    resource:
+      textures:
+        - projecte:item/matters/orange.png
+
+  yellow_matter:
+    variant_of: projecte:regular_item_template
+    display_name: <lang:item.projecte.yellow_matter>
+    resource:
+      textures:
+        - projecte:item/matters/yellow.png
+
+  lime_matter:
+    variant_of: projecte:regular_item_template
+    display_name: <lang:item.projecte.lime_matter>
+    resource:
+      textures:
+        - projecte:item/matters/lime.png
+
+  green_matter:
+    variant_of: projecte:regular_item_template
+    display_name: <lang:item.projecte.green_matter>
+    resource:
+      textures:
+        - projecte:item/matters/green.png
+
+  blue_matter:
+    variant_of: projecte:regular_item_template
+    display_name: <lang:item.projecte.blue_matter>
+    resource:
+      textures:
+        - projecte:item/matters/blue.png
+
+  cyan_matter:
+    variant_of: projecte:regular_item_template
+    display_name: <lang:item.projecte.cyan_matter>
+    resource:
+      textures:
+        - projecte:item/matters/cyan.png
+
+  violet_matter:
+    variant_of: projecte:regular_item_template
+    display_name: <lang:item.projecte.violet_matter>
+    resource:
+      textures:
+        - projecte:item/matters/violet.png
+
+  purple_matter:
+    variant_of: projecte:regular_item_template
+    display_name: <lang:item.projecte.purple_matter>
+    resource:
+      textures:
+        - projecte:item/matters/purple.png
+
+  magenta_matter:
+    variant_of: projecte:regular_item_template
+    display_name: <lang:item.projecte.magenta_matter>
+    resource:
+      textures:
+        - projecte:item/matters/magenta.png
+
+  pink_matter:
+    variant_of: projecte:regular_item_template
+    display_name: <lang:item.projecte.pink_matter>
+    resource:
+      textures:
+        - projecte:item/matters/pink.png
+
+  white_matter:
+    variant_of: projecte:regular_item_template
+    display_name: <lang:item.projecte.white_matter> A
+    resource:
+      textures:
+        - projecte:item/matters/white.png
+
+  singularity:
+    variant_of: projecte:regular_item_template
+    display_name: <lang:item.projecte.singularity>
+    resource:
+      textures:
+        - projecte:item/matters/singularity.png

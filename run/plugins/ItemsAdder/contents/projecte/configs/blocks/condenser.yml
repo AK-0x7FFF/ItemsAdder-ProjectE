@@ -3,7 +3,7 @@ info:
 items:
   condenser_template:
     template: true
-    display_name: <lang:block.projecte.condenser_mk1>
+    display_name: <lang:block.projecte.condenser> MK I
     resource:
       generate: false
       model_path: block/condenser
@@ -20,4 +20,4 @@ items:
 
   condenser_mk2:
     variant_of: condenser_template
-    display_name: <lang:block.projecte.condenser_mk2>
+    display_name: <lang:block.projecte.condenser> MK II

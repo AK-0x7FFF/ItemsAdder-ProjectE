@@ -3,22 +3,19 @@ package ak.ak32767.projecte.emcsys;
 import ak.ak32767.projecte.ProjectE;
 import ak.ak32767.projecte.ProjectEException;
 import ak.ak32767.projecte.data.ItemWrapper;
+import ak.ak32767.projecte.utils.YAMLLoader;
+import dev.lone.itemsadder.api.ItemsAdder;
 import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,7 +24,7 @@ public class EMCBuilder {
     private static final String IA_FAKE_RECIPE_PREFIX = "zzzfake";
 
     private final ProjectE plugin;
-    private final Object2LongLinkedOpenHashMap<Material> fixedValues;
+    private final Object2LongLinkedOpenHashMap<ItemWrapper.TransmutableItem> fixedValues;
     private final Object2ObjectOpenHashMap<Object, BigInteger> emcValues;
     private final ArrayList<ConversionBuilder<EMCBuilder>> conversions;
 
@@ -50,15 +47,24 @@ public class EMCBuilder {
         buildByYAML();
         buildWorldTransmutations2Conversion(worldTransmutationsBuilder);
         buildRecipeConversion();
-
+        this.plugin.logger.info(this.fixedValues.size() + " fixedValues been Set.");
         this.plugin.logger.info(this.conversions.size() + " conversions been Registered.");
+
         calcEMC();
+        int emcedItem = this.fixedValues.size() + this.emcValues.size();
+        long allRegisteredItem = Arrays.stream(Material.values()).filter(Material::isItem).filter(mat -> !mat.isLegacy()).count() + ItemsAdder.getAllItems().size();
+        this.plugin.logger.info(this.emcValues.size() + " EMC been Calculated.");
+        this.plugin.logger.info("EMCed Item: " + emcedItem);
+        this.plugin.logger.info("unEMC Item: " + (allRegisteredItem - emcedItem));
+
 
         this.conversions.clear();
         return emcValues;
     }
 
     public void calcEMC() {
+        this.plugin.logger.info("EMCs Calculate BGN");
+
         int changed = 1;
         short depth = 0;
         for (; changed > 0 && depth < Byte.MAX_VALUE; depth++) {
@@ -69,18 +75,18 @@ public class EMCBuilder {
                 boolean tracker = this.IAItemTracker && target instanceof ItemWrapper.IAItem;
 
                 // 硬編碼跳過
-                if (target instanceof Material && this.getFixedMaterialEmc((Material) target) > 0)
+                if (target instanceof ItemWrapper.MaterialItem && this.getFixedMaterialEmc((ItemWrapper.MaterialItem) target) > 0)
                     continue;
 
                 BigInteger cost = BigInteger.ZERO;
                 boolean calcable = true;
 
                 if (tracker)
-                    this.plugin.logger.info("[EMCBuilder:IAItemTracker] Calculating BGN: " + ((ItemWrapper.IAItem) target).getNamespacedID());
+                    this.plugin.logger.info("[EMCBuilder:IAItemTracker] Calculating BGN: " + ((ItemWrapper.IAItem) target).namespacedID());
 
                 // 遍歷原料
                 for (var entry : conversion.getIngredients().object2LongEntrySet()) {
-                    Set<Object> choices = entry.getKey();
+                    Set<ItemWrapper.TransmutableItem> choices = entry.getKey();
                     long amount = entry.getLongValue();
 
                     // 佔位符處理
@@ -94,7 +100,7 @@ public class EMCBuilder {
                     // 跳過賢者之石
                     if (choices.stream().anyMatch(
                             obj -> obj instanceof ItemWrapper.IAItem &&
-                            ((ItemWrapper.IAItem) obj).getNamespacedID().equals("projecte:philosophers_stone")
+                            ((ItemWrapper.IAItem) obj).namespacedID().equals("projecte:philosophers_stone")
                     ))
                         continue;
 
@@ -102,21 +108,21 @@ public class EMCBuilder {
                         this.plugin.logger.info("[EMCBuilder:IAItemTracker]  - CHOICES: " +
                             choices.stream()
                             .map(choice -> {
-                                if (choice instanceof Material)
+                                if (choice instanceof ItemWrapper.MaterialItem)
                                     return "MATERIAL:" + choice;
 
                                 if (choice instanceof ItemWrapper.ExactItem)
-                                    return "EXACT_ITEM:" + ((ItemWrapper.ExactItem) choice).getMaterial() + "->" + ((ItemWrapper.ExactItem) choice).getMeta().toString();
+                                    return "EXACT_ITEM:" + ((ItemWrapper.ExactItem) choice).material() + "->" + ((ItemWrapper.ExactItem) choice).meta().toString();
 
                                 if (choice instanceof ItemWrapper.IAItem)
-                                    return "IAITEM:" + ((ItemWrapper.IAItem) choice).getNamespacedID().toUpperCase();
+                                    return "IAITEM:" + ((ItemWrapper.IAItem) choice).namespacedID().toUpperCase();
 
                                 return "NUL";
                             }).toList()
                         );
 
                     BigInteger minEmc = null;
-                    for (Object item : choices) {
+                    for (ItemWrapper.TransmutableItem item : choices) {
                         BigInteger curr = this.getEMCRaw(item);
 
                         // 未迭代或無EMC
@@ -154,48 +160,37 @@ public class EMCBuilder {
                 this.emcValues.put(target, itemEmc);
                 changed++;
             }
-            this.plugin.logger.info("EMC Map Calculated, depth: " + depth + ", Changed: +" + changed);
+            this.plugin.logger.info("EMCs Calculating, depth: " + depth + ", Changed: +" + changed);
         }
 
         if (depth == Byte.MAX_VALUE) {
 //            this.plugin.logger.warning("OVERDEPTH!!!!!!!!!!!!!!!");
             throw new IllegalStateException("OVER DEPTH !!!!!!!!!!!!!!!");
         }
+
+        this.plugin.logger.info("EMCs Calculate END");
     }
 
-    public long getFixedMaterialEmc(Material material) {
-        return this.fixedValues.getLong(material);
+    public long getFixedMaterialEmc(ItemWrapper.TransmutableItem item) {
+        return this.fixedValues.getLong(item);
     }
 
     public BigInteger getCalcedItemEmc(Object item) {
         return this.emcValues.get(item);
     }
 
-    public BigInteger getEMCRaw(Object item) {
-        if (item instanceof Material) {
-            long fixedValue = this.getFixedMaterialEmc((Material) item);
-            if (fixedValue > 0)
-                return BigInteger.valueOf(fixedValue);
+    public BigInteger getEMCRaw(ItemWrapper.TransmutableItem item) {
+        long fixedValue = this.getFixedMaterialEmc(item);
+        if (fixedValue > 0)
+            return BigInteger.valueOf(fixedValue);
 
-            BigInteger value = this.getCalcedItemEmc(item);
-            if (value.compareTo(BigInteger.ZERO) > 0) {
-                return value;
-            }
-            return BigInteger.ZERO;
-        }
+        BigInteger value = this.getCalcedItemEmc(item);
+        if (value.compareTo(BigInteger.ZERO) > 0)
+            return value;
 
         if (item instanceof ItemWrapper.ExactItem) {
-            BigInteger value = this.getCalcedItemEmc(item);
-            if (value.compareTo(BigInteger.ZERO) > 0)
-                return value;
-
-            Material material = ((ItemWrapper.ExactItem) item).getMaterial();
+            Material material = ((ItemWrapper.ExactItem) item).material();
             value = this.getCalcedItemEmc(material);
-            if (value.compareTo(BigInteger.ZERO) > 0)
-                return value;
-
-        } else if (item instanceof ItemWrapper.IAItem) {
-            BigInteger value = this.getCalcedItemEmc(item);
             if (value.compareTo(BigInteger.ZERO) > 0)
                 return value;
         }
@@ -240,12 +235,16 @@ public class EMCBuilder {
             for (RecipeChoice choice : choices) {
                 // 常規選物
                 if (choice instanceof RecipeChoice.MaterialChoice) {
-                    Set<Object> materials = new ObjectOpenHashSet<>(((RecipeChoice.MaterialChoice) choice).getChoices());
-                    conversion.addIngredientsGroup(materials);
+                    Set<ItemWrapper.TransmutableItem> items = new ObjectOpenHashSet<>(
+                        ((RecipeChoice.MaterialChoice) choice).getChoices().stream()
+                        .map(ItemWrapper.MaterialItem::new)
+                        .collect(Collectors.toSet())
+                    );
+                    conversion.addIngredientsGroup(items);
 
                 // 精確選物
                 } else if (choice instanceof RecipeChoice.ExactChoice) {
-                    Set<Object> items = ((RecipeChoice.ExactChoice) choice).getChoices()
+                    Set<ItemWrapper.TransmutableItem> items = ((RecipeChoice.ExactChoice) choice).getChoices()
                             .stream().map(ItemWrapper::of)
                             .collect(Collectors.toSet());
                     conversion.addIngredientsGroup(items);
@@ -256,142 +255,87 @@ public class EMCBuilder {
         }
     }
 
+
+
     private void buildByYAML() throws FileNotFoundException {
-        InputStream fileStream = this.plugin.getResource("data/emc_data.yml");
-        if  (fileStream == null)
-            throw new FileNotFoundException("data/emc_data.yml file not found!");
+        FileConfiguration config = YAMLLoader.load(this.plugin, "data/emc_data.yml");
 
-        try (InputStreamReader reader = new InputStreamReader(fileStream, StandardCharsets.UTF_8)) {
-            FileConfiguration config = YamlConfiguration.loadConfiguration(reader);
+        // this.fixedValue
+        @NotNull List<Map<?, ?>> fixed = config.getMapList("fixed");
+        buildFixedByYAML(fixed);
 
-            // this.fixedValue
-            @NotNull List<Map<?, ?>> fixed = config.getMapList("fixed");
-            buildFixedByYAML(fixed);
+        // this.conversions
+        List<Map<?, ?>> conversions = config.getMapList("conversion");
+        buildConversionByYAML(conversions);
+    }
 
-            // this.conversions
-            List<Map<?, ?>> conversions = config.getMapList("conversion");
-            buildConversionByYAML(conversions);
+    private void buildFixedByYAML(@NotNull List<Map<?, ?>> fixeds) {
+        for (Map<?, ?> entry : fixeds) {
+            int value = ((Number) entry.get("value")).intValue();
+             List<ItemWrapper.TransmutableItem> items = YAMLLoader.ItemYAMLWrapper.of(entry);
 
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
+             for (ItemWrapper.TransmutableItem item : items)
+                 this.fixed(item, value);
         }
     }
 
-    private void buildFixedByYAML(@NotNull List<Map<?, ?>> fixedList) {
-        for (Map<?, ?> fixed : fixedList) {
-            String name = String.valueOf(fixed.get("name")).toUpperCase();
-            String type = String.valueOf(fixed.get("type")).toUpperCase();
-            int value   = ((Number) fixed.get("value")).intValue();
-
-            if (type.equalsIgnoreCase("MATERIAL")) {
-                Material material = Material.getMaterial(name);
-                if (material == null)
-                    throw new ProjectEException.YAMLMaterialNotFoundException();
-
-                this.fixed(material, value);
-
-            } else if (type.equalsIgnoreCase("TAG")) {
-                Tag<Material> tag = Bukkit.getTag(
-                    Tag.REGISTRY_ITEMS,
-                    NamespacedKey.minecraft(name.toLowerCase()),
-                    Material.class
-                );
-
-                if (tag == null) {
-                    // UNSAFY, 但能用
-                    try {
-                        Field field = Tag.class.getField(name);
-                        tag = (Tag<Material>) field.get(null);
-                        tag.getValues().forEach(mat -> this.fixed(mat, value));
-                    } catch (Exception ignored) {
-                        throw new ProjectEException.YAMLTagNotFoundException();
-                    }
-                }
-
-                this.fixed(tag, value);
-            }
-        }
-    }
-
-    private void buildConversionByYAML(List<Map<?, ?>> conversionList) {
-        for (Map<?, ?> conversion : conversionList) {
-            String name = String.valueOf(conversion.get("name")).toUpperCase();
-            String type = String.valueOf(conversion.get("type")).toUpperCase();
-            long amount = ((Number) conversion.get("amount")).longValue();
+    private void buildConversionByYAML(List<Map<?, ?>> conversions) {
+        for (Map<?, ?> conversion : conversions) {
+            long resultAmount = ((Number) conversion.get("amount")).longValue();
             List<Map<?, ?>> ingredients = (List<Map<?, ?>>) conversion.get("ingredient");
 
-            ConversionBuilder<EMCBuilder> cb = null;
-            if (type.equalsIgnoreCase("MATERIAL")) {
-                Material material = Material.getMaterial(name);
-                if (material == null)
-                    throw new ProjectEException.YAMLMaterialNotFoundException();
+            List<ItemWrapper.TransmutableItem> resultItems = YAMLLoader.ItemYAMLWrapper.of(conversion);
+            if (resultItems.isEmpty())
+                throw new IllegalStateException();
 
-                cb = this.conversion(material, amount);
-            }
 
-            if (cb == null)
-                throw new RuntimeException();
-
+            List<ConversionBuilder<EMCBuilder>> cbs = resultItems.stream().map(item -> this.conversion(item, resultAmount)).toList();
             for (Map<?, ?> ingredient : ingredients) {
-                 String ingrType = String.valueOf(ingredient.get("type")).toUpperCase();
+                 String type = String.valueOf(ingredient.get("type")).toUpperCase();
 
-                 if  (ingrType.equalsIgnoreCase("MATERIAL")) {
-                     String ingrName = String.valueOf(ingredient.get("name")).toUpperCase();
-                     long ingrAmount = ((Number) ingredient.get("amount")).longValue();
+                 if (type.equalsIgnoreCase("ADD")) {
+                     long value = ((Number) ingredient.get("value")).longValue();
+                     cbs.forEach(cb -> cb.addValue(value));
+                 } else {
+                     long amount = ((Number) ingredient.get("amount")).longValue();
+                     List<ItemWrapper.TransmutableItem> items = YAMLLoader.ItemYAMLWrapper.of(ingredient);
+                     if (items.isEmpty())
+                         throw new IllegalStateException();
 
-                     Material material = Material.getMaterial(ingrName);
-                     if (material == null)
-                         throw new ProjectEException.YAMLMaterialNotFoundException();
-
-                     cb.addIngredient(material, ingrAmount);
-
-                 } else if (ingrType.equalsIgnoreCase("ADD")) {
-                     long ngrValue = ((Number) ingredient.get("value")).longValue();
-                     cb.addValue(ngrValue);
+                     cbs.forEach(cb -> cb.addIngredient(items.getFirst(), amount));
                  }
 
-                 cb.end();
+                cbs.forEach(cb -> cb.end());
             }
-
-
-
-
         }
     }
 
     private void buildWorldTransmutations2Conversion(WorldTransmutationsBuilder worldTransmutationsBuilder) {
         for (var node: worldTransmutationsBuilder.getRegistered()) {
-            this.conversion(node.getResultForward()).addIngredient(node.getOrigin()).end();
+            this.conversion(node.resultForward()).addIngredient(node.origin()).end();
 
-            if (!node.getResultForward().equals(node.getResultBackward()))
-                this.conversion(node.getResultBackward()).addIngredient(node.getOrigin()).end();
+            if (!node.resultForward().equals(node.resultBackward()))
+                this.conversion(node.resultBackward()).addIngredient(node.origin()).end();
         }
     }
 
-    public EMCBuilder fixed(Material material, long value) {
-        this.fixedValues.put(material, value);
+    public EMCBuilder fixed(ItemWrapper.TransmutableItem item, long value) {
+        this.fixedValues.put(item, value);
         return this;
     }
 
-    public EMCBuilder fixed(Tag<Material> tag, int value) {
-        for (Material material : tag.getValues()) {
-            fixed(material, value);
-        }
-        return this;
-    }
-
-    public ConversionBuilder<EMCBuilder> conversion(Material materials) {
+    public ConversionBuilder<EMCBuilder> conversion(ItemWrapper.TransmutableItem materials) {
         return conversion(materials, 1);
     }
 
-    public ConversionBuilder<EMCBuilder> conversion(Material materials, long amount) {
-        ConversionBuilder<EMCBuilder> builder = new ConversionBuilder<>(this, materials, amount);
+    public ConversionBuilder<EMCBuilder> conversion(ItemWrapper.TransmutableItem item, long amount) {
+        ConversionBuilder<EMCBuilder> builder = new ConversionBuilder<>(this, item, amount);
         this.conversions.add(builder);
         return builder;
     }
 
     public ConversionBuilder<EMCBuilder> conversion(ItemStack item, long amount) {
-        Object itemWrapped = ItemWrapper.of(item);
+        ItemWrapper.TransmutableItem itemWrapped = ItemWrapper.of(item);
         ConversionBuilder<EMCBuilder> builder = new ConversionBuilder<>(this, itemWrapped, amount);
         this.conversions.add(builder);
         return builder;

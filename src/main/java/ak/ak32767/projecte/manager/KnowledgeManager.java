@@ -42,9 +42,9 @@ public class KnowledgeManager {
         Object wrappered = ItemWrapper.of(item);
 
         switch (wrappered) {
-            case Material              material  -> namespacedID = material.getKey().toString();
-            case ItemWrapper.ExactItem exactItem -> namespacedID = exactItem.getMaterial().getKey().toString();
-            case ItemWrapper.IAItem    iaItem    -> namespacedID = iaItem.getNamespacedID();
+            case ItemWrapper.MaterialItem material  -> namespacedID = material .material().getKey().toString();
+            case ItemWrapper.ExactItem    exactItem -> namespacedID = exactItem.material().getKey().toString();
+            case ItemWrapper.IAItem       iaItem    -> namespacedID = iaItem.namespacedID();
             default -> {}
         }
 

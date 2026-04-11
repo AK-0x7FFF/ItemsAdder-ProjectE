@@ -11,6 +11,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.logging.Logger;
 
 public final class ProjectE extends JavaPlugin {
@@ -27,8 +28,12 @@ public final class ProjectE extends JavaPlugin {
             folder.mkdirs();
         PluginManager pluginManager = getServer().getPluginManager();
 
-        this.worldTransmutationBuilder = new WorldTransmutationsBuilder();
-        this.worldTransmutationBuilder.build();
+        this.worldTransmutationBuilder = new WorldTransmutationsBuilder(this);
+        try {
+            this.worldTransmutationBuilder.buildx();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
 
         // 在 `IALoadedListener.java` 中進行BUILD
         this.emcBuilder = new EMCBuilder(this);
@@ -38,7 +43,7 @@ public final class ProjectE extends JavaPlugin {
         this.knowledgeManager = new KnowledgeManager(this);
 
         // listener register
-        pluginManager.registerEvents(new InventoryListener(this), this);
+        pluginManager.registerEvents(new GUIListener(this), this);
         pluginManager.registerEvents(new DataSave2PDCListener(this.emcManager, this.knowledgeManager), this);
 
         pluginManager.registerEvents(new IALoadedListener(this), this);

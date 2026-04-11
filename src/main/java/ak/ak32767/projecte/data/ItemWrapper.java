@@ -2,36 +2,52 @@ package ak.ak32767.projecte.data;
 
 import dev.lone.itemsadder.api.CustomStack;
 import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
 
 
 public class ItemWrapper {
-    public static Object of(ItemStack item) {
+    private ItemWrapper() {};
+
+    public static TransmutableItem of(ItemStack item) {
         Material material = item.getType();
 
         if (!item.hasItemMeta())
-            return material;
+            return new MaterialItem(material);
 
         CustomStack iaItem = CustomStack.byItemStack(item);
         if (iaItem != null)
-            return new ItemWrapper.IAItem(material, iaItem.getNamespacedID());
+            return new IAItem(material, iaItem.getNamespacedID());
 
-        return new ItemWrapper.ExactItem(material, item.getItemMeta());
+        return new ExactItem(material, item.getItemMeta());
     }
 
 
-    public static class ExactItem {
-        private final Material material;
-        private final ItemMeta meta;
+    public interface TransmutableItem {
+        @Override
+        boolean equals(Object other);
 
-        public ExactItem(@NotNull Material material, ItemMeta meta) {
-            this.material = material;
-            this.meta = meta;
+        @Override
+        int hashCode();
+
+        Material material();
+        ItemStack item();
+    }
+
+    public record MaterialItem(Material material) implements TransmutableItem {
+        @Override
+        public ItemStack item() {
+            return ItemStack.of(this.material);
+        }
+    }
+
+    public record ExactItem(@NotNull Material material, ItemMeta meta) implements TransmutableItem {
+        public ExactItem(@NotNull ItemStack item) {
+            this(item.getType(), item.getItemMeta());
         }
 
         @Override
@@ -42,76 +58,54 @@ public class ItemWrapper {
             if (!(other instanceof ExactItem that))
                 return false;
 
-            if (this.material == that.material)
-                return true;
+            if (this.material != that.material)
+                return false;
 
-            // 耐久度過濾
-            if (this.meta instanceof Damageable && that.meta instanceof Damageable) {
-                ItemMeta thisMeta = this.meta.clone();
-                ItemMeta thatMeta = that.meta.clone();
-                ((Damageable) thisMeta).setDamage(0);
-                ((Damageable) thatMeta).setDamage(0);
+            ItemMeta thisMeta = normalize(this.meta);
+            ItemMeta thatMeta = normalize(that.meta);
 
-                return Objects.equals(thisMeta, thatMeta);
-            }
+            return thisMeta.equals(thatMeta);
 
-            return Objects.equals(this.meta, that.meta);
         }
 
         @Override
         public int hashCode() {
 
             int hash = 3;
-            hash = 19 * hash + (this.material != null ? this.material.hashCode() : 0);
-            hash = 19 * hash + (this.meta != null ? this.meta.hashCode() : 0);
+            hash = 19 * hash + this.material.hashCode();
+            hash = 19 * hash + (this.meta != null ? normalize(this.meta).hashCode() : 0);
 
             return hash;
         }
 
-        public Material getMaterial() {
-            return this.material;
+        public ItemStack item() {
+            ItemStack item = ItemStack.of(this.material);
+
+            if (this.meta != null)
+                item.setItemMeta(this.meta);
+
+            return item;
         }
 
-        public ItemMeta getMeta() {
-            return meta;
+        private static ItemMeta normalize(ItemMeta input) {
+            if (!(input instanceof Damageable))
+                return input;
+
+            ItemMeta clone = input.clone();
+            // 耐久度過濾
+            ((Damageable) clone).setDamage(0);
+
+            return clone;
         }
     }
 
-    public static class IAItem {
-        private final Material material;
-        private final String namespacedID;
-
-        public IAItem(@NotNull Material material, @NotNull String namespacedID) {
-            this.material = material;
-            this.namespacedID = namespacedID;
+    public record IAItem(@NotNull Material material, @NotNull String namespacedID) implements TransmutableItem {
+        public IAItem(@NotNull ItemStack item) {
+            this(item.getType(), CustomStack.byItemStack(item).getNamespacedID());
         }
 
-        @Override
-        public boolean equals(Object other) {
-            if (this == other)
-                return true;
-
-            if (!(other instanceof IAItem that))
-                return false;
-
-            return this.namespacedID.equals(that.namespacedID);
-        }
-
-        @Override
-        public int hashCode() {
-            int hash = 3;
-            hash = 19 * hash + this.material.hashCode();
-            hash = 19 * hash + this.namespacedID.hashCode();
-
-            return hash;
-        }
-
-        public Material getMaterial() {
-            return material;
-        }
-
-        public String getNamespacedID() {
-            return namespacedID;
+        public ItemStack item() {
+            return CustomStack.getInstance(this.namespacedID).getItemStack();
         }
     }
 }

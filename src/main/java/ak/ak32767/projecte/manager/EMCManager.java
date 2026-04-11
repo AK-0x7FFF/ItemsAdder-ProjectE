@@ -32,10 +32,10 @@ public class EMCManager {
     }
 
     public BigInteger getItemEMC(ItemStack item) {
-        Object obj = ItemWrapper.of(item);
+        ItemWrapper.TransmutableItem itemWrapped = ItemWrapper.of(item);
 
-        BigInteger emc = this.plugin.getEmcBuilder().getEMCRaw(obj);
-        if (obj instanceof ItemWrapper.ExactItem) {
+        BigInteger emc = this.plugin.getEmcBuilder().getEMCRaw(itemWrapped);
+        if (itemWrapped instanceof ItemWrapper.ExactItem) {
             ItemMeta meta = item.getItemMeta();
 
             Damageable damageableMeta = (Damageable) meta;

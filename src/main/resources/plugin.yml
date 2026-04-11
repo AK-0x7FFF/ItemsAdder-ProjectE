@@ -12,3 +12,8 @@ commands:
     usage: /<command> [material]
   calcemc:
     usage: /<c0mmand>
+  getplayeremc:
+    usage: /<command>
+  setplayeremc:
+    usage: /<command> [value]
+  dgui:

@@ -133,7 +133,7 @@ public class WorldTransmutationsBuilder {
         return this.registered;
     }
 
-    public class WorldTransmutationNode {
+    public static class WorldTransmutationNode {
         private final Material origin;
         private final Material resultForward;
         private final Material resultBackward;

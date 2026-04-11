@@ -1,0 +1,7 @@
+info:
+  namespace: projecte
+font_images:
+  transmute:
+    path: gui/transmute
+    suggest_in_command: false
+    y_position: 33

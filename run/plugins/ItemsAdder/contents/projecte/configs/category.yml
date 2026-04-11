@@ -3,11 +3,18 @@ info:
 categories:
   food:
     enabled: true
-    icon: "minecraft:diamond"
+    icon: "projecte:philosophers_stone"
     name: <lang:misc.projecte.mod_name>
     items:
+      - "projecte:philosophers_stone"
+
+      - "projecte:alchemical_coal"
+      - "projecte:mobius_fuel"
+      - "projecte:aeternalis_fuel"
+
       - "projecte:collector_mk1"
       - "projecte:collector_mk2"
       - "projecte:collector_mk3"
+
       - "projecte:condenser_mk1"
       - "projecte:condenser_mk2"

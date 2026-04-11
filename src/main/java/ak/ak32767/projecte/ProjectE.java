@@ -1,24 +1,30 @@
 package ak.ak32767.projecte;
 
-import ak.ak32767.projecte.commands.CommandCalcEMC;
-import ak.ak32767.projecte.commands.CommandGetEMC;
+import ak.ak32767.projecte.commands.CommandDebugEMC;
+import ak.ak32767.projecte.commands.CommandDebugGUI;
 import ak.ak32767.projecte.emcsys.EMCBuilder;
-import ak.ak32767.projecte.emcsys.EMCManager;
+import ak.ak32767.projecte.manager.EMCManager;
 import ak.ak32767.projecte.emcsys.WorldTransmutationsBuilder;
 import ak.ak32767.projecte.listener.*;
+import ak.ak32767.projecte.manager.KnowledgeManager;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.logging.Logger;
 
 public final class ProjectE extends JavaPlugin {
+    public final Logger logger = this.getLogger();
     private WorldTransmutationsBuilder worldTransmutationBuilder;
     private EMCBuilder emcBuilder;
     private EMCManager emcManager;
-    public final Logger logger = this.getLogger();
+    private KnowledgeManager knowledgeManager;
 
     @Override
     public void onEnable() {
+        File folder = this.getDataFolder();
+        if (!folder.exists())
+            folder.mkdirs();
         PluginManager pluginManager = getServer().getPluginManager();
 
         this.worldTransmutationBuilder = new WorldTransmutationsBuilder();
@@ -26,25 +32,34 @@ public final class ProjectE extends JavaPlugin {
 
         // 在 `IALoadedListener.java` 中進行BUILD
         this.emcBuilder = new EMCBuilder(this);
+
+        // manager
         this.emcManager = new EMCManager(this);
+        this.knowledgeManager = new KnowledgeManager(this);
 
         // listener register
-        pluginManager.registerEvents(new EMCSave2PDCListener(this.emcManager), this);
+        pluginManager.registerEvents(new InventoryListener(this), this);
+        pluginManager.registerEvents(new DataSave2PDCListener(this.emcManager, this.knowledgeManager), this);
 
         pluginManager.registerEvents(new IALoadedListener(this), this);
+        pluginManager.registerEvents(new IAItemInteractListener(this), this);
         pluginManager.registerEvents(new IABlockPlaceListener(this), this);
         pluginManager.registerEvents(new IABlockBreakListener(this), this);
         pluginManager.registerEvents(new IABlockInteractListener(this), this);
 
         // command register
-        getCommand("getemc").setExecutor(new CommandGetEMC(this));
-        getCommand("calcemc").setExecutor(new CommandCalcEMC(this));
+        getCommand("getemc").setExecutor(new CommandDebugEMC.GetEMC(this));
+        getCommand("calcemc").setExecutor(new CommandDebugEMC.CalcEMC(this));
+        getCommand("getplayeremc").setExecutor(new CommandDebugEMC.GetPlayerEMC(this));
+        getCommand("setplayeremc").setExecutor(new CommandDebugEMC.SetPlayerEMC(this));
+        getCommand("dgui").setExecutor(new CommandDebugGUI(this));
     }
 
 
     @Override
     public void onDisable() {
         this.emcManager.saveAllPlayerEMCMap2PDC();
+        this.knowledgeManager.saveAllPlayerKnowledgeMap2PDC();
     }
 
     public EMCBuilder getEmcBuilder() {
@@ -52,7 +67,11 @@ public final class ProjectE extends JavaPlugin {
     }
 
     public EMCManager getEmcManager() {
-        return emcManager;
+        return this.emcManager;
+    }
+
+    public KnowledgeManager getKnowledgeManager() {
+        return this.knowledgeManager;
     }
 
     public WorldTransmutationsBuilder getWorldTransmutationBuilder() {

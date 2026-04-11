@@ -1,0 +1,9 @@
+info:
+  namespace: projecte
+items:
+  regular_item_template:
+    template: true
+    resource:
+      generate: true
+      material: PHANTOM_MEMBRANE
+    max_stack_size: 64

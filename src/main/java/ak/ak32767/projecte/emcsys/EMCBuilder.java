@@ -2,8 +2,7 @@ package ak.ak32767.projecte.emcsys;
 
 import ak.ak32767.projecte.ProjectE;
 import ak.ak32767.projecte.ProjectEException;
-import ak.ak32767.projecte.data.ExactItemWrapper;
-import ak.ak32767.projecte.data.IAItemWrapper;
+import ak.ak32767.projecte.data.ItemWrapper;
 import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -67,7 +66,7 @@ public class EMCBuilder {
 
             for (ConversionBuilder<EMCBuilder> conversion : this.conversions) {
                 Object target = conversion.getResult();
-                boolean tracker = this.IAItemTracker && target instanceof IAItemWrapper;
+                boolean tracker = this.IAItemTracker && target instanceof ItemWrapper.IAItem;
 
                 // 硬編碼跳過
                 if (target instanceof Material && this.getFixedMaterialEmc((Material) target) > 0)
@@ -77,7 +76,7 @@ public class EMCBuilder {
                 boolean calcable = true;
 
                 if (tracker)
-                    this.plugin.logger.info("[EMCBuilder:IAItemTracker] Calculating BGN: " + ((IAItemWrapper) target).getNamespacedID());
+                    this.plugin.logger.info("[EMCBuilder:IAItemTracker] Calculating BGN: " + ((ItemWrapper.IAItem) target).getNamespacedID());
 
                 // 遍歷原料
                 for (var entry : conversion.getIngredients().object2LongEntrySet()) {
@@ -94,8 +93,8 @@ public class EMCBuilder {
 
                     // 跳過賢者之石
                     if (choices.stream().anyMatch(
-                            obj -> obj instanceof IAItemWrapper &&
-                            ((IAItemWrapper) obj).getNamespacedID().equals("projecte:philosophers_stone")
+                            obj -> obj instanceof ItemWrapper.IAItem &&
+                            ((ItemWrapper.IAItem) obj).getNamespacedID().equals("projecte:philosophers_stone")
                     ))
                         continue;
 
@@ -106,11 +105,11 @@ public class EMCBuilder {
                                 if (choice instanceof Material)
                                     return "MATERIAL:" + choice;
 
-                                if (choice instanceof ExactItemWrapper)
-                                    return "EXACT_ITEM:" + ((ExactItemWrapper) choice).getMaterial() + "->" + ((ExactItemWrapper) choice).getMeta().toString();
+                                if (choice instanceof ItemWrapper.ExactItem)
+                                    return "EXACT_ITEM:" + ((ItemWrapper.ExactItem) choice).getMaterial() + "->" + ((ItemWrapper.ExactItem) choice).getMeta().toString();
 
-                                if (choice instanceof IAItemWrapper)
-                                    return "IAITEM:" + ((IAItemWrapper) choice).getNamespacedID().toUpperCase();
+                                if (choice instanceof ItemWrapper.IAItem)
+                                    return "IAITEM:" + ((ItemWrapper.IAItem) choice).getNamespacedID().toUpperCase();
 
                                 return "NUL";
                             }).toList()
@@ -118,7 +117,7 @@ public class EMCBuilder {
 
                     BigInteger minEmc = null;
                     for (Object item : choices) {
-                        BigInteger curr = this.getEMC(item);
+                        BigInteger curr = this.getEMCRaw(item);
 
                         // 未迭代或無EMC
                         if (curr.equals(BigInteger.ZERO))
@@ -166,14 +165,13 @@ public class EMCBuilder {
 
     public long getFixedMaterialEmc(Material material) {
         return this.fixedValues.getLong(material);
-
     }
 
     public BigInteger getCalcedItemEmc(Object item) {
         return this.emcValues.get(item);
     }
 
-    public BigInteger getEMC(Object item) {
+    public BigInteger getEMCRaw(Object item) {
         if (item instanceof Material) {
             long fixedValue = this.getFixedMaterialEmc((Material) item);
             if (fixedValue > 0)
@@ -186,16 +184,17 @@ public class EMCBuilder {
             return BigInteger.ZERO;
         }
 
-        if (item instanceof ExactItemWrapper) {
+        if (item instanceof ItemWrapper.ExactItem) {
             BigInteger value = this.getCalcedItemEmc(item);
             if (value.compareTo(BigInteger.ZERO) > 0)
                 return value;
 
-            Material material = ((ExactItemWrapper) item).getMaterial();
+            Material material = ((ItemWrapper.ExactItem) item).getMaterial();
             value = this.getCalcedItemEmc(material);
             if (value.compareTo(BigInteger.ZERO) > 0)
                 return value;
-        } else if (item instanceof IAItemWrapper) {
+
+        } else if (item instanceof ItemWrapper.IAItem) {
             BigInteger value = this.getCalcedItemEmc(item);
             if (value.compareTo(BigInteger.ZERO) > 0)
                 return value;
@@ -247,7 +246,7 @@ public class EMCBuilder {
                 // 精確選物
                 } else if (choice instanceof RecipeChoice.ExactChoice) {
                     Set<Object> items = ((RecipeChoice.ExactChoice) choice).getChoices()
-                            .stream().map(ExactItemWrapper::of)
+                            .stream().map(ItemWrapper::of)
                             .collect(Collectors.toSet());
                     conversion.addIngredientsGroup(items);
                 }
@@ -392,7 +391,7 @@ public class EMCBuilder {
     }
 
     public ConversionBuilder<EMCBuilder> conversion(ItemStack item, long amount) {
-        Object itemWrapped = ExactItemWrapper.of(item);
+        Object itemWrapped = ItemWrapper.of(item);
         ConversionBuilder<EMCBuilder> builder = new ConversionBuilder<>(this, itemWrapped, amount);
         this.conversions.add(builder);
         return builder;

@@ -2,7 +2,6 @@ package ak.ak32767.projecte.listener;
 
 import ak.ak32767.projecte.ProjectE;
 import dev.lone.itemsadder.api.Events.CustomBlockInteractEvent;
-import dev.lone.itemsadder.api.Events.FurnitureInteractEvent;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;

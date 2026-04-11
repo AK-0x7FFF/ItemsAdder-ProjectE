@@ -1,0 +1,10 @@
+info:
+  namespace: projecte
+items:
+  transmutation_tablet:
+    display_name: <lang:item.projecte.transmutation_tablet>
+    resource:
+      generate: true
+      textures:
+        - projecte:item/transmutation_tablet.png
+      material: PHANTOM_MEMBRANE

@@ -1,7 +1,6 @@
 package ak.ak32767.projecte.emcsys;
 
 import ak.ak32767.projecte.ProjectE;
-import ak.ak32767.projecte.ProjectEException;
 import ak.ak32767.projecte.data.ItemWrapper;
 import ak.ak32767.projecte.utils.YAMLLoader;
 import dev.lone.itemsadder.api.ItemsAdder;
@@ -14,10 +13,11 @@ import org.bukkit.inventory.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileNotFoundException;
-import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static ak.ak32767.projecte.emcsys.ConversionBuilder.BLANK;
 
 public class EMCBuilder {
     private static final boolean IAItemTracker = false;
@@ -25,7 +25,7 @@ public class EMCBuilder {
 
     private final ProjectE plugin;
     private final Object2LongLinkedOpenHashMap<ItemWrapper.TransmutableItem> fixedValues;
-    private final Object2ObjectOpenHashMap<Object, BigInteger> emcValues;
+    private final Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, BigInteger> emcValues;
     private final ArrayList<ConversionBuilder<EMCBuilder>> conversions;
 
 
@@ -39,7 +39,7 @@ public class EMCBuilder {
         this.emcValues.defaultReturnValue(BigInteger.valueOf(0));
     }
 
-    public Object2ObjectOpenHashMap<Object, BigInteger> build(WorldTransmutationsBuilder worldTransmutationsBuilder) throws FileNotFoundException {
+    public Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, BigInteger> build(WorldTransmutationsBuilder worldTransmutationsBuilder) throws FileNotFoundException {
         this.fixedValues.clear();
         this.conversions.clear();
         this.emcValues.clear();
@@ -57,7 +57,6 @@ public class EMCBuilder {
         this.plugin.logger.info("EMCed Item: " + emcedItem);
         this.plugin.logger.info("unEMC Item: " + (allRegisteredItem - emcedItem));
 
-
         this.conversions.clear();
         return emcValues;
     }
@@ -71,11 +70,11 @@ public class EMCBuilder {
             changed = 0;
 
             for (ConversionBuilder<EMCBuilder> conversion : this.conversions) {
-                Object target = conversion.getResult();
-                boolean tracker = this.IAItemTracker && target instanceof ItemWrapper.IAItem;
+                ItemWrapper.TransmutableItem target = conversion.getResult();
+                boolean tracker = IAItemTracker && target instanceof ItemWrapper.IAItem;
 
                 // 硬編碼跳過
-                if (target instanceof ItemWrapper.MaterialItem && this.getFixedMaterialEmc((ItemWrapper.MaterialItem) target) > 0)
+                if (target instanceof ItemWrapper.MaterialItem && this.getFixedMaterialEmc(target) > 0)
                     continue;
 
                 BigInteger cost = BigInteger.ZERO;
@@ -90,7 +89,7 @@ public class EMCBuilder {
                     long amount = entry.getLongValue();
 
                     // 佔位符處理
-                    if (choices.contains(Material.AIR)) {
+                    if (choices == BLANK) {
                         cost = cost.add(BigInteger.valueOf(amount));
                         if (tracker)
                             this.plugin.logger.info("[EMCBuilder:IAItemTracker]  - ADD_HARD: " + amount + " -> " + cost);
@@ -305,7 +304,7 @@ public class EMCBuilder {
                      cbs.forEach(cb -> cb.addIngredient(items.getFirst(), amount));
                  }
 
-                cbs.forEach(cb -> cb.end());
+                cbs.forEach(ConversionBuilder::end);
             }
         }
     }

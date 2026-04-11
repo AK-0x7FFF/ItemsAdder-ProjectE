@@ -1,0 +1,824 @@
+world:
+# FROM PROJECTE: https://github.com/sinkillerj/ProjectE/blob/mc1.21.1/src/datagen/java/moze_intel/projecte/common/PEWorldTransmutationProvider.java
+  - origin:
+      name: STONE
+      type: MATERIAL
+    result_backward:
+      name: GRASS_BLOCK
+      type: MATERIAL
+    result_forward:
+      name: COBBLESTONE
+      type: MATERIAL
+    type: REGULAR
+  - origin:
+      name: COBBLESTONE
+      type: MATERIAL
+    result_backward:
+      name: GRASS_BLOCK
+      type: MATERIAL
+    result_forward:
+      name: STONE
+      type: MATERIAL
+    type: REGULAR
+  - origin:
+      name: GRASS_BLOCK
+      type: MATERIAL
+    result_backward:
+      name: COBBLESTONE
+      type: MATERIAL
+    result_forward:
+      name: SAND
+      type: MATERIAL
+    type: REGULAR
+  - origin:
+      name: SAND
+      type: MATERIAL
+    result_backward:
+      name: COBBLESTONE
+      type: MATERIAL
+    result_forward:
+      name: GRASS_BLOCK
+      type: MATERIAL
+    type: REGULAR
+  - origin:
+      name: DIRT
+      type: MATERIAL
+    result_backward:
+      name: COBBLESTONE
+      type: MATERIAL
+    result_forward:
+      name: SAND
+      type: MATERIAL
+    type: REGULAR
+  - items:
+      - name: GRAVEL
+        type: MATERIAL
+      - name: SANDSTONE
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: FROSTED_ICE
+        type: MATERIAL
+      - name: ICE
+        type: MATERIAL
+      - name: PACKED_ICE
+        type: MATERIAL
+      - name: BLUE_ICE
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: OBSIDIAN
+        type: MATERIAL
+      - name: LAVA
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: MELON
+        type: MATERIAL
+      - name: PUMPKIN
+        type: MATERIAL
+    type: CHAIN
+  - origin:
+      name: GRANITE
+      type: MATERIAL
+    result_backward:
+      name: ANDESITE
+      type: MATERIAL
+    result_forward:
+      name: DIORITE
+      type: MATERIAL
+    type: REGULAR
+  - origin:
+      name: DIORITE
+      type: MATERIAL
+    result_backward:
+      name: GRANITE
+      type: MATERIAL
+    result_forward:
+      name: ANDESITE
+      type: MATERIAL
+    type: REGULAR
+  - origin:
+      name: ANDESITE
+      type: MATERIAL
+    result_backward:
+      name: DIORITE
+      type: MATERIAL
+    result_forward:
+      name: GRANITE
+      type: MATERIAL
+    type: REGULAR
+  - items:
+      - name: SOUL_SAND
+        type: MATERIAL
+      - name: SOUL_SOIL
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: NETHERRACK
+        type: MATERIAL
+      - name: CRIMSON_NYLIUM
+        type: MATERIAL
+      - name: WARPED_NYLIUM
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: NETHER_WART_BLOCK
+        type: MATERIAL
+      - name: WARPED_WART_BLOCK
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: CRIMSON_FUNGUS
+        type: MATERIAL
+      - name: WARPED_FUNGUS
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: CRIMSON_ROOTS
+        type: MATERIAL
+      - name: WARPED_ROOTS
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: OAK_LOG
+        type: MATERIAL
+      - name: BIRCH_LOG
+        type: MATERIAL
+      - name: SPRUCE_LOG
+        type: MATERIAL
+      - name: JUNGLE_LOG
+        type: MATERIAL
+      - name: ACACIA_LOG
+        type: MATERIAL
+      - name: DARK_OAK_LOG
+        type: MATERIAL
+      - name: MANGROVE_LOG
+        type: MATERIAL
+      - name: CHERRY_LOG
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: STRIPPED_OAK_LOG
+        type: MATERIAL
+      - name: STRIPPED_BIRCH_LOG
+        type: MATERIAL
+      - name: STRIPPED_SPRUCE_LOG
+        type: MATERIAL
+      - name: STRIPPED_JUNGLE_LOG
+        type: MATERIAL
+      - name: STRIPPED_ACACIA_LOG
+        type: MATERIAL
+      - name: STRIPPED_DARK_OAK_LOG
+        type: MATERIAL
+      - name: STRIPPED_MANGROVE_LOG
+        type: MATERIAL
+      - name: STRIPPED_CHERRY_LOG
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: OAK_WOOD
+        type: MATERIAL
+      - name: BIRCH_WOOD
+        type: MATERIAL
+      - name: SPRUCE_WOOD
+        type: MATERIAL
+      - name: JUNGLE_WOOD
+        type: MATERIAL
+      - name: ACACIA_WOOD
+        type: MATERIAL
+      - name: DARK_OAK_WOOD
+        type: MATERIAL
+      - name: MANGROVE_WOOD
+        type: MATERIAL
+      - name: CHERRY_WOOD
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: STRIPPED_OAK_WOOD
+        type: MATERIAL
+      - name: STRIPPED_BIRCH_WOOD
+        type: MATERIAL
+      - name: STRIPPED_SPRUCE_WOOD
+        type: MATERIAL
+      - name: STRIPPED_JUNGLE_WOOD
+        type: MATERIAL
+      - name: STRIPPED_ACACIA_WOOD
+        type: MATERIAL
+      - name: STRIPPED_DARK_OAK_WOOD
+        type: MATERIAL
+      - name: STRIPPED_MANGROVE_WOOD
+        type: MATERIAL
+      - name: STRIPPED_CHERRY_WOOD
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: OAK_LEAVES
+        type: MATERIAL
+      - name: BIRCH_LEAVES
+        type: MATERIAL
+      - name: SPRUCE_LEAVES
+        type: MATERIAL
+      - name: JUNGLE_LEAVES
+        type: MATERIAL
+      - name: ACACIA_LEAVES
+        type: MATERIAL
+      - name: DARK_OAK_LEAVES
+        type: MATERIAL
+      - name: MANGROVE_LEAVES
+        type: MATERIAL
+      - name: CHERRY_LEAVES
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: OAK_SAPLING
+        type: MATERIAL
+      - name: BIRCH_SAPLING
+        type: MATERIAL
+      - name: SPRUCE_SAPLING
+        type: MATERIAL
+      - name: JUNGLE_SAPLING
+        type: MATERIAL
+      - name: ACACIA_SAPLING
+        type: MATERIAL
+      - name: DARK_OAK_SAPLING
+        type: MATERIAL
+      - name: MANGROVE_PROPAGULE
+        type: MATERIAL
+      - name: CHERRY_SAPLING
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: OAK_PLANKS
+        type: MATERIAL
+      - name: BIRCH_PLANKS
+        type: MATERIAL
+      - name: SPRUCE_PLANKS
+        type: MATERIAL
+      - name: JUNGLE_PLANKS
+        type: MATERIAL
+      - name: ACACIA_PLANKS
+        type: MATERIAL
+      - name: DARK_OAK_PLANKS
+        type: MATERIAL
+      - name: MANGROVE_PLANKS
+        type: MATERIAL
+      - name: CHERRY_PLANKS
+        type: MATERIAL
+      - name: BAMBOO_PLANKS
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: OAK_SLAB
+        type: MATERIAL
+      - name: BIRCH_SLAB
+        type: MATERIAL
+      - name: SPRUCE_SLAB
+        type: MATERIAL
+      - name: JUNGLE_SLAB
+        type: MATERIAL
+      - name: ACACIA_SLAB
+        type: MATERIAL
+      - name: DARK_OAK_SLAB
+        type: MATERIAL
+      - name: MANGROVE_SLAB
+        type: MATERIAL
+      - name: CHERRY_SLAB
+        type: MATERIAL
+      - name: BAMBOO_SLAB
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: OAK_STAIRS
+        type: MATERIAL
+      - name: BIRCH_STAIRS
+        type: MATERIAL
+      - name: SPRUCE_STAIRS
+        type: MATERIAL
+      - name: JUNGLE_STAIRS
+        type: MATERIAL
+      - name: ACACIA_STAIRS
+        type: MATERIAL
+      - name: DARK_OAK_STAIRS
+        type: MATERIAL
+      - name: MANGROVE_STAIRS
+        type: MATERIAL
+      - name: CHERRY_STAIRS
+        type: MATERIAL
+      - name: BAMBOO_STAIRS
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: OAK_FENCE
+        type: MATERIAL
+      - name: BIRCH_FENCE
+        type: MATERIAL
+      - name: SPRUCE_FENCE
+        type: MATERIAL
+      - name: JUNGLE_FENCE
+        type: MATERIAL
+      - name: ACACIA_FENCE
+        type: MATERIAL
+      - name: DARK_OAK_FENCE
+        type: MATERIAL
+      - name: MANGROVE_FENCE
+        type: MATERIAL
+      - name: CHERRY_FENCE
+        type: MATERIAL
+      - name: BAMBOO_FENCE
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: OAK_PRESSURE_PLATE
+        type: MATERIAL
+      - name: BIRCH_PRESSURE_PLATE
+        type: MATERIAL
+      - name: SPRUCE_PRESSURE_PLATE
+        type: MATERIAL
+      - name: JUNGLE_PRESSURE_PLATE
+        type: MATERIAL
+      - name: ACACIA_PRESSURE_PLATE
+        type: MATERIAL
+      - name: DARK_OAK_PRESSURE_PLATE
+        type: MATERIAL
+      - name: MANGROVE_PRESSURE_PLATE
+        type: MATERIAL
+      - name: CHERRY_PRESSURE_PLATE
+        type: MATERIAL
+      - name: BAMBOO_PRESSURE_PLATE
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: OAK_BUTTON
+        type: MATERIAL
+      - name: BIRCH_BUTTON
+        type: MATERIAL
+      - name: SPRUCE_BUTTON
+        type: MATERIAL
+      - name: JUNGLE_BUTTON
+        type: MATERIAL
+      - name: ACACIA_BUTTON
+        type: MATERIAL
+      - name: DARK_OAK_BUTTON
+        type: MATERIAL
+      - name: MANGROVE_BUTTON
+        type: MATERIAL
+      - name: CHERRY_BUTTON
+        type: MATERIAL
+      - name: BAMBOO_BUTTON
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: OAK_TRAPDOOR
+        type: MATERIAL
+      - name: BIRCH_TRAPDOOR
+        type: MATERIAL
+      - name: SPRUCE_TRAPDOOR
+        type: MATERIAL
+      - name: JUNGLE_TRAPDOOR
+        type: MATERIAL
+      - name: ACACIA_TRAPDOOR
+        type: MATERIAL
+      - name: DARK_OAK_TRAPDOOR
+        type: MATERIAL
+      - name: MANGROVE_TRAPDOOR
+        type: MATERIAL
+      - name: CHERRY_TRAPDOOR
+        type: MATERIAL
+      - name: BAMBOO_TRAPDOOR
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: OAK_DOOR
+        type: MATERIAL
+      - name: BIRCH_DOOR
+        type: MATERIAL
+      - name: SPRUCE_DOOR
+        type: MATERIAL
+      - name: JUNGLE_DOOR
+        type: MATERIAL
+      - name: ACACIA_DOOR
+        type: MATERIAL
+      - name: DARK_OAK_DOOR
+        type: MATERIAL
+      - name: MANGROVE_DOOR
+        type: MATERIAL
+      - name: CHERRY_DOOR
+        type: MATERIAL
+      - name: BAMBOO_DOOR
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: OAK_SIGN
+        type: MATERIAL
+      - name: BIRCH_SIGN
+        type: MATERIAL
+      - name: SPRUCE_SIGN
+        type: MATERIAL
+      - name: JUNGLE_SIGN
+        type: MATERIAL
+      - name: ACACIA_SIGN
+        type: MATERIAL
+      - name: DARK_OAK_SIGN
+        type: MATERIAL
+      - name: MANGROVE_SIGN
+        type: MATERIAL
+      - name: CHERRY_SIGN
+        type: MATERIAL
+      - name: BAMBOO_SIGN
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: OAK_WALL_SIGN
+        type: MATERIAL
+      - name: BIRCH_WALL_SIGN
+        type: MATERIAL
+      - name: SPRUCE_WALL_SIGN
+        type: MATERIAL
+      - name: JUNGLE_WALL_SIGN
+        type: MATERIAL
+      - name: ACACIA_WALL_SIGN
+        type: MATERIAL
+      - name: DARK_OAK_WALL_SIGN
+        type: MATERIAL
+      - name: MANGROVE_WALL_SIGN
+        type: MATERIAL
+      - name: CHERRY_WALL_SIGN
+        type: MATERIAL
+      - name: BAMBOO_WALL_SIGN
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: OAK_HANGING_SIGN
+        type: MATERIAL
+      - name: BIRCH_HANGING_SIGN
+        type: MATERIAL
+      - name: SPRUCE_HANGING_SIGN
+        type: MATERIAL
+      - name: JUNGLE_HANGING_SIGN
+        type: MATERIAL
+      - name: ACACIA_HANGING_SIGN
+        type: MATERIAL
+      - name: DARK_OAK_HANGING_SIGN
+        type: MATERIAL
+      - name: MANGROVE_HANGING_SIGN
+        type: MATERIAL
+      - name: CHERRY_HANGING_SIGN
+        type: MATERIAL
+      - name: BAMBOO_HANGING_SIGN
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: OAK_WALL_HANGING_SIGN
+        type: MATERIAL
+      - name: BIRCH_WALL_HANGING_SIGN
+        type: MATERIAL
+      - name: SPRUCE_WALL_HANGING_SIGN
+        type: MATERIAL
+      - name: JUNGLE_WALL_HANGING_SIGN
+        type: MATERIAL
+      - name: ACACIA_WALL_HANGING_SIGN
+        type: MATERIAL
+      - name: DARK_OAK_WALL_HANGING_SIGN
+        type: MATERIAL
+      - name: MANGROVE_WALL_HANGING_SIGN
+        type: MATERIAL
+      - name: CHERRY_WALL_HANGING_SIGN
+        type: MATERIAL
+      - name: BAMBOO_WALL_HANGING_SIGN
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: CRIMSON_STEM
+        type: MATERIAL
+      - name: WARPED_STEM
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: STRIPPED_CRIMSON_STEM
+        type: MATERIAL
+      - name: STRIPPED_WARPED_STEM
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: CRIMSON_HYPHAE
+        type: MATERIAL
+      - name: WARPED_HYPHAE
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: STRIPPED_CRIMSON_HYPHAE
+        type: MATERIAL
+      - name: STRIPPED_WARPED_HYPHAE
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: CRIMSON_PLANKS
+        type: MATERIAL
+      - name: WARPED_PLANKS
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: CRIMSON_SLAB
+        type: MATERIAL
+      - name: WARPED_SLAB
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: CRIMSON_STAIRS
+        type: MATERIAL
+      - name: WARPED_STAIRS
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: CRIMSON_FENCE
+        type: MATERIAL
+      - name: WARPED_FENCE
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: CRIMSON_PRESSURE_PLATE
+        type: MATERIAL
+      - name: WARPED_PRESSURE_PLATE
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: CRIMSON_BUTTON
+        type: MATERIAL
+      - name: WARPED_BUTTON
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: CRIMSON_TRAPDOOR
+        type: MATERIAL
+      - name: WARPED_TRAPDOOR
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: CRIMSON_DOOR
+        type: MATERIAL
+      - name: WARPED_DOOR
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: CRIMSON_SIGN
+        type: MATERIAL
+      - name: WARPED_SIGN
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: CRIMSON_WALL_SIGN
+        type: MATERIAL
+      - name: WARPED_WALL_SIGN
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: CRIMSON_HANGING_SIGN
+        type: MATERIAL
+      - name: WARPED_HANGING_SIGN
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: CRIMSON_WALL_HANGING_SIGN
+        type: MATERIAL
+      - name: WARPED_WALL_HANGING_SIGN
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: WHITE_CONCRETE
+        type: MATERIAL
+      - name: ORANGE_CONCRETE
+        type: MATERIAL
+      - name: MAGENTA_CONCRETE
+        type: MATERIAL
+      - name: LIGHT_BLUE_CONCRETE
+        type: MATERIAL
+      - name: YELLOW_CONCRETE
+        type: MATERIAL
+      - name: LIME_CONCRETE
+        type: MATERIAL
+      - name: PINK_CONCRETE
+        type: MATERIAL
+      - name: GRAY_CONCRETE
+        type: MATERIAL
+      - name: LIGHT_GRAY_CONCRETE
+        type: MATERIAL
+      - name: CYAN_CONCRETE
+        type: MATERIAL
+      - name: PURPLE_CONCRETE
+        type: MATERIAL
+      - name: BLUE_CONCRETE
+        type: MATERIAL
+      - name: BROWN_CONCRETE
+        type: MATERIAL
+      - name: GREEN_CONCRETE
+        type: MATERIAL
+      - name: RED_CONCRETE
+        type: MATERIAL
+      - name: BLACK_CONCRETE
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: WHITE_CONCRETE_POWDER
+        type: MATERIAL
+      - name: ORANGE_CONCRETE_POWDER
+        type: MATERIAL
+      - name: MAGENTA_CONCRETE_POWDER
+        type: MATERIAL
+      - name: LIGHT_BLUE_CONCRETE_POWDER
+        type: MATERIAL
+      - name: YELLOW_CONCRETE_POWDER
+        type: MATERIAL
+      - name: LIME_CONCRETE_POWDER
+        type: MATERIAL
+      - name: PINK_CONCRETE_POWDER
+        type: MATERIAL
+      - name: GRAY_CONCRETE_POWDER
+        type: MATERIAL
+      - name: LIGHT_GRAY_CONCRETE_POWDER
+        type: MATERIAL
+      - name: CYAN_CONCRETE_POWDER
+        type: MATERIAL
+      - name: PURPLE_CONCRETE_POWDER
+        type: MATERIAL
+      - name: BLUE_CONCRETE_POWDER
+        type: MATERIAL
+      - name: BROWN_CONCRETE_POWDER
+        type: MATERIAL
+      - name: GREEN_CONCRETE_POWDER
+        type: MATERIAL
+      - name: RED_CONCRETE_POWDER
+        type: MATERIAL
+      - name: BLACK_CONCRETE_POWDER
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: WHITE_CARPET
+        type: MATERIAL
+      - name: ORANGE_CARPET
+        type: MATERIAL
+      - name: MAGENTA_CARPET
+        type: MATERIAL
+      - name: LIGHT_BLUE_CARPET
+        type: MATERIAL
+      - name: YELLOW_CARPET
+        type: MATERIAL
+      - name: LIME_CARPET
+        type: MATERIAL
+      - name: PINK_CARPET
+        type: MATERIAL
+      - name: GRAY_CARPET
+        type: MATERIAL
+      - name: LIGHT_GRAY_CARPET
+        type: MATERIAL
+      - name: CYAN_CARPET
+        type: MATERIAL
+      - name: PURPLE_CARPET
+        type: MATERIAL
+      - name: BLUE_CARPET
+        type: MATERIAL
+      - name: BROWN_CARPET
+        type: MATERIAL
+      - name: GREEN_CARPET
+        type: MATERIAL
+      - name: RED_CARPET
+        type: MATERIAL
+      - name: BLACK_CARPET
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: WHITE_WOOL
+        type: MATERIAL
+      - name: ORANGE_WOOL
+        type: MATERIAL
+      - name: MAGENTA_WOOL
+        type: MATERIAL
+      - name: LIGHT_BLUE_WOOL
+        type: MATERIAL
+      - name: YELLOW_WOOL
+        type: MATERIAL
+      - name: LIME_WOOL
+        type: MATERIAL
+      - name: PINK_WOOL
+        type: MATERIAL
+      - name: GRAY_WOOL
+        type: MATERIAL
+      - name: LIGHT_GRAY_WOOL
+        type: MATERIAL
+      - name: CYAN_WOOL
+        type: MATERIAL
+      - name: PURPLE_WOOL
+        type: MATERIAL
+      - name: BLUE_WOOL
+        type: MATERIAL
+      - name: BROWN_WOOL
+        type: MATERIAL
+      - name: GREEN_WOOL
+        type: MATERIAL
+      - name: RED_WOOL
+        type: MATERIAL
+      - name: BLACK_WOOL
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: WHITE_TERRACOTTA
+        type: MATERIAL
+      - name: ORANGE_TERRACOTTA
+        type: MATERIAL
+      - name: MAGENTA_TERRACOTTA
+        type: MATERIAL
+      - name: LIGHT_BLUE_TERRACOTTA
+        type: MATERIAL
+      - name: YELLOW_TERRACOTTA
+        type: MATERIAL
+      - name: LIME_TERRACOTTA
+        type: MATERIAL
+      - name: PINK_TERRACOTTA
+        type: MATERIAL
+      - name: GRAY_TERRACOTTA
+        type: MATERIAL
+      - name: LIGHT_GRAY_TERRACOTTA
+        type: MATERIAL
+      - name: CYAN_TERRACOTTA
+        type: MATERIAL
+      - name: PURPLE_TERRACOTTA
+        type: MATERIAL
+      - name: BLUE_TERRACOTTA
+        type: MATERIAL
+      - name: BROWN_TERRACOTTA
+        type: MATERIAL
+      - name: GREEN_TERRACOTTA
+        type: MATERIAL
+      - name: RED_TERRACOTTA
+        type: MATERIAL
+      - name: BLACK_TERRACOTTA
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: WHITE_STAINED_GLASS
+        type: MATERIAL
+      - name: ORANGE_STAINED_GLASS
+        type: MATERIAL
+      - name: MAGENTA_STAINED_GLASS
+        type: MATERIAL
+      - name: LIGHT_BLUE_STAINED_GLASS
+        type: MATERIAL
+      - name: YELLOW_STAINED_GLASS
+        type: MATERIAL
+      - name: LIME_STAINED_GLASS
+        type: MATERIAL
+      - name: PINK_STAINED_GLASS
+        type: MATERIAL
+      - name: GRAY_STAINED_GLASS
+        type: MATERIAL
+      - name: LIGHT_GRAY_STAINED_GLASS
+        type: MATERIAL
+      - name: CYAN_STAINED_GLASS
+        type: MATERIAL
+      - name: PURPLE_STAINED_GLASS
+        type: MATERIAL
+      - name: BLUE_STAINED_GLASS
+        type: MATERIAL
+      - name: BROWN_STAINED_GLASS
+        type: MATERIAL
+      - name: GREEN_STAINED_GLASS
+        type: MATERIAL
+      - name: RED_STAINED_GLASS
+        type: MATERIAL
+      - name: BLACK_STAINED_GLASS
+        type: MATERIAL
+    type: CHAIN
+  - items:
+      - name: WHITE_STAINED_GLASS_PANE
+        type: MATERIAL
+      - name: ORANGE_STAINED_GLASS_PANE
+        type: MATERIAL
+      - name: MAGENTA_STAINED_GLASS_PANE
+        type: MATERIAL
+      - name: LIGHT_BLUE_STAINED_GLASS_PANE
+        type: MATERIAL
+      - name: YELLOW_STAINED_GLASS_PANE
+        type: MATERIAL
+      - name: LIME_STAINED_GLASS_PANE
+        type: MATERIAL
+      - name: PINK_STAINED_GLASS_PANE
+        type: MATERIAL
+      - name: GRAY_STAINED_GLASS_PANE
+        type: MATERIAL
+      - name: LIGHT_GRAY_STAINED_GLASS_PANE
+        type: MATERIAL
+      - name: CYAN_STAINED_GLASS_PANE
+        type: MATERIAL
+      - name: PURPLE_STAINED_GLASS_PANE
+        type: MATERIAL
+      - name: BLUE_STAINED_GLASS_PANE
+        type: MATERIAL
+      - name: BROWN_STAINED_GLASS_PANE
+        type: MATERIAL
+      - name: GREEN_STAINED_GLASS_PANE
+        type: MATERIAL
+      - name: RED_STAINED_GLASS_PANE
+        type: MATERIAL
+      - name: BLACK_STAINED_GLASS_PANE
+        type: MATERIAL
+    type: CHAIN

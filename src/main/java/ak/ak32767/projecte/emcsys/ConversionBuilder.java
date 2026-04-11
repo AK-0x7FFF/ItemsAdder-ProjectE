@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.Set;
 
 public class ConversionBuilder<PARENT> {
-    private static final Set<ItemWrapper.TransmutableItem> BLANK = Collections.singleton(new ItemWrapper.MaterialItem(Material.AIR));
+    public static final Set<ItemWrapper.TransmutableItem> BLANK = Collections.singleton(new ItemWrapper.MaterialItem(Material.AIR));
 
     private final PARENT parent;
     private final ItemWrapper.TransmutableItem result;

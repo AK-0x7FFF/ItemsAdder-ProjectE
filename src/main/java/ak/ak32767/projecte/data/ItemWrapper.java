@@ -26,6 +26,10 @@ public class ItemWrapper {
         return new ExactItem(material, item.getItemMeta());
     }
 
+    public static MaterialItem toMaterialItem(TransmutableItem item) {
+        return new MaterialItem(item.material());
+    }
+
 
     public interface TransmutableItem {
         @Override

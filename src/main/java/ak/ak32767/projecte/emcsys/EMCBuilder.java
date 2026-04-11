@@ -174,7 +174,7 @@ public class EMCBuilder {
         return this.fixedValues.getLong(item);
     }
 
-    public BigInteger getCalcedItemEmc(Object item) {
+    public BigInteger getCalcedItemEmc(ItemWrapper.TransmutableItem item) {
         return this.emcValues.get(item);
     }
 
@@ -188,7 +188,7 @@ public class EMCBuilder {
             return value;
 
         if (item instanceof ItemWrapper.ExactItem) {
-            Material material = ((ItemWrapper.ExactItem) item).material();
+            ItemWrapper.MaterialItem material = ItemWrapper.toMaterialItem(item);
             value = this.getCalcedItemEmc(material);
             if (value.compareTo(BigInteger.ZERO) > 0)
                 return value;

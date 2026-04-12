@@ -1,15 +1,21 @@
 package ak.ak32767.projecte.manager;
 
 import ak.ak32767.projecte.ProjectE;
+import ak.ak32767.projecte.utils.EMCFormatter;
 import ak.ak32767.projecte.utils.ItemBase64Converter;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
 import java.util.Collections;
@@ -162,7 +168,7 @@ public class TransTableManager {
         }
 
         if (this.tryLearnItem(item))
-            this.player.playSound(this.player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 0.5f, 1.4f);
+            this.player.playSound(this.player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.4f);
 
         this.emcManager.addPlayerEMC(player, this.emcManager.getItemEMC(item).multiply(BigInteger.valueOf(item.getAmount())));
         return true;
@@ -207,7 +213,7 @@ public class TransTableManager {
         return this.pages.size();
     }
 
-    public boolean tryUpdatePages() {
+    public boolean tryRefreshPages() {
         if (this.pages.isEmpty()) {
             this.updatePagesForce();
             return true;
@@ -226,5 +232,32 @@ public class TransTableManager {
         while (pageItems.size() < 6)
             pageItems.add(new ItemStack(Material.AIR));
         return pageItems;
+    }
+
+    public ItemStack tagEMC2Item(@NotNull ItemStack item) {
+        item = item.clone();
+        ItemMeta meta = item.getItemMeta();
+
+        if (meta == null)
+            return item;
+
+        List<Component> lore = meta.hasLore() ? meta.lore() : new ObjectArrayList<>();
+
+        BigInteger emc = this.emcManager.getItemEMC(item);
+        String emcStr = EMCFormatter.commaFormat(emc);
+        if (emc.compareTo(BigInteger.valueOf(1_000_000)) >= 0)
+            emcStr = EMCFormatter.numberNameFormat(emc) + " (" + emcStr + ")";
+
+        lore.addFirst(
+            Component.text()
+                .append(Component.text("EMC: ", NamedTextColor.YELLOW))
+                .append(Component.text(emcStr, NamedTextColor.WHITE))
+                .decoration(TextDecoration.ITALIC, false)
+                .build()
+        );
+
+        meta.lore(lore);
+        item.setItemMeta(meta);
+        return item;
     }
 }

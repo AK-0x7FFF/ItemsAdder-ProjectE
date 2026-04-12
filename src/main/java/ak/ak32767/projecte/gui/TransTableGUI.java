@@ -8,10 +8,10 @@ import dev.lone.itemsadder.api.FontImages.FontImageWrapper;
 import dev.lone.itemsadder.api.FontImages.TexturedInventoryWrapper;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -56,9 +56,10 @@ public class TransTableGUI extends GUIBase {
 
     private TexturedInventoryWrapper inventoryWrapper;
     private Inventory inventory;
-    private ItemStack emcCheckerItem;
 
     private TransTableManager transTableManager;
+    private ItemStack emcCheckerItem;
+    private Map<ItemStack, ItemStack> emcTaggedItemMap;
     private int page;
 
     public TransTableGUI(ProjectE plugin, Player player) {
@@ -72,38 +73,33 @@ public class TransTableGUI extends GUIBase {
 
     @Override
     public void setupGUI(ProjectE plugin, Player player) {
-        this.transTableManager = new TransTableManager(plugin, player);
-        this.page = 0;
-
         // GUI 初始化
         this.inventoryWrapper = new TexturedInventoryWrapper(new MyHolder(), 54, "null", BACKGROUND);
         this.inventory = inventoryWrapper.getInternal();
 
+        this.transTableManager = new TransTableManager(plugin, player);
+        this.emcTaggedItemMap = new Object2ObjectOpenHashMap<>();
+
+        // 欄位初始化
         this.emcCheckerItem = ItemStack.of(Material.PLAYER_HEAD); {
             SkullMeta playerHeadMeta = (SkullMeta) emcCheckerItem.getItemMeta();
             playerHeadMeta.setOwningPlayer(player);
             emcCheckerItem.setItemMeta(playerHeadMeta);
-            this.updateEMC();
         };
-        // 欄位初始化
         this.inventory.setItem(PREV_PAGE_SLOT, (CustomStack.getInstance("_iainternal:icon_left_blue").getItemStack()));
         this.inventory.setItem(SEARCH_SLOT, (CustomStack.getInstance("_iainternal:icon_search").getItemStack()));
         this.inventory.setItem(NEXT_PAGE_SLOT, (CustomStack.getInstance("_iainternal:icon_right_blue").getItemStack()));
 
+        // 儲物欄
         List<ItemStack> storage = this.transTableManager.getStorageItem();
         for (int i = 0; i < STORAGE_SLOTS.size(); ++i) {
             this.inventory.setItem(STORAGE_SLOTS.getInt(i), storage.get(i));
         }
-//        for (int slot : EXTRACTION_INNER_RING_SLOTS) {
-//            this.inventory.setItem(slot, ItemStack.of(Material.EMERALD));
-//        }
-//        for (int slot : EXTRACTION_OUTER_RING_SLOTS) {
-//            this.inventory.setItem(slot, ItemStack.of(Material.NETHERITE_INGOT));
-//        }
+        // 轉化欄
+        this.page = 0;
         this.updateExtractionRing();
 
-
-        instances.put(player.getUniqueId(), this);
+        this.updateEMC();
         this.inventoryWrapper.showInventory(player);
     }
 
@@ -133,9 +129,7 @@ public class TransTableGUI extends GUIBase {
                 return;
 
             if (this.transTableManager.tryLearnItem(cursorItem))
-                this.player.playSound(this.player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 0.5f, 1.4f);
-//            else
-//                this.player.playSound(this.player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.5f, 1f);
+                this.player.playSound(this.player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.4f);
             this.updateExtractionRing();
 
             // 電池充電邏輯， 待補充
@@ -146,26 +140,14 @@ public class TransTableGUI extends GUIBase {
             if (currItem == null || currItem.isEmpty())
                 return;
 
-            ItemStack givenItem = currItem;
+            ItemStack givenItem = this.emcTaggedItemMap.get(currItem);
             if (
                 clickType == ClickType.LEFT || clickType == ClickType.RIGHT ||
                 clickType == ClickType.SHIFT_LEFT || clickType == ClickType.SHIFT_RIGHT ||
                 clickType == ClickType.DOUBLE_CLICK
             ) {
-                // 游標物品與提取物品不一致
-                if (!cursorItem.isEmpty() && !cursorItem.isSimilar(givenItem))
-                    return;
-
-                int cursorItemAmount = 0;
-                if (!cursorItem.isEmpty()) {
-                    givenItem = cursorItem;
-                    cursorItemAmount = cursorItem.getAmount();
-                }
-
                 int giveAmount = 1;
                 if (clickType == ClickType.SHIFT_LEFT || clickType == ClickType.SHIFT_RIGHT) {
-                    giveAmount = givenItem.getMaxStackSize() - cursorItemAmount;
-                    if (giveAmount <= 0) {
                         if (this.transTableManager.giveItem2Inventory(givenItem, givenItem.getMaxStackSize())) {
                             this.updateEMC();
                             this.player.playSound(this.player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 0.5f, 1.2f);
@@ -174,7 +156,16 @@ public class TransTableGUI extends GUIBase {
 
                         this.player.playSound(this.player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.5f, 1f);
                         return;
-                    }
+                }
+
+                // 游標物品與提取物品不一致
+                if (!cursorItem.isEmpty() && !cursorItem.isSimilar(givenItem))
+                    return;
+
+                int cursorItemAmount = 0;
+                if (!cursorItem.isEmpty()) {
+                    givenItem = cursorItem;
+                    cursorItemAmount = cursorItem.getAmount();
                 }
 
                 if (cursorItemAmount + giveAmount > givenItem.getMaxStackSize())
@@ -233,9 +224,13 @@ public class TransTableGUI extends GUIBase {
                 this.player.playSound(this.player.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 0.5f, 1.2f);
 
         } else if (slot == PREV_PAGE_SLOT) {
+            if (clickType == ClickType.DOUBLE_CLICK)
+                return;
             this.prevPage();
 
         } else if (slot == NEXT_PAGE_SLOT) {
+            if (clickType == ClickType.DOUBLE_CLICK)
+                return;
             this.nextPage();
         }
     }
@@ -288,25 +283,36 @@ public class TransTableGUI extends GUIBase {
         SkullMeta playerHeadMeta = (SkullMeta) this.emcCheckerItem.getItemMeta();
 
         BigInteger emc = this.plugin.getEmcManager().getPlayerEMC(this.player);
-        String str = "EMC: " + StringUtils.capitalize(EMCFormatter.numberNameFormat(emc)) + " (" + EMCFormatter.commaFormat(emc) + ")";
-        Component com = Component.text(str, NamedTextColor.WHITE)
-            .decoration(TextDecoration.ITALIC, false)
-//            .decoration(TextDecoration.BOLD, true)
-        ;
+        String emcStr = EMCFormatter.commaFormat(emc);
+        if (emc.compareTo(BigInteger.valueOf(1_000_000)) >= 0)
+            emcStr = EMCFormatter.numberNameFormat(emc) + " (" + emcStr + ")";
 
-        playerHeadMeta.displayName(com);
+        playerHeadMeta.displayName(
+            Component.text()
+            .append(Component.text(this.player.getName() + "'s EMC: ", NamedTextColor.YELLOW))
+            .append(Component.text(emcStr, NamedTextColor.WHITE))
+            .decoration(TextDecoration.ITALIC, false)
+            .build()
+        );
+
         this.emcCheckerItem.setItemMeta(playerHeadMeta);
         this.inventory.setItem(CHECK_EMC_SLOT, this.emcCheckerItem);
 
-        boolean isPageUpdated = this.transTableManager.tryUpdatePages();
+        boolean isPageUpdated = this.transTableManager.tryRefreshPages();
         if (isPageUpdated)
             this.updateExtractionRing();
     }
 
     private void updateExtractionRing() {
         List<ItemStack> items = this.transTableManager.getPageItems(this.page);
+        this.emcTaggedItemMap.clear();
+
         for (int i = 0; i < EXTRACTION_OUTER_RING_SLOTS.size(); ++i) {
-            this.inventory.setItem(EXTRACTION_OUTER_RING_SLOTS.getInt(i), items.get(i));
+            ItemStack item = items.get(i);
+            ItemStack itemTagged = this.transTableManager.tagEMC2Item(item);
+
+            this.emcTaggedItemMap.put(itemTagged, item);
+            this.inventory.setItem(EXTRACTION_OUTER_RING_SLOTS.getInt(i), itemTagged);
         }
     }
 

@@ -36,8 +36,6 @@ public final class ProjectE extends JavaPlugin {
         }
 
         // 在 `IALoadedListener.java` 中進行BUILD
-        this.emcBuilder = new EMCBuilder(this);
-
         // manager
         this.emcManager = new EMCManager(this);
         this.knowledgeManager = new KnowledgeManager(this);
@@ -65,10 +63,6 @@ public final class ProjectE extends JavaPlugin {
     public void onDisable() {
         this.emcManager.saveAllPlayerEMCMap2PDC();
         this.knowledgeManager.saveAllPlayerKnowledgeMap2PDC();
-    }
-
-    public EMCBuilder getEmcBuilder() {
-        return this.emcBuilder;
     }
 
     public EMCManager getEmcManager() {

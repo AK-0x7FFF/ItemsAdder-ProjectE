@@ -16,6 +16,6 @@ public class IALoadedListener implements Listener {
 
     @EventHandler
     public void onItemsAdderLoaded(ItemsAdderLoadDataEvent event) throws FileNotFoundException {
-        this.plugin.getEmcBuilder().build(this.plugin.getWorldTransmutationBuilder());
+        this.plugin.getEmcManager().build(this.plugin.getWorldTransmutationBuilder());
     }
 }

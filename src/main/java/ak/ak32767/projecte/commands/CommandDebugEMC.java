@@ -27,7 +27,7 @@ public class CommandDebugEMC {
         @Override
         public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
             try {
-                this.plugin.getEmcBuilder().build(this.plugin.getWorldTransmutationBuilder());
+                this.plugin.getEmcManager().build(this.plugin.getWorldTransmutationBuilder());
             } catch (FileNotFoundException ignored) {}
             return true;
         }

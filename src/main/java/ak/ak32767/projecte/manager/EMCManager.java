@@ -2,6 +2,8 @@ package ak.ak32767.projecte.manager;
 
 import ak.ak32767.projecte.ProjectE;
 import ak.ak32767.projecte.data.ItemWrapper;
+import ak.ak32767.projecte.emcsys.EMCBuilder;
+import ak.ak32767.projecte.emcsys.WorldTransmutationsBuilder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.bukkit.Bukkit;
@@ -12,18 +14,25 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.io.FileNotFoundException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Map;
 import java.util.UUID;
 
 public class EMCManager {
     private final ProjectE plugin;
+
     private final NamespacedKey emcKey;
+    private Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, BigInteger> emcValues;
     private final Object2ObjectMap<UUID, BigInteger> playersEMCMap;
 
     public EMCManager(ProjectE plugin) {
         this.plugin = plugin;
+
         this.emcKey = new NamespacedKey(plugin, "emc");
+        this.emcValues = new Object2ObjectOpenHashMap<>();
+        this.emcValues.defaultReturnValue(BigInteger.ZERO);
         this.playersEMCMap = new Object2ObjectOpenHashMap<>();
         this.playersEMCMap.defaultReturnValue(null);
 
@@ -31,21 +40,38 @@ public class EMCManager {
         Bukkit.getScheduler().runTaskTimer(plugin, this::saveAllPlayerEMCMap2PDC, 6000L, 6000L);
     }
 
+    public void build(WorldTransmutationsBuilder worldTransmutationsBuilder) throws FileNotFoundException {
+        EMCBuilder builder = new EMCBuilder(plugin);
+        this.emcValues = builder.build(worldTransmutationsBuilder);
+
+    }
+
+
     public BigInteger getItemEMC(ItemStack item) {
         ItemWrapper.TransmutableItem itemWrapped = ItemWrapper.of(item);
+        BigInteger emc = this.emcValues.get(itemWrapped);
 
-        BigInteger emc = this.plugin.getEmcBuilder().getEMCRaw(itemWrapped);
         if (itemWrapped instanceof ItemWrapper.ExactItem) {
+            // 取 Material 的 EMC
+            ItemWrapper.MaterialItem material = ItemWrapper.toMaterialItem(itemWrapped);
+            emc = this.emcValues.get(material);
+            if (emc.compareTo(BigInteger.ZERO) <= 0)
+                return BigInteger.ZERO;
+
+            // 等比扣除耐久 EMC
+            if (!item.hasItemMeta())
+                return emc;
+
             ItemMeta meta = item.getItemMeta();
-
             Damageable damageableMeta = (Damageable) meta;
-            if (damageableMeta.hasDamageValue()) {
-                int max = item.getType().getMaxDurability();
-                if (damageableMeta.hasMaxDamage())
-                    max = damageableMeta.getMaxDamage();
+            if (!damageableMeta.hasDamageValue())
+                return emc;
 
-                emc = emc.multiply(BigInteger.valueOf(max - damageableMeta.getDamage())).divide(BigInteger.valueOf(max));
-            }
+            int max = item.getType().getMaxDurability();
+            if (damageableMeta.hasMaxDamage())
+                max = damageableMeta.getMaxDamage();
+
+            emc = emc.multiply(BigInteger.valueOf(max - damageableMeta.getDamage())).divide(BigInteger.valueOf(max));
         }
         return emc;
     }

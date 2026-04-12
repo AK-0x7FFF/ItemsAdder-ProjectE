@@ -2,10 +2,9 @@ package ak.ak32767.projecte.emcsys;
 
 import ak.ak32767.projecte.ProjectE;
 import ak.ak32767.projecte.data.ItemWrapper;
-import ak.ak32767.projecte.manager.EMCManager;
+import ak.ak32767.projecte.event.EMCPreCalculateEvent;
 import ak.ak32767.projecte.utils.YAMLLoader;
 import dev.lone.itemsadder.api.ItemsAdder;
-import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import org.bukkit.*;
@@ -28,9 +27,9 @@ public class EMCBuilder {
 
     private final ProjectE plugin;
 //    private final EMCManager manager;
-    private final Object2LongLinkedOpenHashMap<ItemWrapper.TransmutableItem> fixedValues;
+    private final Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, BigDecimal> fixedValues;
     private final Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, BigDecimal> emcValues;
-    private final ArrayList<ConversionBuilder<EMCBuilder>> conversions;
+    private final ArrayList<ConversionBuilder> conversions;
 
 
     public EMCBuilder(ProjectE plugin) {
@@ -38,17 +37,24 @@ public class EMCBuilder {
 //        this.manager = manager;
         this.conversions = new ArrayList<>();
 
-        this.fixedValues = new Object2LongLinkedOpenHashMap<>();
-        this.fixedValues.defaultReturnValue(0);
+        this.fixedValues = new Object2ObjectOpenHashMap<>();
+        this.fixedValues.defaultReturnValue(BigDecimal.ZERO);
 
         this.emcValues = new Object2ObjectOpenHashMap<>();
-        this.emcValues.defaultReturnValue(BigDecimal.valueOf(0));
+        this.emcValues.defaultReturnValue(BigDecimal.ZERO);
     }
 
     public Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, BigInteger> build(WorldTransmutationsBuilder worldTransmutationsBuilder) throws FileNotFoundException {
         conversionByYAML();
         conversionByWorldTransmutations(worldTransmutationsBuilder);
-        addConversionByRecipe();
+
+        for (Iterator<Recipe> recipes = Bukkit.recipeIterator(); recipes.hasNext(); ) {
+            Recipe recipe = recipes.next();
+            addConversionByRecipe(recipe);
+        }
+
+        EMCPreCalculateEvent preCalcEvent = new EMCPreCalculateEvent(this);
+        Bukkit.getPluginManager().callEvent(preCalcEvent);
         this.plugin.logger.info(this.fixedValues.size() + " fixedValues been Set.");
         this.plugin.logger.info(this.conversions.size() + " conversions been Registered.");
 
@@ -56,15 +62,11 @@ public class EMCBuilder {
             int emcedItem = this.fixedValues.size() + this.emcValues.size();
             long allRegisteredItem = Arrays.stream(Material.values()).filter(Material::isItem).filter(mat -> !mat.isLegacy()).count() + ItemsAdder.getAllItems().size();
             this.plugin.logger.info(this.emcValues.size() + " EMC been Calculated.");
-            this.plugin.logger.info("EMCed Item: " + emcedItem);
-            this.plugin.logger.info("unEMC Item: " + (allRegisteredItem - emcedItem));
+            this.plugin.logger.info("EMCed Item: " + emcedItem + ", unEMC Item: " + (allRegisteredItem - emcedItem));
         }
 
         this.conversions.clear();
-        this.fixedValues.forEach(
-            (item, value) -> this.emcValues.put(item, BigDecimal.valueOf(value))
-        );
-
+        this.emcValues.putAll(this.fixedValues);
         Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, BigInteger> emcIntValues = new Object2ObjectOpenHashMap<>(this.emcValues.size());
         this.emcValues.object2ObjectEntrySet().fastForEach(
             entry -> emcIntValues.put(entry.getKey(), entry.getValue().toBigInteger())
@@ -80,12 +82,12 @@ public class EMCBuilder {
         for (; changed > 0 && depth < Byte.MAX_VALUE; depth++) {
             changed = 0;
 
-            for (ConversionBuilder<EMCBuilder> conversion : this.conversions) {
+            for (ConversionBuilder conversion : this.conversions) {
                 ItemWrapper.TransmutableItem target = conversion.getResult();
                 boolean iaTracker = IAItemTracker && target instanceof ItemWrapper.IAItem;
 
                 // 硬編碼跳過
-                if (target instanceof ItemWrapper.MaterialItem && this.getFixedMaterialEmc(target) > 0)
+                if (target instanceof ItemWrapper.MaterialItem && this.getFixedMaterialEmc(target).compareTo(BigDecimal.ZERO) > 0)
                     continue;
 
                 BigDecimal cost = BigDecimal.ZERO;
@@ -180,7 +182,7 @@ public class EMCBuilder {
                 this.emcValues.put(target, itemEmc);
                 changed++;
             }
-            this.plugin.logger.info("EMCs Calculating, depth: " + depth + ", Changed: +" + changed);
+            this.plugin.logger.info("   Depth: " + depth + ", Changed: +" + changed);
         }
 
         if (depth == Byte.MAX_VALUE) {
@@ -191,8 +193,8 @@ public class EMCBuilder {
         this.plugin.logger.info("EMCs Calculate END");
         }
 
-    private long getFixedMaterialEmc(ItemWrapper.TransmutableItem item) {
-        return this.fixedValues.getLong(item);
+    private BigDecimal getFixedMaterialEmc(ItemWrapper.TransmutableItem item) {
+        return this.fixedValues.get(item);
     }
 
     private BigDecimal getCalcedItemEmc(ItemWrapper.TransmutableItem item) {
@@ -200,9 +202,9 @@ public class EMCBuilder {
     }
 
     private BigDecimal getEMCRaw(ItemWrapper.TransmutableItem item) {
-        long fixedValue = this.getFixedMaterialEmc(item);
-        if (fixedValue > 0)
-            return BigDecimal.valueOf(fixedValue);
+        BigDecimal fixedValue = this.getFixedMaterialEmc(item);
+        if (fixedValue.compareTo(BigDecimal.ZERO) > 0)
+            return fixedValue;
 
         BigDecimal value = this.getCalcedItemEmc(item);
         if (value.compareTo(BigDecimal.ZERO) > 0)
@@ -218,61 +220,58 @@ public class EMCBuilder {
         return BigDecimal.ZERO;
     }
 
-    private void addConversionByRecipe() {
-        for (Iterator<Recipe> recipes = Bukkit.recipeIterator(); recipes.hasNext();) {
-            Recipe recipe = recipes.next();
+    public boolean addConversionByRecipe(Recipe recipe) {
+        // 跳過IA假配方
+        if (((Keyed) recipe).getKey().getNamespace().startsWith(IA_FAKE_RECIPE_PREFIX))
+            return false;
 
-            // 跳過IA假配方
-            if (((Keyed) recipe).getKey().getNamespace().startsWith(IA_FAKE_RECIPE_PREFIX))
-                continue;
+        ItemStack resultItem = recipe.getResult();
+        Material resultMaterial = resultItem.getType();
+        int resultAmount = resultItem.getAmount();
 
-            ItemStack resultItem = recipe.getResult();
-            Material resultMaterial = resultItem.getType();
-            int resultAmount = resultItem.getAmount();
+        if (resultMaterial.equals(Material.AIR))
+            return false;
 
-            if (resultMaterial.equals(Material.AIR))
-                continue;
-
-            ArrayList<RecipeChoice> choices = new ArrayList<>();
-            switch (recipe) {
-                case ShapelessRecipe    shapelessRecipe     -> choices.addAll(shapelessRecipe.getChoiceList());
-                case ShapedRecipe       shapedRecipe        -> choices.addAll(shapedRecipe.getChoiceMap().values());
-                case CookingRecipe<?>   cookingRecipe       -> choices.add(cookingRecipe.getInputChoice());
-                case StonecuttingRecipe stonecuttingRecipe  -> choices.add(stonecuttingRecipe.getInputChoice());
-                case SmithingTransformRecipe smithingRecipe -> {
-                    choices.add(smithingRecipe.getBase());
-                    choices.add(smithingRecipe.getAddition());
-                    choices.add(smithingRecipe.getTemplate());
-                }
-                default -> {}
+        ArrayList<RecipeChoice> choices = new ArrayList<>();
+        switch (recipe) {
+            case ShapelessRecipe    shapelessRecipe     -> choices.addAll(shapelessRecipe.getChoiceList());
+            case ShapedRecipe       shapedRecipe        -> choices.addAll(shapedRecipe.getChoiceMap().values());
+            case CookingRecipe<?>   cookingRecipe       -> choices.add(cookingRecipe.getInputChoice());
+            case StonecuttingRecipe stonecuttingRecipe  -> choices.add(stonecuttingRecipe.getInputChoice());
+            case SmithingTransformRecipe smithingRecipe -> {
+                choices.add(smithingRecipe.getBase());
+                choices.add(smithingRecipe.getAddition());
+                choices.add(smithingRecipe.getTemplate());
             }
-
-            if (choices.isEmpty())
-                continue;
-
-            ConversionBuilder<EMCBuilder> conversion = this.conversion(resultItem, resultAmount);
-
-            for (RecipeChoice choice : choices) {
-                // 常規選物
-                if (choice instanceof RecipeChoice.MaterialChoice) {
-                    Set<ItemWrapper.TransmutableItem> items = new ObjectOpenHashSet<>(
-                            ((RecipeChoice.MaterialChoice) choice).getChoices().stream()
-                                    .map(ItemWrapper.MaterialItem::new)
-                                    .collect(Collectors.toSet())
-                    );
-                    conversion.addIngredientsGroup(items);
-
-                    // 精確選物
-                } else if (choice instanceof RecipeChoice.ExactChoice) {
-                    Set<ItemWrapper.TransmutableItem> items = ((RecipeChoice.ExactChoice) choice).getChoices()
-                            .stream().map(ItemWrapper::of)
-                            .collect(Collectors.toSet());
-                    conversion.addIngredientsGroup(items);
-                }
-            }
-
-            conversion.end();
+            default -> {}
         }
+
+        if (choices.isEmpty())
+            return false;
+
+        ConversionBuilder conversion = this.conversion(resultItem, resultAmount);
+
+        for (RecipeChoice choice : choices) {
+            // 常規選物
+            if (choice instanceof RecipeChoice.MaterialChoice) {
+                Set<ItemWrapper.TransmutableItem> items = new ObjectOpenHashSet<>(
+                    ((RecipeChoice.MaterialChoice) choice).getChoices().stream()
+                    .map(ItemWrapper.MaterialItem::new)
+                    .collect(Collectors.toSet())
+                );
+                conversion.addIngredientsGroup(items);
+
+                // 精確選物
+            } else if (choice instanceof RecipeChoice.ExactChoice) {
+                Set<ItemWrapper.TransmutableItem> items = ((RecipeChoice.ExactChoice) choice).getChoices()
+                    .stream().map(ItemWrapper::of)
+                    .collect(Collectors.toSet());
+                conversion.addIngredientsGroup(items);
+            }
+        }
+
+        conversion.end();
+        return true;
     }
 
 
@@ -291,11 +290,11 @@ public class EMCBuilder {
 
     private void fixedByYAML(@NotNull List<Map<?, ?>> fixeds) {
         for (Map<?, ?> entry : fixeds) {
-            int value = ((Number) entry.get("value")).intValue();
+            long value = ((Number) entry.get("value")).longValue();
             List<ItemWrapper.TransmutableItem> items = YAMLLoader.ItemYAMLWrapper.of(entry);
 
             for (ItemWrapper.TransmutableItem item : items)
-                this.fixed(item, value);
+                this.fixed(item, BigDecimal.valueOf(value));
         }
     }
 
@@ -309,7 +308,7 @@ public class EMCBuilder {
                 throw new IllegalStateException();
 
 
-            List<ConversionBuilder<EMCBuilder>> cbs = resultItems.stream().map(item -> this.conversion(item, resultAmount)).toList();
+            List<ConversionBuilder> cbs = resultItems.stream().map(item -> this.conversion(item, resultAmount)).toList();
             for (Map<?, ?> ingredient : ingredients) {
                 String type = String.valueOf(ingredient.get("type")).toUpperCase();
 
@@ -339,24 +338,24 @@ public class EMCBuilder {
         }
     }
 
-    public EMCBuilder fixed(ItemWrapper.TransmutableItem item, long value) {
+    public EMCBuilder fixed(ItemWrapper.TransmutableItem item, BigDecimal value) {
         this.fixedValues.put(item, value);
         return this;
     }
 
-    public ConversionBuilder<EMCBuilder> conversion(ItemWrapper.TransmutableItem materials) {
+    public ConversionBuilder conversion(ItemWrapper.TransmutableItem materials) {
         return conversion(materials, 1);
     }
 
-    public ConversionBuilder<EMCBuilder> conversion(ItemWrapper.TransmutableItem item, long amount) {
-        ConversionBuilder<EMCBuilder> builder = new ConversionBuilder<>(this, item, amount);
+    public ConversionBuilder conversion(ItemWrapper.TransmutableItem item, long amount) {
+        ConversionBuilder builder = new ConversionBuilder(this, item, amount);
         this.conversions.add(builder);
         return builder;
     }
 
-    public ConversionBuilder<EMCBuilder> conversion(ItemStack item, long amount) {
+    public ConversionBuilder conversion(ItemStack item, long amount) {
         ItemWrapper.TransmutableItem itemWrapped = ItemWrapper.of(item);
-        ConversionBuilder<EMCBuilder> builder = new ConversionBuilder<>(this, itemWrapped, amount);
+        ConversionBuilder builder = new ConversionBuilder(this, itemWrapped, amount);
         this.conversions.add(builder);
         return builder;
     }

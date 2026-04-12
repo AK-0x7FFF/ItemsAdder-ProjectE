@@ -43,36 +43,36 @@ public class EMCManager {
     public void build(WorldTransmutationsBuilder worldTransmutationsBuilder) throws FileNotFoundException {
         EMCBuilder builder = new EMCBuilder(plugin);
         this.emcValues = builder.build(worldTransmutationsBuilder);
-
     }
-
 
     public BigInteger getItemEMC(ItemStack item) {
         ItemWrapper.TransmutableItem itemWrapped = ItemWrapper.of(item);
         BigInteger emc = this.emcValues.get(itemWrapped);
 
+        if (emc == null || emc.compareTo(BigInteger.ZERO) <= 0)
+            return BigInteger.ZERO;
+
         if (itemWrapped instanceof ItemWrapper.ExactItem) {
             // 取 Material 的 EMC
             ItemWrapper.MaterialItem material = ItemWrapper.toMaterialItem(itemWrapped);
             emc = this.emcValues.get(material);
-            if (emc.compareTo(BigInteger.ZERO) <= 0)
-                return BigInteger.ZERO;
-
-            // 等比扣除耐久 EMC
-            if (!item.hasItemMeta())
-                return emc;
-
-            ItemMeta meta = item.getItemMeta();
-            Damageable damageableMeta = (Damageable) meta;
-            if (!damageableMeta.hasDamageValue())
-                return emc;
-
-            int max = item.getType().getMaxDurability();
-            if (damageableMeta.hasMaxDamage())
-                max = damageableMeta.getMaxDamage();
-
-            emc = emc.multiply(BigInteger.valueOf(max - damageableMeta.getDamage())).divide(BigInteger.valueOf(max));
         }
+
+        if (!item.hasItemMeta())
+            return emc;
+
+        ItemMeta meta = item.getItemMeta();
+        Damageable damageableMeta = (Damageable) meta;
+        if (!damageableMeta.hasDamageValue())
+            return emc;
+
+        int max = item.getType().getMaxDurability();
+        if (damageableMeta.hasMaxDamage())
+            max = damageableMeta.getMaxDamage();
+
+        // 等比扣除耐久 EMC
+        emc = emc.multiply(BigInteger.valueOf(max - damageableMeta.getDamage())).divide(BigInteger.valueOf(max));
+
         return emc;
     }
 

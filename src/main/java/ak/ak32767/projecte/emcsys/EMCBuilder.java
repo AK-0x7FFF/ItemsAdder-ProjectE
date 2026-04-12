@@ -125,8 +125,18 @@ public class EMCBuilder {
                         BigInteger curr = this.getEMCRaw(item);
 
                         // 未迭代或無EMC
-                        if (curr.equals(BigInteger.ZERO))
+                        if (curr.compareTo(BigInteger.ZERO) <= 0)
                             continue;
+
+                        // 合成歸還物品EMC減除
+                        if (item.material().isItem()) {
+                            Material craftRemainMaterial = item.material().getCraftingRemainingItem();
+                            if (craftRemainMaterial != null) {
+                                BigInteger remainEMC = getEMCRaw(new ItemWrapper.MaterialItem(craftRemainMaterial));
+                                if (remainEMC.compareTo(BigInteger.ZERO) > 0)
+                                    curr = curr.subtract(remainEMC);
+                            }
+                        }
 
                         if (minEmc == null || curr.compareTo(minEmc) < 0)
                             minEmc = curr;
@@ -153,7 +163,7 @@ public class EMCBuilder {
                     continue;
 
                 BigInteger prevItemEmc = getCalcedItemEmc(target);
-                if (!prevItemEmc.equals(BigInteger.ZERO) && itemEmc.compareTo(prevItemEmc) >= 0)
+                if (prevItemEmc.compareTo(BigInteger.ZERO) > 0 && itemEmc.compareTo(prevItemEmc) >= 0)
                     continue;
 
                 this.emcValues.put(target, itemEmc);

@@ -290,11 +290,15 @@ public class EMCBuilder {
 
     private void fixedByYAML(@NotNull List<Map<?, ?>> fixeds) throws ProjectEException.YAMLKeyOrValueErrorException {
         for (Map<?, ?> entry : fixeds) {
-            long value = ((Number) entry.get("value")).longValue();
+            String valueRaw = String.valueOf(entry.get("value"));
+            if (valueRaw == null)
+                throw new ProjectEException.YAMLKeyOrValueErrorException();
+
+            BigDecimal value = new BigDecimal(valueRaw).setScale(0, RoundingMode.DOWN);
             List<ItemWrapper.TransmutableItem> items = YAMLLoader.ItemYAMLWrapper.of(entry);
 
             for (ItemWrapper.TransmutableItem item : items)
-                this.fixed(item, BigDecimal.valueOf(value));
+                this.fixed(item, value);
         }
     }
 

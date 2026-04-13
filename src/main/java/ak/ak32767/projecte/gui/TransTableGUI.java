@@ -77,7 +77,7 @@ public class TransTableGUI extends GUIBase {
     @Override
     protected void setupGUI(ProjectE plugin, Player player) {
         // GUI 初始化
-        this.inventoryWrapper = new TexturedInventoryWrapper(new MyHolder(), 54, null, 0, -16, BACKGROUND);
+        this.inventoryWrapper = new TexturedInventoryWrapper(new MyHolder(), 54, "Transmutation Table", 26, -16, BACKGROUND);
         this.inventory = this.inventoryWrapper.getInternal();
 
         this.transTableManager = new TransTableManager(plugin, player);

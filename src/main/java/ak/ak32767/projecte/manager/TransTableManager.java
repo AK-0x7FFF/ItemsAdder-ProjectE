@@ -309,7 +309,7 @@ public class TransTableManager {
         new AnvilGUI.Builder()
                 .plugin(this.plugin)
                 .title("↓ 搜索... ")
-                .text("\u0000")
+                .text(" ")
                 .onClick((anvilSlot, state) -> {
                     if(anvilSlot != AnvilGUI.Slot.OUTPUT) {
                         return Collections.emptyList();
@@ -334,7 +334,10 @@ public class TransTableManager {
     }
 
     public List<ItemStack> getPageItems(int page) {
-        List<ItemStack> pageItems = this.pages.get(page);
+        List<ItemStack> pageItems;
+        if (this.pages.isEmpty()) pageItems = new ObjectArrayList<>();
+        else pageItems = this.pages.get(page);
+
         while (pageItems.size() < 6)
             pageItems.add(new ItemStack(Material.AIR));
         return pageItems;

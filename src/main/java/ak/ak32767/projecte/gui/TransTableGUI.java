@@ -96,8 +96,8 @@ public class TransTableGUI extends GUIBase {
         }
         // EMC過濾欄
         ItemStack pagesMaxEMCItem = storage.get(8);
-        this.inventory.setItem(EMC_FILTER_SLOT, pagesMaxEMCItem);
         this.transTableManager.setPagesMaxEMCItem(pagesMaxEMCItem);
+        this.inventory.setItem(EMC_FILTER_SLOT, this.transTableManager.tagEMC2Item(pagesMaxEMCItem));
         // 轉化欄
         this.page = 0;
         this.updateExtractionRing();

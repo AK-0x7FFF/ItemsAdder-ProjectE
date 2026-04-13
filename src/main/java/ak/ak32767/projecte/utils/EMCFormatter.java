@@ -1,5 +1,7 @@
 package ak.ak32767.projecte.utils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
@@ -19,7 +21,7 @@ public class EMCFormatter {
             return value.toString();
 
         int digit = value.toString().length();
-        return shortedNum(value) + " " + getNumberName(digit);
+        return shortedNum(value) + " " + StringUtils.capitalize(getNumberName(digit));
     }
 
 //    public static String scientificFormat(BigInteger value) {
@@ -34,21 +36,16 @@ public class EMCFormatter {
         return new DecimalFormat("#.##").format(mantissa);
     }
 
-    private static String getNumberName(int exponent) {
-        if (exponent < 3) return "";
-        if (exponent == 6) return "MILLION";
+    private static String getNumberName(int digit) {
+        if (digit < 3) return "";
 
-        int n = (exponent - 3) / 3;
-        if (n == 1) return "MILLION";
-        if (n == 2) return "BILLION";
-        if (n == 3) return "TRILLION";
+        int n = (digit - 3) / 3;
+        if (n == 1) return "million";
+        if (n == 2) return "billion";
+        if (n == 3) return "trillion";
 
-        int u = n % 10;
-        int t = (n / 10) % 10;
-        int h = (n / 100) % 10;
-
-        String name = UNITS[u] + TENS[t] + HUNDREDS[h];
-        return name.toUpperCase() + "ILLION";
+        String name = UNITS[n % 10] + TENS[(n / 10) % 10] + HUNDREDS[(n / 100) % 10];
+        return name + "illion";
     }
 
 }

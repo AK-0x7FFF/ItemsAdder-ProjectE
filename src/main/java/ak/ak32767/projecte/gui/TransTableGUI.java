@@ -9,6 +9,7 @@ import dev.lone.itemsadder.api.FontImages.TexturedInventoryWrapper;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -74,7 +75,7 @@ public class TransTableGUI extends GUIBase {
     @Override
     public void setupGUI(ProjectE plugin, Player player) {
         // GUI 初始化
-        this.inventoryWrapper = new TexturedInventoryWrapper(new MyHolder(), 54, "null", BACKGROUND);
+        this.inventoryWrapper = new TexturedInventoryWrapper(new MyHolder(), 54, null, 0, -16, BACKGROUND);
         this.inventory = inventoryWrapper.getInternal();
 
         this.transTableManager = new TransTableManager(plugin, player);
@@ -280,14 +281,32 @@ public class TransTableGUI extends GUIBase {
     }
 
     private void updateEMC() {
-        SkullMeta playerHeadMeta = (SkullMeta) this.emcCheckerItem.getItemMeta();
+        SkullMeta itemMeta = (SkullMeta) this.emcCheckerItem.getItemMeta();
+        List<Component> lore = new ObjectArrayList<>(
+            new Component[]{Component.text("Detail: ", NamedTextColor.GRAY)}
+        );
 
         BigInteger emc = this.plugin.getEmcManager().getPlayerEMC(this.player);
-        String emcStr = EMCFormatter.commaFormat(emc);
-        if (emc.compareTo(BigInteger.valueOf(1_000_000)) >= 0)
-            emcStr = EMCFormatter.numberNameFormat(emc) + " (" + emcStr + ")";
 
-        playerHeadMeta.displayName(
+        String emcStr = EMCFormatter.commaFormat(emc);
+        if (emc.compareTo(BigInteger.valueOf(1_000_000)) >= 0) {
+            String[] emcStrSplit = emcStr.split(",");
+            StringBuilder emcStrPart = new StringBuilder();
+
+            for (int i = emcStrSplit.length - 1; i >= 0; --i) {
+                if (!emcStrPart.isEmpty())
+                    emcStrPart.insert(0, ",");
+                emcStrPart.insert(0, emcStrSplit[i]);
+
+                if ((emcStrSplit.length - i) % 9 == 0 || i == 0) {
+                    lore.add(1, Component.text(emcStrPart.toString(), NamedTextColor.GRAY));
+                    emcStrPart.setLength(0);
+                }
+            }
+
+            emcStr = EMCFormatter.numberNameFormat(emc);
+        }
+        itemMeta.displayName(
             Component.text()
             .append(Component.text(this.player.getName() + "'s EMC: ", NamedTextColor.YELLOW))
             .append(Component.text(emcStr, NamedTextColor.WHITE))
@@ -295,7 +314,8 @@ public class TransTableGUI extends GUIBase {
             .build()
         );
 
-        this.emcCheckerItem.setItemMeta(playerHeadMeta);
+        itemMeta.lore(lore);
+        this.emcCheckerItem.setItemMeta(itemMeta);
         this.inventory.setItem(CHECK_EMC_SLOT, this.emcCheckerItem);
 
         boolean isPageUpdated = this.transTableManager.tryRefreshPages();

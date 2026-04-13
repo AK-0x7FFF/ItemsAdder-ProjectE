@@ -31,34 +31,35 @@ public class YAMLLoader {
     }
 
     public record ItemYAMLWrapper(String name, String type) {
-        public static List<ItemWrapper.TransmutableItem> of(Map<?, ?> entry) {
+        public static List<ItemWrapper.TransmutableItem> of(Map<?, ?> entry) throws ProjectEException.YAMLKeyOrValueErrorException {
             if (entry == null)
-                return null;
+                throw new ProjectEException.YAMLKeyOrValueErrorException("Entry is null");
 
             if (!entry.containsKey("name") || !entry.containsKey("type"))
-                return null;
+                throw new ProjectEException.YAMLKeyOrValueErrorException();
 
             String name = String.valueOf(entry.get("name")).toUpperCase();
             String type = String.valueOf(entry.get("type")).toUpperCase();
+
             return new ItemYAMLWrapper(name, type).get();
         }
 
-        public List<ItemWrapper.TransmutableItem> get() {
+        public List<ItemWrapper.TransmutableItem> get() throws ProjectEException.YAMLKeyOrValueErrorException {
             if (name == null || type == null)
-                return new ObjectArrayList<>();
+                throw new ProjectEException.YAMLKeyOrValueErrorException("type is null");
 
             return switch (type) {
                 case "MATERIAL" -> {
                     Material material = Material.getMaterial(name);
                     if (material == null)
-                        yield new ObjectArrayList<>();
+                        throw new ProjectEException.YAMLKeyOrValueErrorException("type is null");
 
                     yield ObjectArrayList.of(new ItemWrapper.MaterialItem(material));
                 }
                 case "IAITEM" -> {
                     CustomStack instance = CustomStack.getInstance(name);
                     if (instance == null)
-                        yield new ObjectArrayList<>();
+                        throw new ProjectEException.YAMLKeyOrValueErrorException("type is null");
 
                     yield ObjectArrayList.of(new ItemWrapper.IAItem(instance.getItemStack()));
                 }
@@ -75,7 +76,7 @@ public class YAMLLoader {
                             Field field = Tag.class.getField(name);
                             tag = (Tag<Material>) field.get(null);
                         } catch (Exception ignored) {
-                            throw new ProjectEException.YAMLTagNotFoundException();
+                            throw new ProjectEException.YAMLKeyOrValueErrorException("type is null");
                         }
                     }
 
@@ -84,7 +85,7 @@ public class YAMLLoader {
                         .toList();
                 }
 
-                default -> new ObjectArrayList<>();
+                default -> throw new ProjectEException.YAMLKeyOrValueErrorException("type is null");
             };
         }
     };

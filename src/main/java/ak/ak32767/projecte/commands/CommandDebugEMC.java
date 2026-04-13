@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.FileNotFoundException;
 import java.math.BigInteger;
 
 public class CommandDebugEMC {
@@ -26,9 +25,7 @@ public class CommandDebugEMC {
 
         @Override
         public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
-            try {
-                this.plugin.getEmcManager().build(this.plugin.getWorldTransmutationBuilder());
-            } catch (FileNotFoundException ignored) {}
+            this.plugin.getEmcManager().build();
             return true;
         }
     }

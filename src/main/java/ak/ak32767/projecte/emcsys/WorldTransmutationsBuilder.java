@@ -1,8 +1,10 @@
 package ak.ak32767.projecte.emcsys;
 
 import ak.ak32767.projecte.ProjectE;
+import ak.ak32767.projecte.ProjectEException;
 import ak.ak32767.projecte.data.ItemWrapper;
 import ak.ak32767.projecte.utils.YAMLLoader;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -11,37 +13,38 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 public class WorldTransmutationsBuilder {
-    public record WorldTransmutationNode(ItemWrapper.TransmutableItem origin, ItemWrapper.TransmutableItem resultForward, ItemWrapper.TransmutableItem resultBackward) {}
-    private final ArrayList<WorldTransmutationNode> registered;
+    public record WorldTransmutationNode(
+        ItemWrapper.TransmutableItem origin, ItemWrapper.TransmutableItem resultForward, ItemWrapper.TransmutableItem resultBackward
+    ) {}
+    private final List<WorldTransmutationNode> conversions;
 
     private final ProjectE plugin;
     public WorldTransmutationsBuilder(ProjectE plugin) {
         this.plugin = plugin;
-        this.registered = new ArrayList<>();
+        this.conversions = new ObjectArrayList<>();
     }
 
-    public void buildx() throws FileNotFoundException {
-        FileConfiguration config = YAMLLoader.load(this.plugin, "data/transmutation_data.yml");
-        if (config == null)
-            return;
-
-        @NotNull List<Map<?, ?>> transMap = config.getMapList("world");
-        buildByYAML(transMap);
-        buildHardcodeCopper();
+    public boolean build() {
+        try {
+            FileConfiguration config = YAMLLoader.load(this.plugin, "data/transmutation_data.yml");
+            buildByYAML(config.getMapList("world"));
+            buildHardcodeCopper();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
 
-    public void buildByYAML(List<Map<?, ?>> transList) {
+    public void buildByYAML(List<Map<?, ?>> transList) throws ProjectEException.YAMLKeyOrValueErrorException {
         for (Map<?, ?> entry : transList) {
             String type = (String) entry.get("type");
-            if (type == null) throw new IllegalArgumentException("type is null");
+            if (type == null) throw new ProjectEException.YAMLKeyOrValueErrorException("type is null");
 
             if (type.equals("REGULAR")) {
-                List<ItemWrapper.TransmutableItem> origin = YAMLLoader.ItemYAMLWrapper.of((Map<?, ?>) entry.get("origin"));
-                if (origin.isEmpty()) throw new IllegalArgumentException("origin is null");
-
-                List<ItemWrapper.TransmutableItem> resultForward = YAMLLoader.ItemYAMLWrapper.of((Map<?, ?>) entry.get("result_forward"));
-                if (resultForward.isEmpty()) throw new IllegalArgumentException("result_forward is null");
+                var origin = YAMLLoader.ItemYAMLWrapper.of((Map<?, ?>) entry.get("origin"));
+                var resultForward = YAMLLoader.ItemYAMLWrapper.of((Map<?, ?>) entry.get("result_forward"));
 
                 Map<?, ?> resultBackwardEntry = (Map<?, ?>) entry.get("result_backward");
                 if (resultBackwardEntry == null) {
@@ -49,20 +52,21 @@ public class WorldTransmutationsBuilder {
                     continue;
                 }
 
-                List<ItemWrapper.TransmutableItem> resultBackward = YAMLLoader.ItemYAMLWrapper.of(resultBackwardEntry);
-                if (resultBackward.isEmpty()) throw new IllegalArgumentException("result_backward is null");
+                var resultBackward = YAMLLoader.ItemYAMLWrapper.of(resultBackwardEntry);
                 this.register(origin.getFirst(), resultForward.getFirst(), resultBackward.getFirst());
 
             } else if (type.equals("CHAIN")) {
                 List<Map<?, ?>> items = (List<Map<?, ?>>) entry.get("items");
-                if (items == null || items.isEmpty()) throw new IllegalArgumentException("items is null");
 
                 List<ItemWrapper.TransmutableItem> itemList = items.stream()
-                    .map(item -> YAMLLoader.ItemYAMLWrapper.of(item).getFirst())
+                    .map(item -> {
+                        try { return YAMLLoader.ItemYAMLWrapper.of(item).getFirst(); }
+                        catch (ProjectEException.YAMLKeyOrValueErrorException e) { return null; }
+                    })
                     .toList();
 
                 if (itemList.contains(null))
-                    throw new IllegalArgumentException("items has null");
+                    throw new ProjectEException.YAMLKeyOrValueErrorException("Item list has null");
 
                 this.registerChain(itemList.toArray(ItemWrapper.TransmutableItem[]::new));
             }
@@ -97,13 +101,13 @@ public class WorldTransmutationsBuilder {
 
     public WorldTransmutationsBuilder register(ItemWrapper.TransmutableItem origin, ItemWrapper.TransmutableItem result) {
         WorldTransmutationNode node = new WorldTransmutationNode(origin, result, result);
-        this.registered.add(node);
+        this.conversions.add(node);
         return this;
     }
 
     public WorldTransmutationsBuilder register(ItemWrapper.TransmutableItem origin, ItemWrapper.TransmutableItem resultForward, ItemWrapper.TransmutableItem resultBackward) {
         WorldTransmutationNode node = new WorldTransmutationNode(origin, resultForward, resultBackward);
-        this.registered.add(node);
+        this.conversions.add(node);
         return this;
     }
 
@@ -114,13 +118,13 @@ public class WorldTransmutationsBuilder {
             ItemWrapper.TransmutableItem backward = items[i == 0 ? items.length - 1 : i - 1];
 
             WorldTransmutationNode node = new WorldTransmutationNode(orijin, forward, backward);
-            this.registered.add(node);
+            this.conversions.add(node);
         }
 
         return this;
     }
 
-    public ArrayList<WorldTransmutationNode> getRegistered() {
-        return this.registered;
+    public List<WorldTransmutationNode> getConversions() {
+        return this.conversions;
     }
 }

@@ -1,6 +1,7 @@
 package ak.ak32767.projecte.emcsys;
 
 import ak.ak32767.projecte.ProjectE;
+import ak.ak32767.projecte.ProjectEException;
 import ak.ak32767.projecte.data.ItemWrapper;
 import ak.ak32767.projecte.event.EMCPreCalculateEvent;
 import ak.ak32767.projecte.utils.YAMLLoader;
@@ -19,7 +20,7 @@ import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ak.ak32767.projecte.emcsys.ConversionBuilder.BLANK;
+import static ak.ak32767.projecte.emcsys.ItemConversionBuilder.BLANK;
 
 public class EMCBuilder {
     private static final boolean IAItemTracker = false;
@@ -29,7 +30,7 @@ public class EMCBuilder {
 //    private final EMCManager manager;
     private final Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, BigDecimal> fixedValues;
     private final Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, BigDecimal> emcValues;
-    private final ArrayList<ConversionBuilder> conversions;
+    private final ArrayList<ItemConversionBuilder> conversions;
 
 
     public EMCBuilder(ProjectE plugin) {
@@ -44,17 +45,31 @@ public class EMCBuilder {
         this.emcValues.defaultReturnValue(BigDecimal.ZERO);
     }
 
-    public Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, BigInteger> build(WorldTransmutationsBuilder worldTransmutationsBuilder) throws FileNotFoundException {
-        conversionByYAML();
-        conversionByWorldTransmutations(worldTransmutationsBuilder);
+    public Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, BigInteger> build() {
+        // 從 .yml 構建
+        try {
+            FileConfiguration config = YAMLLoader.load(this.plugin, "data/emc_data.yml");
+            {
+                List<Map<?, ?>> fixed = config.getMapList("fixed");
+                fixedByYAML(fixed);
 
+                List<Map<?, ?>> conversions = config.getMapList("conversion");
+                conversionByYAML(conversions);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // 從 合成表 構建
         for (Iterator<Recipe> recipes = Bukkit.recipeIterator(); recipes.hasNext(); ) {
             Recipe recipe = recipes.next();
             addConversionByRecipe(recipe);
         }
 
+        // 從 事件 構建
         EMCPreCalculateEvent preCalcEvent = new EMCPreCalculateEvent(this);
         Bukkit.getPluginManager().callEvent(preCalcEvent);
+
         this.plugin.logger.info(this.fixedValues.size() + " fixedValues been Set.");
         this.plugin.logger.info(this.conversions.size() + " conversions been Registered.");
 
@@ -82,7 +97,7 @@ public class EMCBuilder {
         for (; changed > 0 && depth < Byte.MAX_VALUE; depth++) {
             changed = 0;
 
-            for (ConversionBuilder conversion : this.conversions) {
+            for (ItemConversionBuilder conversion : this.conversions) {
                 ItemWrapper.TransmutableItem target = conversion.getResult();
                 boolean iaTracker = IAItemTracker && target instanceof ItemWrapper.IAItem;
 
@@ -249,7 +264,7 @@ public class EMCBuilder {
         if (choices.isEmpty())
             return false;
 
-        ConversionBuilder conversion = this.conversion(resultItem, resultAmount);
+        ItemConversionBuilder conversion = this.register(resultItem, resultAmount);
 
         for (RecipeChoice choice : choices) {
             // 常規選物
@@ -274,21 +289,7 @@ public class EMCBuilder {
         return true;
     }
 
-
-
-    private void conversionByYAML() throws FileNotFoundException {
-        FileConfiguration config = YAMLLoader.load(this.plugin, "data/emc_data.yml");
-
-        // this.fixedValue
-        @NotNull List<Map<?, ?>> fixed = config.getMapList("fixed");
-        fixedByYAML(fixed);
-
-        // this.conversions
-        List<Map<?, ?>> conversions = config.getMapList("conversion");
-        conversionByYAML(conversions);
-    }
-
-    private void fixedByYAML(@NotNull List<Map<?, ?>> fixeds) {
+    private void fixedByYAML(@NotNull List<Map<?, ?>> fixeds) throws ProjectEException.YAMLKeyOrValueErrorException {
         for (Map<?, ?> entry : fixeds) {
             long value = ((Number) entry.get("value")).longValue();
             List<ItemWrapper.TransmutableItem> items = YAMLLoader.ItemYAMLWrapper.of(entry);
@@ -298,17 +299,17 @@ public class EMCBuilder {
         }
     }
 
-    private void conversionByYAML(List<Map<?, ?>> conversions) {
+    private void conversionByYAML(List<Map<?, ?>> conversions) throws ProjectEException.YAMLKeyOrValueErrorException {
         for (Map<?, ?> conversion : conversions) {
             long resultAmount = ((Number) conversion.get("amount")).longValue();
             List<Map<?, ?>> ingredients = (List<Map<?, ?>>) conversion.get("ingredient");
 
             List<ItemWrapper.TransmutableItem> resultItems = YAMLLoader.ItemYAMLWrapper.of(conversion);
             if (resultItems.isEmpty())
-                throw new IllegalStateException();
+                throw new ProjectEException.YAMLKeyOrValueErrorException();
 
 
-            List<ConversionBuilder> cbs = resultItems.stream().map(item -> this.conversion(item, resultAmount)).toList();
+            List<ItemConversionBuilder> cbs = resultItems.stream().map(item -> this.register(item, resultAmount)).toList();
             for (Map<?, ?> ingredient : ingredients) {
                 String type = String.valueOf(ingredient.get("type")).toUpperCase();
 
@@ -319,22 +320,13 @@ public class EMCBuilder {
                     long amount = ((Number) ingredient.get("amount")).longValue();
                     List<ItemWrapper.TransmutableItem> items = YAMLLoader.ItemYAMLWrapper.of(ingredient);
                     if (items.isEmpty())
-                        throw new IllegalStateException();
+                        throw new ProjectEException.YAMLKeyOrValueErrorException();
 
                     cbs.forEach(cb -> cb.addIngredient(items.getFirst(), amount));
                 }
 
-                cbs.forEach(ConversionBuilder::end);
+                cbs.forEach(ItemConversionBuilder::end);
             }
-        }
-    }
-
-    private void conversionByWorldTransmutations(WorldTransmutationsBuilder worldTransmutationsBuilder) {
-        for (var node: worldTransmutationsBuilder.getRegistered()) {
-            this.conversion(node.resultForward()).addIngredient(node.origin()).end();
-
-            if (!node.resultForward().equals(node.resultBackward()))
-                this.conversion(node.resultBackward()).addIngredient(node.origin()).end();
         }
     }
 
@@ -343,20 +335,15 @@ public class EMCBuilder {
         return this;
     }
 
-    public ConversionBuilder conversion(ItemWrapper.TransmutableItem materials) {
-        return conversion(materials, 1);
-    }
-
-    public ConversionBuilder conversion(ItemWrapper.TransmutableItem item, long amount) {
-        ConversionBuilder builder = new ConversionBuilder(this, item, amount);
-        this.conversions.add(builder);
-        return builder;
-    }
-
-    public ConversionBuilder conversion(ItemStack item, long amount) {
+    public ItemConversionBuilder register(ItemStack item, long amount) {
         ItemWrapper.TransmutableItem itemWrapped = ItemWrapper.of(item);
-        ConversionBuilder builder = new ConversionBuilder(this, itemWrapped, amount);
+        return this.register(itemWrapped, amount);
+    }
+
+    public ItemConversionBuilder register(ItemWrapper.TransmutableItem item, long amount) {
+        ItemConversionBuilder builder = new ItemConversionBuilder(this, item, amount);
         this.conversions.add(builder);
         return builder;
     }
+
 }

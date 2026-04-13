@@ -7,40 +7,33 @@ import ak.ak32767.projecte.manager.EMCManager;
 import ak.ak32767.projecte.emcsys.WorldTransmutationsBuilder;
 import ak.ak32767.projecte.listener.*;
 import ak.ak32767.projecte.manager.KnowledgeManager;
+import ak.ak32767.projecte.manager.TransmutationManager;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.logging.Logger;
 
 public final class ProjectE extends JavaPlugin {
     public final Logger logger = this.getLogger();
-    private WorldTransmutationsBuilder worldTransmutationBuilder;
-    private EMCBuilder emcBuilder;
     private EMCManager emcManager;
+    private TransmutationManager transmutationManager;
     private KnowledgeManager knowledgeManager;
 
     @Override
     public void onEnable() {
         File folder = this.getDataFolder();
-        if (!folder.exists())
-            folder.mkdirs();
+        if (!folder.exists()) folder.mkdirs();
         PluginManager pluginManager = getServer().getPluginManager();
 
-        this.worldTransmutationBuilder = new WorldTransmutationsBuilder(this);
-        try {
-            this.worldTransmutationBuilder.buildx();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        this.transmutationManager = new TransmutationManager(this);
 
-        // 在 `IALoadedListener.java` 中進行BUILD
         // manager
         this.emcManager = new EMCManager(this);
         this.knowledgeManager = new KnowledgeManager(this);
 
         // listener register
+        pluginManager.registerEvents(new EMCPreCalculateListener(this.transmutationManager), this);
         pluginManager.registerEvents(new GUIListener(this), this);
         pluginManager.registerEvents(new DataSave2PDCListener(this.emcManager, this.knowledgeManager), this);
 
@@ -73,7 +66,4 @@ public final class ProjectE extends JavaPlugin {
         return this.knowledgeManager;
     }
 
-    public WorldTransmutationsBuilder getWorldTransmutationBuilder() {
-        return worldTransmutationBuilder;
-    }
 }

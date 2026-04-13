@@ -1,6 +1,7 @@
 package ak.ak32767.projecte.manager;
 
 import ak.ak32767.projecte.ProjectE;
+import ak.ak32767.projecte.ProjectEException;
 import ak.ak32767.projecte.data.ItemWrapper;
 import ak.ak32767.projecte.emcsys.EMCBuilder;
 import ak.ak32767.projecte.emcsys.WorldTransmutationsBuilder;
@@ -40,9 +41,9 @@ public class EMCManager {
         Bukkit.getScheduler().runTaskTimer(plugin, this::saveAllPlayerEMCMap2PDC, 6000L, 6000L);
     }
 
-    public void build(WorldTransmutationsBuilder worldTransmutationsBuilder) throws FileNotFoundException {
+    public void build() {
         EMCBuilder builder = new EMCBuilder(plugin);
-        this.emcValues = builder.build(worldTransmutationsBuilder);
+        this.emcValues = builder.build();
     }
 
     public BigInteger getItemEMC(ItemStack item) {

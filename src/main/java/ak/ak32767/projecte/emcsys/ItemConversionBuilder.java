@@ -7,7 +7,7 @@ import org.bukkit.Material;
 import java.util.Collections;
 import java.util.Set;
 
-public class ConversionBuilder {
+public class ItemConversionBuilder {
     public static final Set<ItemWrapper.TransmutableItem> BLANK = Collections.singleton(new ItemWrapper.MaterialItem(Material.AIR));
 
     private final EMCBuilder parent;
@@ -15,7 +15,7 @@ public class ConversionBuilder {
     private final long amount;
     private final Object2LongLinkedOpenHashMap<Set<ItemWrapper.TransmutableItem>> ingredients;
 
-    public ConversionBuilder(EMCBuilder emcBuilder, ItemWrapper.TransmutableItem result, long amount) {
+    public ItemConversionBuilder(EMCBuilder emcBuilder, ItemWrapper.TransmutableItem result, long amount) {
         this.parent = emcBuilder;
         this.result = result;
         this.amount = amount;
@@ -35,25 +35,25 @@ public class ConversionBuilder {
         return ingredients;
     }
 
-    public ConversionBuilder addValue(long value) {
+    public ItemConversionBuilder addValue(long value) {
         this.ingredients.addTo(BLANK, value);
         return this;
     }
 
-    public ConversionBuilder addIngredient(ItemWrapper.TransmutableItem ingredient) {
+    public ItemConversionBuilder addIngredient(ItemWrapper.TransmutableItem ingredient) {
         return this.addIngredient(ingredient, 1);
     }
 
-    public ConversionBuilder addIngredient(ItemWrapper.TransmutableItem ingredient, long amount) {
+    public ItemConversionBuilder addIngredient(ItemWrapper.TransmutableItem ingredient, long amount) {
         this.ingredients.addTo(Collections.singleton(ingredient), amount);
         return this;
     }
 
-    public ConversionBuilder addIngredientsGroup(Set<ItemWrapper.TransmutableItem> ingredients) {
+    public ItemConversionBuilder addIngredientsGroup(Set<ItemWrapper.TransmutableItem> ingredients) {
         return this.addIngredientsGroup(ingredients, 1);
     }
 
-    public ConversionBuilder addIngredientsGroup(Set<ItemWrapper.TransmutableItem> ingredients, long amount) {
+    public ItemConversionBuilder addIngredientsGroup(Set<ItemWrapper.TransmutableItem> ingredients, long amount) {
         Set<ItemWrapper.TransmutableItem> immutSet = Set.copyOf(ingredients);
         this.ingredients.addTo(immutSet, amount);
         return this;

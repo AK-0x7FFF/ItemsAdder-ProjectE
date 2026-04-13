@@ -1,7 +1,7 @@
 package ak.ak32767.projecte.event;
 
 import ak.ak32767.projecte.data.ItemWrapper;
-import ak.ak32767.projecte.emcsys.ConversionBuilder;
+import ak.ak32767.projecte.emcsys.ItemConversionBuilder;
 import ak.ak32767.projecte.emcsys.EMCBuilder;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -20,6 +20,10 @@ public class EMCPreCalculateEvent extends Event {
         this.builder = builder;
     }
 
+    public EMCBuilder getBuilder() {
+        return builder;
+    }
+
     public boolean addFixedEMCItem(ItemStack item, BigInteger emcValue) {
         ItemWrapper.TransmutableItem itemWrapped = ItemWrapper.of(item);
         this.builder.fixed(itemWrapped, new BigDecimal(emcValue));
@@ -30,16 +34,20 @@ public class EMCPreCalculateEvent extends Event {
         return this.builder.addConversionByRecipe(recipe);
     }
 
-    public ConversionBuilder conversionItemBuilder(ItemStack item) {
+    public ItemConversionBuilder conversionItemBuilder(ItemStack item) {
         return this.conversionItemBuilder(item, 1);
     }
 
-    public ConversionBuilder conversionItemBuilder(ItemStack item, long amount) {
-        return this.builder.conversion(item, amount);
+    public ItemConversionBuilder conversionItemBuilder(ItemStack item, long amount) {
+        return this.builder.register(item, amount);
     }
 
     @Override
     public @NotNull HandlerList getHandlers() {
+        return HANDLERS;
+    }
+
+    public static HandlerList getHandlerList() {
         return HANDLERS;
     }
 }

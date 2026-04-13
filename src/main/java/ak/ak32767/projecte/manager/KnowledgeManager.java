@@ -35,6 +35,8 @@ public class KnowledgeManager {
         this.namespacedKey = new NamespacedKey(plugin, "knowledge");
         this.playersKnowledgeMap = new Object2ObjectOpenHashMap<>();
         this.playersKnowledgeMap.defaultReturnValue(null);
+
+        Bukkit.getScheduler().runTaskTimer(plugin, this::saveAllPlayerKnowledgeMap2PDC, 6000L, 6000L);
     }
 
     private String item2NamespacedID(ItemStack item) {

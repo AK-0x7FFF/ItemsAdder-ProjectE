@@ -46,18 +46,22 @@ public class EMCManager {
         this.emcValues = builder.build();
     }
 
+    public boolean isItemHasEMC(ItemStack item) {
+        return this.getItemEMC(item).compareTo(BigInteger.ZERO) > 0;
+    }
+
     public BigInteger getItemEMC(ItemStack item) {
         ItemWrapper.TransmutableItem itemWrapped = ItemWrapper.of(item);
         BigInteger emc = this.emcValues.get(itemWrapped);
 
-        if (emc == null || emc.compareTo(BigInteger.ZERO) <= 0)
-            return BigInteger.ZERO;
-
-        if (itemWrapped instanceof ItemWrapper.ExactItem) {
+        if (itemWrapped instanceof ItemWrapper.ExactItem && (emc == null || emc.compareTo(BigInteger.ZERO) <= 0)) {
             // 取 Material 的 EMC
             ItemWrapper.MaterialItem material = ItemWrapper.toMaterialItem(itemWrapped);
             emc = this.emcValues.get(material);
         }
+
+        if (emc == null || emc.compareTo(BigInteger.ZERO) <= 0)
+            return BigInteger.ZERO;
 
         if (!item.hasItemMeta())
             return emc;
@@ -77,9 +81,9 @@ public class EMCManager {
         return emc;
     }
 
-    public BigInteger getItemEMCTotal(ItemStack item) {
-        return this.getItemEMC(item).multiply(BigInteger.valueOf(item.getAmount()));
-    }
+//    public BigInteger getItemEMCTotal(ItemStack item) {
+//        return this.getItemEMC(item).multiply(BigInteger.valueOf(item.getAmount()));
+//    }
 
     public BigInteger getPlayerEMC(Player player) {
         return this.getPlayerEMC(player.getUniqueId());

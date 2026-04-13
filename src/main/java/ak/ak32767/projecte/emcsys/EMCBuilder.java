@@ -13,7 +13,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
@@ -102,7 +101,7 @@ public class EMCBuilder {
                 boolean iaTracker = IAItemTracker && target instanceof ItemWrapper.IAItem;
 
                 // 硬編碼跳過
-                if (target instanceof ItemWrapper.MaterialItem && this.getFixedMaterialEmc(target).compareTo(BigDecimal.ZERO) > 0)
+                if (target instanceof ItemWrapper.MaterialItem && this.getFixedItemEmc(target).compareTo(BigDecimal.ZERO) > 0)
                     continue;
 
                 BigDecimal cost = BigDecimal.ZERO;
@@ -133,19 +132,19 @@ public class EMCBuilder {
 
                     if (iaTracker)
                         this.plugin.logger.info("[EMCBuilder:IAItemTracker]  - CHOICES: " +
-                                choices.stream()
-                                        .map(choice -> {
-                                            if (choice instanceof ItemWrapper.MaterialItem)
-                                                return "MATERIAL:" + choice;
+                            choices.stream()
+                                .map(choice -> {
+                                    if (choice instanceof ItemWrapper.MaterialItem)
+                                        return "MATERIAL:" + choice;
 
-                                            if (choice instanceof ItemWrapper.ExactItem)
-                                                return "EXACT_ITEM:" + ((ItemWrapper.ExactItem) choice).material() + "->" + ((ItemWrapper.ExactItem) choice).meta().toString();
+                                    if (choice instanceof ItemWrapper.ExactItem)
+                                        return "EXACT_ITEM:" + ((ItemWrapper.ExactItem) choice).material() + "->" + ((ItemWrapper.ExactItem) choice).meta().toString();
 
-                                            if (choice instanceof ItemWrapper.IAItem)
-                                                return "IAITEM:" + ((ItemWrapper.IAItem) choice).namespacedID().toUpperCase();
+                                    if (choice instanceof ItemWrapper.IAItem)
+                                        return "IAITEM:" + ((ItemWrapper.IAItem) choice).namespacedID().toUpperCase();
 
-                                            return "NUL";
-                                        }).toList()
+                                    return "NUL";
+                                }).toList()
                         );
 
                     BigDecimal minEmc = null;
@@ -208,7 +207,7 @@ public class EMCBuilder {
         this.plugin.logger.info("EMCs Calculate END");
         }
 
-    private BigDecimal getFixedMaterialEmc(ItemWrapper.TransmutableItem item) {
+    private BigDecimal getFixedItemEmc(ItemWrapper.TransmutableItem item) {
         return this.fixedValues.get(item);
     }
 
@@ -217,7 +216,7 @@ public class EMCBuilder {
     }
 
     private BigDecimal getEMCRaw(ItemWrapper.TransmutableItem item) {
-        BigDecimal fixedValue = this.getFixedMaterialEmc(item);
+        BigDecimal fixedValue = this.getFixedItemEmc(item);
         if (fixedValue.compareTo(BigDecimal.ZERO) > 0)
             return fixedValue;
 

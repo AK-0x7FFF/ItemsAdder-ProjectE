@@ -31,6 +31,7 @@ public class TransTableManager {
     private final Player player;
 
     private List<List<ItemStack>> pages;
+    private ItemStack pagesMaxEMCItem;
 
     public TransTableManager(ProjectE plugin, Player player) {
         this.plugin = plugin;
@@ -38,6 +39,8 @@ public class TransTableManager {
         this.knowledgeManager = plugin.getKnowledgeManager();
 
         this.player = player;
+        this.pages = new ObjectArrayList<>();
+        this.pagesMaxEMCItem = ItemStack.of(Material.AIR);
         this.updatePagesForce();
     }
 
@@ -117,9 +120,8 @@ public class TransTableManager {
         amount = takeItemCalc.itemAmount();
 
         // 餘額不足，請充值 :(
-        if (amount == 0) {
+        if (amount == 0)
             return false;
-        }
 
         item.setAmount(amount);
         this.player.getWorld().dropItemNaturally(this.player.getEyeLocation(), item);
@@ -131,10 +133,10 @@ public class TransTableManager {
     public List<ItemStack> getStorageItem() {
         String b64 = this.player.getPersistentDataContainer().get(STORAGE_KEY, PersistentDataType.STRING);
         if (b64 == null)
-            return new ObjectArrayList<>(Collections.nCopies(8, new ItemStack(Material.AIR)));
+            return new ObjectArrayList<>(Collections.nCopies(9, new ItemStack(Material.AIR)));
 
         List<ItemStack> storage = ItemBase64Converter.base642Item(b64);
-        while (storage.size() < 8) {
+        while (storage.size() < 9) {
             storage.add(new ItemStack(Material.AIR));
         }
 
@@ -205,7 +207,20 @@ public class TransTableManager {
     }
 
     public void updatePagesForce() {
+        BigInteger maxEMC = this.emcManager.getItemEMC(this.pagesMaxEMCItem);
         List<ItemStack> items = this.knowledgeManager.getKnowledgeItemEMCSorted(this.player);
+
+        if (maxEMC.compareTo(BigInteger.ZERO) > 0) {
+            items = new ObjectArrayList<>(
+                items.stream()
+                .filter(item -> this.emcManager.getItemEMC(item).compareTo(maxEMC) <= 0)
+                .toList()
+            );
+            int index = items.indexOf(this.pagesMaxEMCItem);
+            if (index > 0) {
+                Collections.rotate(items.subList(0, index + 1), 1);
+            }
+        }
         this.pages = Lists.partition(items, 6);
     }
 
@@ -219,12 +234,29 @@ public class TransTableManager {
             return true;
         }
 
-        if (this.emcManager.getItemEMC(this.pages.getFirst().getFirst()).compareTo(this.emcManager.getPlayerEMC(this.player)) < 0) {
+        // 萃取欄首位物品EMC 對比 玩家EMC
+        BigInteger firstItemEMC = this.emcManager.getItemEMC(this.pages.getFirst().getFirst());
+        if (firstItemEMC.compareTo(this.emcManager.getPlayerEMC(this.player)) < 0) {
+            this.updatePagesForce();
+            return true;
+        }
+
+        BigInteger maxEMC = this.emcManager.getItemEMC(this.pagesMaxEMCItem);
+        if (maxEMC.compareTo(BigInteger.ZERO) == 0 || maxEMC.compareTo(firstItemEMC) < 0) {
             this.updatePagesForce();
             return true;
         }
 
         return false;
+    }
+
+    public ItemStack getPagesMaxEMCItem() {
+        return pagesMaxEMCItem;
+    }
+
+    public void setPagesMaxEMCItem(ItemStack item) {
+        this.pagesMaxEMCItem = item;
+        this.tryRefreshPages();
     }
 
     public List<ItemStack> getPageItems(int page) {

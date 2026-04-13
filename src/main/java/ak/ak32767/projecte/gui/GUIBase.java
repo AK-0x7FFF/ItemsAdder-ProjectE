@@ -38,8 +38,8 @@ public abstract class GUIBase {
         else
             onPlayerInventoryClick(event);
     }
-    public abstract void onStorageClick(InventoryClickEvent event);
-    public abstract void onPlayerInventoryClick(InventoryClickEvent event);
+    protected abstract void onStorageClick(InventoryClickEvent event);
+    protected abstract void onPlayerInventoryClick(InventoryClickEvent event);
 
     public void onInventoryClose(InventoryCloseEvent event) {
         instances.remove(event.getPlayer().getUniqueId());

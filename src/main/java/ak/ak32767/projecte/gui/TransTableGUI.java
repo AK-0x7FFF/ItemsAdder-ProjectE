@@ -108,7 +108,7 @@ public class TransTableGUI extends GUIBase {
 
 
     @Override
-    public void onStorageClick(InventoryClickEvent event) {
+    protected void onStorageClick(InventoryClickEvent event) {
         event.setCancelled(true);
 
         int slot = event.getSlot();
@@ -229,7 +229,9 @@ public class TransTableGUI extends GUIBase {
 
         // EMC 過濾欄
         } else if (slot == EMC_FILTER_SLOT) {
-            if (clickType == ClickType.DOUBLE_CLICK)
+//            if (clickType == ClickType.DOUBLE_CLICK)
+//                return;
+            if (!clickType.isMouseClick())
                 return;
 
             if ((currItem == null || currItem.isEmpty()) && cursorItem.isEmpty())
@@ -237,22 +239,14 @@ public class TransTableGUI extends GUIBase {
 
             if (!cursorItem.isEmpty()) {
                 if (this.transTableManager.getKnowledgeManager().isLearnable(cursorItem)) {
-                    this.page = 0;
-                    this.transTableManager.setPagesMaxEMCItem(cursorItem);
-                    this.updateExtractionRing();
-
-                    this.inventory.setItem(EMC_FILTER_SLOT, this.transTableManager.tagEMC2Item(cursorItem));
-                    this.player.setItemOnCursor(ItemStack.of(Material.AIR));
-                } else
-                    this.player.playSound(this.player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.5f, 1f);
-            } else {
-                this.player.setItemOnCursor(this.transTableManager.getPagesMaxEMCItem());
-                this.inventory.setItem(EMC_FILTER_SLOT, ItemStack.of(Material.AIR));
-
-                this.page = 0;
-                this.transTableManager.setPagesMaxEMCItem(ItemStack.of(Material.AIR));
-                this.updateExtractionRing();
+                    this.swapCursorItem2Filter(cursorItem);
+                    return;
+                }
+                this.player.playSound(this.player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.5f, 1f);
+                return;
             }
+
+            this.filterItem2Cursor();
 
         // 翻頁的
         } else if (slot == PREV_PAGE_SLOT) {
@@ -267,7 +261,7 @@ public class TransTableGUI extends GUIBase {
     }
 
     @Override
-    public void onPlayerInventoryClick(InventoryClickEvent event) {
+    protected void onPlayerInventoryClick(InventoryClickEvent event) {
         event.setCancelled(true);
 
         ClickType clickType = event.getClick();
@@ -367,7 +361,26 @@ public class TransTableGUI extends GUIBase {
         }
     }
 
-    public void prevPage() {
+    private void swapCursorItem2Filter(ItemStack cursorItem) {
+        this.page = 0;
+        ItemStack prevPagesMaxEMCItem = this.transTableManager.getPagesMaxEMCItem();
+        this.transTableManager.setPagesMaxEMCItem(cursorItem);
+        this.updateExtractionRing();
+
+        this.inventory.setItem(EMC_FILTER_SLOT, this.transTableManager.tagEMC2Item(cursorItem));
+        this.player.setItemOnCursor(prevPagesMaxEMCItem);
+    }
+
+    private void filterItem2Cursor() {
+        this.player.setItemOnCursor(this.transTableManager.getPagesMaxEMCItem());
+        this.inventory.setItem(EMC_FILTER_SLOT, ItemStack.of(Material.AIR));
+
+        this.page = 0;
+        this.transTableManager.setPagesMaxEMCItem(ItemStack.of(Material.AIR));
+        this.updateExtractionRing();
+    }
+
+    private void prevPage() {
         this.page = Math.max(this.page - 1, 0);
         this.updateExtractionRing();
 
@@ -375,7 +388,7 @@ public class TransTableGUI extends GUIBase {
         plugin.logger.info(this.page + " " + this.page);
     }
 
-    public void nextPage() {
+    private void nextPage() {
         this.page = Math.min(this.page + 1, this.transTableManager.getPagesSize() - 1);
         this.updateExtractionRing();
 

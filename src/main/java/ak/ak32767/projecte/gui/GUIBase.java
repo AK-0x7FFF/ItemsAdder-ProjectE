@@ -5,6 +5,8 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.inventory.Inventory;
 
 import java.util.Map;
 import java.util.UUID;
@@ -30,10 +32,18 @@ public abstract class GUIBase {
         return instances.get(uuid);
     }
 
-    public abstract void setupGUI( ProjectE plugin, Player player);
+    public abstract Inventory getInventory();
+
+    public abstract void openInventory();
+
+    protected abstract void setupGUI( ProjectE plugin, Player player);
+
+    protected boolean isStorageSlot(int slot) {
+        return slot < this.getInventory().getSize();
+    }
 
     public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getRawSlot() < event.getInventory().getSize())
+        if (this.isStorageSlot(event.getRawSlot()))
             onStorageClick(event);
         else
             onPlayerInventoryClick(event);
@@ -41,10 +51,11 @@ public abstract class GUIBase {
     protected abstract void onStorageClick(InventoryClickEvent event);
     protected abstract void onPlayerInventoryClick(InventoryClickEvent event);
 
+    public abstract void onInventoryDrag(InventoryDragEvent event);
+
     public void onInventoryClose(InventoryCloseEvent event) {
         instances.remove(event.getPlayer().getUniqueId());
         this.onInventoryClosePost(event);
     };
-
     public abstract void onInventoryClosePost(InventoryCloseEvent event);
 }

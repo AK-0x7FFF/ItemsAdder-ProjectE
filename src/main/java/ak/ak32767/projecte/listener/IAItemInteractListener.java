@@ -33,7 +33,9 @@ public class IAItemInteractListener implements Listener {
         if (id.equals("projecte:transmutation_tablet")) {
             Player player = event.getPlayer();
             player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 0.4f, .85f);
-            new TransTableGUI(this.plugin, event.getPlayer());
+
+            TransTableGUI gui = new TransTableGUI(this.plugin, event.getPlayer());
+            gui.openInventory();
         }
     }
 }

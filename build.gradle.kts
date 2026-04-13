@@ -18,7 +18,7 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT")
     compileOnly("dev.lone:api-itemsadder:4.0.10")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")
-    implementation("net.wesjd:anvilgui:1.9.2-SNAPSHOT")
+    implementation("net.wesjd:anvilgui:1.10.11-SNAPSHOT")
 }
 
 buildscript {

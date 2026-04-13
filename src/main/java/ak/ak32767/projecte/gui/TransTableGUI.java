@@ -19,9 +19,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,10 +56,12 @@ public class TransTableGUI extends GUIBase {
         ALLOWED_SLOTS.addAll(EXTRACTION_INNER_RING_SLOTS);
     };
 
+    private TexturedInventoryWrapper inventoryWrapper;
     private Inventory inventory;
 
     private TransTableManager transTableManager;
     private ItemStack emcCheckerItem;
+    private ItemStack searcherItem;
     private Map<ItemStack, ItemStack> emcTaggedItemMap;
     private int page;
 
@@ -71,22 +75,46 @@ public class TransTableGUI extends GUIBase {
     }
 
     @Override
-    public void setupGUI(ProjectE plugin, Player player) {
+    protected void setupGUI(ProjectE plugin, Player player) {
         // GUI 初始化
-        TexturedInventoryWrapper inventoryWrapper = new TexturedInventoryWrapper(new MyHolder(), 54, null, 0, -16, BACKGROUND);
-        this.inventory = inventoryWrapper.getInternal();
+        this.inventoryWrapper = new TexturedInventoryWrapper(new MyHolder(), 54, null, 0, -16, BACKGROUND);
+        this.inventory = this.inventoryWrapper.getInternal();
 
         this.transTableManager = new TransTableManager(plugin, player);
         this.emcTaggedItemMap = new Object2ObjectOpenHashMap<>();
 
-        // 欄位初始化
+        // EMC查看欄
         this.emcCheckerItem = ItemStack.of(Material.PLAYER_HEAD); {
             SkullMeta playerHeadMeta = (SkullMeta) emcCheckerItem.getItemMeta();
             playerHeadMeta.setOwningPlayer(player);
             emcCheckerItem.setItemMeta(playerHeadMeta);
-        };
+        }
+
+        // 搜索欄
+        this.searcherItem = CustomStack.getInstance("_iainternal:icon_search").getItemStack(); {
+            ItemMeta meta = this.searcherItem.getItemMeta();
+            meta.displayName(Component.text("Search Items").decoration(TextDecoration.ITALIC, false));
+            List<Component> lore = List.of(new Component[]{
+                Component.empty(),
+                Component.text()
+                    .append(Component.text("Click ", NamedTextColor.GRAY))
+                    .append(Component.text("[LEFT  BUTTON]", NamedTextColor.GRAY).decoration(TextDecoration.BOLD, true))
+                    .append(Component.text(" to search", NamedTextColor.GRAY))
+                    .decoration(TextDecoration.ITALIC, false)
+                    .build(),
+                Component.text()
+                    .append(Component.text("Click ", NamedTextColor.GRAY))
+                    .append(Component.text("[RIGHT BUTTON]", NamedTextColor.GRAY).decoration(TextDecoration.BOLD, true))
+                    .append(Component.text(" to clear search", NamedTextColor.GRAY))
+                    .decoration(TextDecoration.ITALIC, false)
+                    .build(),
+            });
+            meta.lore(lore);
+            this.searcherItem.setItemMeta(meta);
+        }
+
+        // 翻頁欄
         this.inventory.setItem(PREV_PAGE_SLOT, (CustomStack.getInstance("_iainternal:icon_left_blue").getItemStack()));
-        this.inventory.setItem(SEARCH_SLOT, (CustomStack.getInstance("_iainternal:icon_search").getItemStack()));
         this.inventory.setItem(NEXT_PAGE_SLOT, (CustomStack.getInstance("_iainternal:icon_right_blue").getItemStack()));
 
         // 儲物欄
@@ -94,18 +122,30 @@ public class TransTableGUI extends GUIBase {
         for (int i = 0; i < STORAGE_SLOTS.size(); ++i) {
             this.inventory.setItem(STORAGE_SLOTS.getInt(i), storage.get(i));
         }
+
         // EMC過濾欄
         ItemStack pagesMaxEMCItem = storage.get(8);
         this.transTableManager.setPagesMaxEMCItem(pagesMaxEMCItem);
         this.inventory.setItem(EMC_FILTER_SLOT, this.transTableManager.tagEMC2Item(pagesMaxEMCItem));
-        // 轉化欄
+
+        // 萃取欄
         this.page = 0;
         this.updateExtractionRing();
 
-        this.updateEMC();
-        inventoryWrapper.showInventory(player);
+        this.updateEMCCheckerItem();
+        this.updateSearcherItem();
+
     }
 
+    @Override
+    public @NotNull Inventory getInventory() {
+        return inventory;
+    }
+
+    @Override
+    public void openInventory() {
+        this.inventoryWrapper.showInventory(player);
+    }
 
     @Override
     protected void onStorageClick(InventoryClickEvent event) {
@@ -152,7 +192,7 @@ public class TransTableGUI extends GUIBase {
                 int giveAmount = 1;
                 if (clickType == ClickType.SHIFT_LEFT || clickType == ClickType.SHIFT_RIGHT) {
                         if (this.transTableManager.giveItem2Inventory(givenItem, givenItem.getMaxStackSize())) {
-                            this.updateEMC();
+                            this.updateEMCCheckerItem();
                             this.player.playSound(this.player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 0.5f, 1.2f);
                             return;
                         }
@@ -195,7 +235,7 @@ public class TransTableGUI extends GUIBase {
                     this.player.playSound(this.player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.5f, 1f);
             }
 
-            this.updateEMC();
+            this.updateEMCCheckerItem();
 
         // 轉化欄
         } else if (slot == TRANSMUTE_SLOT) {
@@ -212,7 +252,7 @@ public class TransTableGUI extends GUIBase {
                     this.player.playSound(this.player.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.25f, 1f);
                 else
                     this.player.playSound(this.player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.5f, 1f);
-            this.updateEMC();
+            this.updateEMCCheckerItem();
 
         // 移除知識欄
         } else if (slot == UNLEARN_SLOT) {
@@ -246,7 +286,7 @@ public class TransTableGUI extends GUIBase {
                 return;
             }
 
-            this.filterItem2Cursor();
+            this.setFilterItem2Cursor();
 
         // 翻頁的
         } else if (slot == PREV_PAGE_SLOT) {
@@ -257,7 +297,22 @@ public class TransTableGUI extends GUIBase {
             if (clickType == ClickType.DOUBLE_CLICK)
                 return;
             this.nextPage();
+
+        // 字串過濾欄
+        } else if (slot == SEARCH_SLOT) {
+            if (!cursorItem.isEmpty())
+                return;
+
+            if (clickType == ClickType.LEFT) {
+                this.player.playSound(this.player.getLocation(), Sound.ITEM_SPYGLASS_USE, 1f, 1f);
+                this.transTableManager.openSearchGUI();
+            } else if (clickType == ClickType.RIGHT) {
+                if (this.transTableManager.getSearchFilter() != null)
+                    this.player.playSound(this.player.getLocation(), Sound.ITEM_SPYGLASS_STOP_USING, 1f, 1f);
+                this.setSearchFilter(null);
+            }
         }
+
     }
 
     @Override
@@ -268,26 +323,55 @@ public class TransTableGUI extends GUIBase {
         ItemStack currItem = event.getCurrentItem();
         ItemStack cursorItem = event.getCursor();
 
-        switch (clickType) {
-            case LEFT: case RIGHT: case MIDDLE:
-            case NUMBER_KEY: case DROP: case CONTROL_DROP: case SWAP_OFFHAND:
-                event.setCancelled(false);
-                break;
+//        switch (clickType) {
+//            case LEFT: case RIGHT: case MIDDLE:
+//            case NUMBER_KEY: case DROP: case CONTROL_DROP: case SWAP_OFFHAND:
+//                event.setCancelled(false);
+//                break;
+//
+//            case SHIFT_LEFT: case SHIFT_RIGHT:
+////                this.transTableManager.getEmcManager().addPlayerEMC(player, this.transTableManager.getEmcManager().getItemEMCTotal(currItem));
+//                if (this.transTableManager.transmuteItem(currItem))
+//                    this.player.playSound(this.player.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.25f, 1f);
+//                else {
+//                    this.player.playSound(this.player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.5f, 1f);
+//                    return;
+//                }
+//                event.setCurrentItem(ItemStack.empty());
+//
+//                this.updateEMCCheckerItem();
+//                this.updateExtractionRing();
+//                break;
+//        }
+        if (clickType == ClickType.SHIFT_LEFT || clickType == ClickType.SHIFT_RIGHT) {
+            if (this.transTableManager.transmuteItem(currItem))
+                this.player.playSound(this.player.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.25f, 1f);
+            else {
+                this.player.playSound(this.player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.5f, 1f);
+                return;
+            }
+            event.setCurrentItem(ItemStack.empty());
 
-            case SHIFT_LEFT: case SHIFT_RIGHT:
-//                this.transTableManager.getEmcManager().addPlayerEMC(player, this.transTableManager.getEmcManager().getItemEMCTotal(currItem));
-                if (this.transTableManager.transmuteItem(currItem))
-                    this.player.playSound(this.player.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.25f, 1f);
-                else {
-                    this.player.playSound(this.player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.5f, 1f);
-                    return;
-                }
-                event.setCurrentItem(ItemStack.empty());
-
-                this.updateEMC();
-                this.updateExtractionRing();
-                break;
+            this.updateEMCCheckerItem();
+            this.updateExtractionRing();
+            return;
         }
+//        else if (clickType == ClickType.DOUBLE_CLICK)
+//            return;
+
+        event.setCancelled(false);
+    }
+
+    @Override
+    public void onInventoryDrag(InventoryDragEvent event) {
+//        event.setCancelled(true);
+
+        event.getNewItems().forEach((slot, item) -> {
+            if (this.isStorageSlot(slot)) {
+                event.setCancelled(true);
+                return;
+            }
+        });
     }
 
     @Override
@@ -305,16 +389,22 @@ public class TransTableGUI extends GUIBase {
         this.transTableManager.saveStorageItem(storage);
     }
 
-    private void updateEMC() {
-        SkullMeta itemMeta = (SkullMeta) this.emcCheckerItem.getItemMeta();
-        List<Component> lore = new ObjectArrayList<>(
-            new Component[]{Component.text("Detail: ", NamedTextColor.GRAY)}
-        );
+    public void setSearchFilter(String filter) {
+        this.transTableManager.setSearchFilter(filter);
+        this.updateSearcherItem();
+        this.updateExtractionRing();
+    }
+
+    private void updateEMCCheckerItem() {
+        SkullMeta meta = (SkullMeta) this.emcCheckerItem.getItemMeta();
+        List<Component> lore = new ObjectArrayList<>();
 
         BigInteger emc = this.plugin.getEmcManager().getPlayerEMC(this.player);
 
         String emcStr = EMCFormatter.commaFormat(emc);
         if (emc.compareTo(BigInteger.valueOf(1_000_000)) >= 0) {
+            lore.add(Component.text("Detail: ", NamedTextColor.GRAY));
+
             String[] emcStrSplit = emcStr.split(",");
             StringBuilder emcStrPart = new StringBuilder();
 
@@ -331,7 +421,7 @@ public class TransTableGUI extends GUIBase {
 
             emcStr = EMCFormatter.numberNameFormat(emc);
         }
-        itemMeta.displayName(
+        meta.displayName(
             Component.text()
             .append(Component.text(this.player.getName() + "'s EMC: ", NamedTextColor.YELLOW))
             .append(Component.text(emcStr, NamedTextColor.WHITE))
@@ -339,13 +429,32 @@ public class TransTableGUI extends GUIBase {
             .build()
         );
 
-        itemMeta.lore(lore);
-        this.emcCheckerItem.setItemMeta(itemMeta);
+        meta.lore(lore);
+        this.emcCheckerItem.setItemMeta(meta);
         this.inventory.setItem(EMC_CHECKER_SLOT, this.emcCheckerItem);
 
-        boolean isPageUpdated = this.transTableManager.tryRefreshPages();
-        if (isPageUpdated)
+        if (this.transTableManager.tryRefreshPages())
             this.updateExtractionRing();
+    }
+
+    private void updateSearcherItem() {
+        ItemMeta meta = this.searcherItem.getItemMeta();
+        List<Component> lore = meta.lore();
+
+        String filterStr = this.transTableManager.getSearchFilter();
+        if (filterStr == null)
+            filterStr = "NONE";
+
+        lore.set(0, Component.text()
+            .append(Component.text("Keyword: ", NamedTextColor.WHITE))
+            .append(Component.text(filterStr.toUpperCase(), NamedTextColor.YELLOW).decoration(TextDecoration.BOLD, true))
+            .decoration(TextDecoration.ITALIC, false)
+            .build()
+        );
+
+        meta.lore(lore);
+        this.searcherItem.setItemMeta(meta);
+        this.inventory.setItem(SEARCH_SLOT, this.searcherItem);
     }
 
     private void updateExtractionRing() {
@@ -361,23 +470,25 @@ public class TransTableGUI extends GUIBase {
         }
     }
 
-    private void swapCursorItem2Filter(ItemStack cursorItem) {
+    private void setPagesMaxEMCItem(ItemStack item) {
+        this.transTableManager.setPagesMaxEMCItem(item);
         this.page = 0;
-        ItemStack prevPagesMaxEMCItem = this.transTableManager.getPagesMaxEMCItem();
-        this.transTableManager.setPagesMaxEMCItem(cursorItem);
         this.updateExtractionRing();
+    }
+
+    private void swapCursorItem2Filter(ItemStack cursorItem) {
+        ItemStack prevPagesMaxEMCItem = this.transTableManager.getPagesMaxEMCItem();
+        this.setPagesMaxEMCItem(cursorItem);
 
         this.inventory.setItem(EMC_FILTER_SLOT, this.transTableManager.tagEMC2Item(cursorItem));
         this.player.setItemOnCursor(prevPagesMaxEMCItem);
     }
 
-    private void filterItem2Cursor() {
+    private void setFilterItem2Cursor() {
         this.player.setItemOnCursor(this.transTableManager.getPagesMaxEMCItem());
         this.inventory.setItem(EMC_FILTER_SLOT, ItemStack.of(Material.AIR));
 
-        this.page = 0;
-        this.transTableManager.setPagesMaxEMCItem(ItemStack.of(Material.AIR));
-        this.updateExtractionRing();
+        this.setPagesMaxEMCItem(ItemStack.of(Material.AIR));
     }
 
     private void prevPage() {

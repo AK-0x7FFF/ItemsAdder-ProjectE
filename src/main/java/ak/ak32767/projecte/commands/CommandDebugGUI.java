@@ -25,7 +25,7 @@ public class CommandDebugGUI implements CommandExecutor {
             return false;
         }
 
-        new TransTableGUI(this.plugin, player);
+        new TransTableGUI(this.plugin, player).openInventory();;
         return true;
     }
 }

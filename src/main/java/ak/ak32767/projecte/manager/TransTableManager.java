@@ -1,13 +1,17 @@
 package ak.ak32767.projecte.manager;
 
 import ak.ak32767.projecte.ProjectE;
+import ak.ak32767.projecte.gui.TransTableGUI;
 import ak.ak32767.projecte.utils.EMCFormatter;
 import ak.ak32767.projecte.utils.ItemBase64Converter;
 import com.google.common.collect.Lists;
+import dev.lone.itemsadder.api.CustomStack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
@@ -16,11 +20,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class TransTableManager {
     private static final NamespacedKey STORAGE_KEY = new NamespacedKey("projecte", "transtable_storage");;
@@ -32,6 +38,7 @@ public class TransTableManager {
 
     private List<List<ItemStack>> pages;
     private ItemStack pagesMaxEMCItem;
+    private String searchFilter = null;
 
     public TransTableManager(ProjectE plugin, Player player) {
         this.plugin = plugin;
@@ -207,20 +214,59 @@ public class TransTableManager {
     }
 
     public void updatePagesForce() {
-        BigInteger maxEMC = this.emcManager.getItemEMC(this.pagesMaxEMCItem);
+        BigInteger maxEMC = this.emcManager.getPlayerEMC(this.player);
+        if (!this.pagesMaxEMCItem.isEmpty())
+            maxEMC = maxEMC.min(this.emcManager.getItemEMC(this.pagesMaxEMCItem));
+        final BigInteger finalMaxEMC = maxEMC;
         List<ItemStack> items = this.knowledgeManager.getKnowledgeItemEMCSorted(this.player);
 
-        if (maxEMC.compareTo(BigInteger.ZERO) > 0) {
-            items = new ObjectArrayList<>(
-                items.stream()
-                .filter(item -> this.emcManager.getItemEMC(item).compareTo(maxEMC) <= 0)
-                .toList()
-            );
-            int index = items.indexOf(this.pagesMaxEMCItem);
-            if (index > 0) {
-                Collections.rotate(items.subList(0, index + 1), 1);
-            }
+        // EMC 過濾
+
+        items = items.stream()
+            .filter(item -> this.emcManager.getItemEMC(item).compareTo(finalMaxEMC) <= 0)
+            .collect(Collectors.toCollection(ObjectArrayList::new));
+        if (items.contains(this.pagesMaxEMCItem)) {
+            items.remove(this.pagesMaxEMCItem);
+            items.addFirst(this.pagesMaxEMCItem);
         }
+
+        // 字符串過濾
+        if (this.searchFilter != null && !this.searchFilter.isEmpty()) {
+            items = items.stream()
+            .filter(item -> {
+                if (item == null || item.isEmpty())
+                    return false;
+
+                ItemMeta meta = item.getItemMeta();
+                if (
+                    meta != null &&
+                    meta.hasCustomName() &&
+                    PlainTextComponentSerializer.plainText().serialize(meta.customName()).toLowerCase().contains(this.searchFilter)
+                ) return true;
+
+                CustomStack iaItem = CustomStack.byItemStack(item);
+                String namespace, id;
+                if (iaItem == null) {
+                    NamespacedKey key = item.getType().getKey();
+
+                    namespace = key.getNamespace();
+                    id = key.getKey();
+                } else {
+                    namespace = iaItem.getNamespace();
+                    id = iaItem.getId();
+                }
+                namespace = namespace.toLowerCase();
+                id = id.toLowerCase();
+                String namespacedID = namespace + ":" + id;
+
+                if (this.searchFilter.contains(":"))
+                    return namespacedID.contains(this.searchFilter);
+
+                return  namespace.contains(this.searchFilter) || id.contains(this.searchFilter);
+            })
+            .collect(Collectors.toCollection(ObjectArrayList::new));
+        }
+
         this.pages = Lists.partition(items, 6);
     }
 
@@ -248,6 +294,34 @@ public class TransTableManager {
         }
 
         return false;
+    }
+
+    public @Nullable String getSearchFilter() {
+        return searchFilter;
+    }
+
+    public void setSearchFilter(@Nullable String searchFilter) {
+        this.searchFilter = searchFilter == null ? null : searchFilter.toLowerCase().strip();
+        this.tryRefreshPages();
+    }
+
+    public void openSearchGUI() {
+        new AnvilGUI.Builder()
+                .plugin(this.plugin)
+                .title("↓ 搜索... ")
+                .text("\u0000")
+                .onClick((anvilSlot, state) -> {
+                    if(anvilSlot != AnvilGUI.Slot.OUTPUT) {
+                        return Collections.emptyList();
+                    }
+                    return List.of(AnvilGUI.ResponseAction.close(), AnvilGUI.ResponseAction.run(() -> {
+                        TransTableGUI newGUI = new TransTableGUI(this.plugin, state.getPlayer());
+                        newGUI.setSearchFilter(state.getText());
+                        newGUI.openInventory();
+                    }));
+                })
+                .onClose(state -> state.getPlayer().playSound(state.getPlayer().getLocation(), Sound.ITEM_SPYGLASS_STOP_USING, 1f, 1f))
+                .open(player);
     }
 
     public ItemStack getPagesMaxEMCItem() {

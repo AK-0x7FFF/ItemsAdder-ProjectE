@@ -2,12 +2,17 @@
  - ### 開發中，請主人把 BUG Report 狠狠地塞進我的 Issue 里 🥵
 
 ## 戰績展示
+### 轉化桌
 <img src=".github/assets/trans_table_preview.png" alt="轉化桌介面" width="512">
+
+### 賢者之石
+<img src=".github/assets/philostone_craft_preview.png" alt="轉化桌介面" width="512">
+
 
 ## 許願池
  - 賢者之石 的 方塊嬗變 
  - 賢者之石 的 實體嬗變 
- - 賢者之石 的 合成轉換
+ - 賢者之石 的 物品嬗變（一半）
  - 共價粉
  - 煉金術箱子
  - 能量凝聚器

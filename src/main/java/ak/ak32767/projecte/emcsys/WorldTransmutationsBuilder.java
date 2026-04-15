@@ -4,24 +4,23 @@ import ak.ak32767.projecte.ProjectE;
 import ak.ak32767.projecte.ProjectEException;
 import ak.ak32767.projecte.data.ItemWrapper;
 import ak.ak32767.projecte.utils.YAMLLoader;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.FileNotFoundException;
 import java.util.*;
 
 public class WorldTransmutationsBuilder {
     public record WorldTransmutationNode(
         ItemWrapper.TransmutableItem origin, ItemWrapper.TransmutableItem resultForward, ItemWrapper.TransmutableItem resultBackward
     ) {}
-    private final List<WorldTransmutationNode> conversions;
 
     private final ProjectE plugin;
+    private final Set<WorldTransmutationNode> conversions;
+
     public WorldTransmutationsBuilder(ProjectE plugin) {
         this.plugin = plugin;
-        this.conversions = new ObjectArrayList<>();
+        this.conversions = new ObjectLinkedOpenHashSet<>();
     }
 
     public boolean build() {
@@ -37,7 +36,7 @@ public class WorldTransmutationsBuilder {
     }
 
 
-    public void buildByYAML(List<Map<?, ?>> transList) throws ProjectEException.YAMLKeyOrValueErrorException {
+    private void buildByYAML(List<Map<?, ?>> transList) throws ProjectEException.YAMLKeyOrValueErrorException {
         for (Map<?, ?> entry : transList) {
             String type = (String) entry.get("type");
             if (type == null) throw new ProjectEException.YAMLKeyOrValueErrorException("type is null");
@@ -124,7 +123,7 @@ public class WorldTransmutationsBuilder {
         return this;
     }
 
-    public List<WorldTransmutationNode> getConversions() {
+    public Set<WorldTransmutationNode> getConversions() {
         return this.conversions;
     }
 }

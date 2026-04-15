@@ -7,6 +7,7 @@ import ak.ak32767.projecte.manager.EMCManager;
 import ak.ak32767.projecte.emcsys.WorldTransmutationsBuilder;
 import ak.ak32767.projecte.listener.*;
 import ak.ak32767.projecte.manager.KnowledgeManager;
+import ak.ak32767.projecte.manager.PhiloRecipeManager;
 import ak.ak32767.projecte.manager.TransmutationManager;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -16,8 +17,9 @@ import java.util.logging.Logger;
 
 public final class ProjectE extends JavaPlugin {
     public final Logger logger = this.getLogger();
-    private EMCManager emcManager;
     private TransmutationManager transmutationManager;
+    private PhiloRecipeManager philoRecipeManager;
+    private EMCManager emcManager;
     private KnowledgeManager knowledgeManager;
 
     @Override
@@ -26,7 +28,8 @@ public final class ProjectE extends JavaPlugin {
         if (!folder.exists()) folder.mkdirs();
         PluginManager pluginManager = getServer().getPluginManager();
 
-        this.transmutationManager = new TransmutationManager(this);
+        this.philoRecipeManager = new PhiloRecipeManager(this);
+        this.transmutationManager = new TransmutationManager(this, this.philoRecipeManager);
 
         // manager
         this.emcManager = new EMCManager(this);
@@ -34,6 +37,7 @@ public final class ProjectE extends JavaPlugin {
 
         // listener register
         pluginManager.registerEvents(new EMCPreCalculateListener(this.transmutationManager), this);
+        pluginManager.registerEvents(new PhiloRecipeListener(this.philoRecipeManager, this), this);
         pluginManager.registerEvents(new GUIListener(this), this);
         pluginManager.registerEvents(new DataSave2PDCListener(this.emcManager, this.knowledgeManager), this);
 
@@ -56,6 +60,10 @@ public final class ProjectE extends JavaPlugin {
     public void onDisable() {
         this.emcManager.saveAllPlayerEMCMap2PDC();
         this.knowledgeManager.saveAllPlayerKnowledgeMap2PDC();
+    }
+
+    public PhiloRecipeManager getPhiloRecipeManager() {
+        return this.philoRecipeManager;
     }
 
     public EMCManager getEmcManager() {

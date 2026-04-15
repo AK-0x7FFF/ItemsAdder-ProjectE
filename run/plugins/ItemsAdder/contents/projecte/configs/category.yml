@@ -7,6 +7,7 @@ categories:
     name: <lang:misc.projecte.mod_name>
     items:
       - "projecte:philosophers_stone"
+      - "projecte:transmutation_tablet"
 
       - "projecte:alchemical_coal"
       - "projecte:mobius_fuel"

@@ -44,7 +44,7 @@ public class YAMLLoader {
             return new ItemYAMLWrapper(name, type).get();
         }
 
-        public List<ItemWrapper.TransmutableItem> get() throws ProjectEException.YAMLKeyOrValueErrorException {
+        private List<ItemWrapper.TransmutableItem> get() throws ProjectEException.YAMLKeyOrValueErrorException {
             if (name == null || type == null)
                 throw new ProjectEException.YAMLKeyOrValueErrorException("type is null");
 
@@ -57,7 +57,7 @@ public class YAMLLoader {
                     yield ObjectArrayList.of(new ItemWrapper.MaterialItem(material));
                 }
                 case "IAITEM" -> {
-                    CustomStack instance = CustomStack.getInstance(name);
+                    CustomStack instance = CustomStack.getInstance(name.toLowerCase());
                     if (instance == null)
                         throw new ProjectEException.YAMLKeyOrValueErrorException("type is null");
 

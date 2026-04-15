@@ -822,3 +822,68 @@ world:
       - name: BLACK_STAINED_GLASS_PANE
         type: MATERIAL
     type: CHAIN
+philocraft:
+  - item_a:
+      type: MATERIAL
+      name: CHARCOAL
+      amount: 4
+    item_b:
+      type: MATERIAL
+      name: COAL
+      amount: 1
+  - item_a:
+      type: MATERIAL
+      name: DIAMOND
+      amount: 2
+    item_b:
+      type: MATERIAL
+      name: EMERALD
+      amount: 1
+  - item_a:
+      type: MATERIAL
+      name: GOLD_INGOT
+      amount: 4
+    item_b:
+      type: MATERIAL
+      name: DIAMOND
+      amount: 1
+  - item_a:
+      type: MATERIAL
+      name: IRON_INGOT
+      amount: 8
+    item_b:
+      type: MATERIAL
+      name: GOLD_INGOT
+      amount: 1
+  - item_a:
+      type: MATERIAL
+      name: IRON_INGOT
+      amount: 4
+    item_b:
+      type: MATERIAL
+      name: ENDER_PEARL
+      amount: 1
+  - item_a:
+      type: MATERIAL
+      name: COAL
+      amount: 4
+    item_b:
+      type: IAITEM
+      name: "projecte:alchemical_coal"
+      amount: 1
+  - item_a:
+      type: IAITEM
+      name: "projecte:alchemical_coal"
+      amount: 4
+    item_b:
+      type: IAITEM
+      name: "projecte:mobius_fuel"
+      amount: 1
+  - item_a:
+      type: IAITEM
+      name: "projecte:mobius_fuel"
+      amount: 4
+    item_b:
+      type: IAITEM
+      name: "projecte:aeternalis_fuel"
+      amount: 1

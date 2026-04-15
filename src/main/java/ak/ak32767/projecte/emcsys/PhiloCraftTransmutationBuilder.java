@@ -3,9 +3,11 @@ package ak.ak32767.projecte.emcsys;
 import ak.ak32767.projecte.ProjectE;
 import ak.ak32767.projecte.ProjectEException;
 import ak.ak32767.projecte.data.ItemWrapper;
+import ak.ak32767.projecte.manager.TransmutationManager;
 import ak.ak32767.projecte.utils.YAMLLoader;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.Map;
@@ -15,7 +17,23 @@ public class PhiloCraftTransmutationBuilder {
     public record PhiloCraftTransmutationData(
         ItemWrapper.TransmutableItem itemA, long amountA,
         ItemWrapper.TransmutableItem itemB, long amountB
-    ) {};
+    ) {
+        public Set<TransmutationManager.PhiloCraftTransmutation.PhiloRecipe> toPhiloRecipes() {
+            Set<TransmutationManager.PhiloCraftTransmutation.PhiloRecipe> philoRecipes = new ObjectLinkedOpenHashSet<>(2);
+
+            ItemStack resultItem; {
+                resultItem = itemA.item();
+                resultItem.setAmount((int) amountA);
+                philoRecipes.add(new TransmutationManager.PhiloCraftTransmutation.PhiloRecipe(resultItem, itemB.item(), (int) amountB));
+
+                resultItem = itemB.item();
+                resultItem.setAmount((int) amountB);
+                philoRecipes.add(new TransmutationManager.PhiloCraftTransmutation.PhiloRecipe(resultItem, itemA.item(), (int) amountA));
+            }
+
+            return philoRecipes;
+        }
+    }
 
     private final ProjectE plugin;
     private final Set<PhiloCraftTransmutationData> conversions;

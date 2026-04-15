@@ -1,6 +1,5 @@
 package ak.ak32767.projecte.listener;
 
-import ak.ak32767.projecte.ProjectE;
 import ak.ak32767.projecte.event.EMCPreCalculateEvent;
 import ak.ak32767.projecte.manager.TransmutationManager;
 import org.bukkit.Bukkit;
@@ -21,9 +20,10 @@ public class EMCPreCalculateListener implements Listener {
     public void onEMCPreCalculateEvent(EMCPreCalculateEvent event) {
         if (this.worldTransmutation.build())
             this.worldTransmutation.conversionsRegister(event.getBuilder());
+
         if (this.philoCraftTransmutation.build()) {
             this.philoCraftTransmutation.conversionsRegister(event.getBuilder());
-            for (Recipe recipe : this.philoCraftTransmutation.toRecipes())
+            for (Recipe recipe : this.philoCraftTransmutation.conversions2Recipes())
                 Bukkit.addRecipe(recipe, true);
         }
     }

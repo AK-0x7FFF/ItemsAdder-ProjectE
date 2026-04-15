@@ -1,13 +1,12 @@
 package ak.ak32767.projecte.listener;
 
 import ak.ak32767.projecte.ProjectE;
-import ak.ak32767.projecte.manager.PhiloRecipeManager;
+import ak.ak32767.projecte.manager.TransmutationManager;
 import dev.lone.itemsadder.api.CustomStack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -22,11 +21,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static ak.ak32767.projecte.manager.TransmutationManager.PhiloCraftTransmutation.*;
+
 public class PhiloRecipeListener implements Listener {
     private ProjectE plugin;
-    private PhiloRecipeManager manager;
+    private TransmutationManager.PhiloCraftTransmutation manager;
 
-    public PhiloRecipeListener(PhiloRecipeManager manager, ProjectE plugin) {
+    public PhiloRecipeListener(TransmutationManager.PhiloCraftTransmutation manager, ProjectE plugin) {
         this.manager = manager;
         this.plugin = plugin;
     }
@@ -40,17 +41,17 @@ public class PhiloRecipeListener implements Listener {
         if (!(recipe instanceof Keyed keyed))
             return;
 
-        if (!keyed.getKey().getNamespace().equalsIgnoreCase(PhiloRecipeManager.PHILO_RECIPE_NAMESPACE))
+        if (!keyed.getKey().getNamespace().equalsIgnoreCase(PHILO_RECIPE_NAMESPACE))
             return;
 
         boolean havePhiloStone = false;
         ItemStack[] matrixRaw = event.getInventory().getMatrix();
         for (ItemStack item : matrixRaw) {
-            if (item == null || !item.getType().equals(Material.PHANTOM_MEMBRANE))
+            if (item == null || !item.getType().equals(PHILOSTONE_MATERIAL))
                 continue;
 
             CustomStack iaItem = CustomStack.byItemStack(item);
-            if (iaItem != null && iaItem.getNamespacedID().equals(PhiloRecipeManager.PHILOSTONE_NAMESPACEDID)) {
+            if (iaItem != null && iaItem.getNamespacedID().equals(PHILOSTONE_NAMESPACEDID)) {
                 havePhiloStone = true;
                 break;
             }
@@ -65,14 +66,10 @@ public class PhiloRecipeListener implements Listener {
             .collect(Collectors.toCollection(ObjectArrayList::new));
 
         event.getInventory().setResult(null);
-        ItemStack result = this.manager.transmutationRecipe(matrix);
+        ItemStack result = this.manager.getResultByMatrix(matrix);
         if (result == null)
             return;
 
-//        Bukkit.getScheduler().runTask(this.plugin, () -> {
-//            event.getInventory().setResult(result);
-//            event.getViewers().forEach(human -> {if (human instanceof Player p) p.updateInventory(); });
-//        });
         event.getInventory().setResult(result);
     }
 
@@ -82,7 +79,7 @@ public class PhiloRecipeListener implements Listener {
         if (!(recipe instanceof Keyed keyed))
             return;
 
-        if (!keyed.getKey().getNamespace().equalsIgnoreCase(PhiloRecipeManager.PHILO_RECIPE_NAMESPACE))
+        if (!keyed.getKey().getNamespace().equalsIgnoreCase(PHILO_RECIPE_NAMESPACE))
             return;
 
         CraftingInventory inventory = event.getInventory();
@@ -93,15 +90,16 @@ public class PhiloRecipeListener implements Listener {
             if (item == null || item.isEmpty())
                 continue;
 
-            CustomStack iaItem = CustomStack.byItemStack(item);
-            if (iaItem == null || !iaItem.getNamespacedID().equals(PhiloRecipeManager.PHILOSTONE_NAMESPACEDID))
+            if (!item.getType().equals(PHILOSTONE_MATERIAL))
                 continue;
 
-            int slot = i + 1;
-            ItemStack tItem = item.clone();
-            plugin.logger.info(slot + " " + tItem);
+            CustomStack iaItem = CustomStack.byItemStack(item);
+            if (iaItem == null || !iaItem.getNamespacedID().equals(PHILOSTONE_NAMESPACEDID))
+                continue;
 
-            Bukkit.getScheduler().runTask(this.plugin, () -> inventory.setItem(slot, tItem));
+            final int slot = i + 1;
+            final ItemStack philostone = item.clone();
+            Bukkit.getScheduler().runTask(this.plugin, () -> inventory.setItem(slot, philostone));
             break;
         }
     }

@@ -1,10 +1,8 @@
 package ak.ak32767.projecte.manager;
 
 import ak.ak32767.projecte.ProjectE;
-import ak.ak32767.projecte.ProjectEException;
 import ak.ak32767.projecte.data.ItemWrapper;
 import ak.ak32767.projecte.emcsys.EMCBuilder;
-import ak.ak32767.projecte.emcsys.WorldTransmutationsBuilder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.bukkit.Bukkit;
@@ -15,8 +13,6 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.io.FileNotFoundException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Map;
 import java.util.UUID;
@@ -56,7 +52,7 @@ public class EMCManager {
 
         if (itemWrapped instanceof ItemWrapper.ExactItem && (emc == null || emc.compareTo(BigInteger.ZERO) <= 0)) {
             // 取 Material 的 EMC
-            ItemWrapper.MaterialItem material = ItemWrapper.toMaterialItem(itemWrapped);
+            ItemWrapper.MaterialItem material = ItemWrapper.toMaterialItemWrapper(itemWrapped);
             emc = this.emcValues.get(material);
         }
 

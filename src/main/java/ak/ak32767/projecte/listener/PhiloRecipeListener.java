@@ -2,11 +2,9 @@ package ak.ak32767.projecte.listener;
 
 import ak.ak32767.projecte.ProjectE;
 import ak.ak32767.projecte.manager.TransmutationManager;
-import dev.lone.itemsadder.api.CustomStack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
-import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -41,17 +39,14 @@ public class PhiloRecipeListener implements Listener {
         if (!(recipe instanceof Keyed keyed))
             return;
 
-        if (!keyed.getKey().getNamespace().equalsIgnoreCase(PHILO_RECIPE_NAMESPACE))
+        String namespace = keyed.getKey().getNamespace();
+        if (!namespace.equalsIgnoreCase(PHILOTRANS_RECIPE_NAMESPACE) && !namespace.equalsIgnoreCase(PHILOSMELT_RECIPE_NAMESPACE))
             return;
 
         boolean havePhiloStone = false;
         ItemStack[] matrixRaw = event.getInventory().getMatrix();
         for (ItemStack item : matrixRaw) {
-            if (item == null || !item.getType().equals(PHILOSTONE_MATERIAL))
-                continue;
-
-            CustomStack iaItem = CustomStack.byItemStack(item);
-            if (iaItem != null && iaItem.getNamespacedID().equals(PHILOSTONE_NAMESPACEDID)) {
+            if (isPhilostoneItem(item)) {
                 havePhiloStone = true;
                 break;
             }
@@ -65,8 +60,16 @@ public class PhiloRecipeListener implements Listener {
             .filter(Objects::nonNull)
             .collect(Collectors.toCollection(ObjectArrayList::new));
 
+        ItemStack result = null;
         event.getInventory().setResult(null);
-        ItemStack result = this.manager.getResultByMatrix(matrix);
+        if (namespace.equalsIgnoreCase(PHILOTRANS_RECIPE_NAMESPACE)) {
+            result = this.manager.getPhilotransResult(matrix);
+        } else {
+//            plugin.logger.info(recipe.getResult().toString());
+//            plugin.logger.info(matrix.toString());
+            result = this.manager.getPhilosmeltResult(recipe, matrix);
+        }
+
         if (result == null)
             return;
 
@@ -76,25 +79,18 @@ public class PhiloRecipeListener implements Listener {
     @EventHandler
     public void onCraftItem(CraftItemEvent event) {
         Recipe recipe = event.getRecipe();
-        if (!(recipe instanceof Keyed keyed))
+        if (!(recipe instanceof Keyed))
             return;
 
-        if (!keyed.getKey().getNamespace().equalsIgnoreCase(PHILO_RECIPE_NAMESPACE))
-            return;
+//        if (!keyed.getKey().getNamespace().equalsIgnoreCase(PHILO_RECIPE_NAMESPACE))
+//            return;
 
         CraftingInventory inventory = event.getInventory();
         ItemStack[] matrix = inventory.getMatrix();
 
         for (int i = 0; i < matrix.length; ++i) {
             ItemStack item = matrix[i];
-            if (item == null || item.isEmpty())
-                continue;
-
-            if (!item.getType().equals(PHILOSTONE_MATERIAL))
-                continue;
-
-            CustomStack iaItem = CustomStack.byItemStack(item);
-            if (iaItem == null || !iaItem.getNamespacedID().equals(PHILOSTONE_NAMESPACEDID))
+            if (!isPhilostoneItem(item))
                 continue;
 
             final int slot = i + 1;

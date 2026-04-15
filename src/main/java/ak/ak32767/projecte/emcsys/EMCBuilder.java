@@ -225,7 +225,7 @@ public class EMCBuilder {
             return value;
 
         if (item instanceof ItemWrapper.ExactItem) {
-            ItemWrapper.MaterialItem material = ItemWrapper.toMaterialItem(item);
+            ItemWrapper.MaterialItem material = ItemWrapper.toMaterialItemWrapper(item);
             value = this.getCalcedItemEmc(material);
             if (value.compareTo(BigDecimal.ZERO) > 0)
                 return value;

@@ -2,7 +2,6 @@ package ak.ak32767.projecte.data;
 
 import dev.lone.itemsadder.api.CustomStack;
 import org.bukkit.Material;
-import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -11,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class ItemWrapper {
-    private ItemWrapper() {};
+    private ItemWrapper() {}
 
     public static TransmutableItem of(ItemStack item) {
         Material material = item.getType();
@@ -26,7 +25,7 @@ public class ItemWrapper {
         return new ExactItem(material, item.getItemMeta());
     }
 
-    public static MaterialItem toMaterialItem(TransmutableItem item) {
+    public static MaterialItem toMaterialItemWrapper(TransmutableItem item) {
         return new MaterialItem(item.material());
     }
 
@@ -63,6 +62,10 @@ public class ItemWrapper {
     }
 
     public record MaterialItem(Material material) implements TransmutableItem {
+        public MaterialItem(ItemStack item) {
+            this(item.getType());
+        }
+
         @Override
         public ItemStack item() {
             return ItemStack.of(this.material);
@@ -94,7 +97,6 @@ public class ItemWrapper {
 
         @Override
         public int hashCode() {
-
             int hash = 3;
             hash = 19 * hash + this.material.hashCode();
             hash = 19 * hash + (this.meta != null ? normalize(this.meta).hashCode() : 0);
@@ -126,6 +128,10 @@ public class ItemWrapper {
     public record IAItem(@NotNull Material material, @NotNull String namespacedID) implements TransmutableItem {
         public IAItem(@NotNull ItemStack item) {
             this(item.getType(), CustomStack.byItemStack(item).getNamespacedID());
+        }
+
+        public IAItem(@NotNull CustomStack iaItem) {
+            this(iaItem.getItemStack());
         }
 
         public ItemStack item() {

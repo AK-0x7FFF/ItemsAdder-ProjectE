@@ -9,29 +9,27 @@ import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class PhiloCraftTransmutationBuilder {
     public record PhiloCraftTransmutationData(
         ItemWrapper.TransmutableItem itemA, long amountA,
         ItemWrapper.TransmutableItem itemB, long amountB
     ) {
-        public Set<TransmutationManager.PhiloCraftTransmutation.PhiloRecipe> toPhiloRecipes() {
-            Set<TransmutationManager.PhiloCraftTransmutation.PhiloRecipe> philoRecipes = new ObjectLinkedOpenHashSet<>(2);
+        public Set<TransmutationManager.PhiloCraftTransmutation.PhilotransRecipe> toPhilotransRecipes() {
+            Set<TransmutationManager.PhiloCraftTransmutation.PhilotransRecipe> philotransRecipes = new ObjectLinkedOpenHashSet<>(2);
 
             ItemStack resultItem; {
                 resultItem = itemA.item();
                 resultItem.setAmount((int) amountA);
-                philoRecipes.add(new TransmutationManager.PhiloCraftTransmutation.PhiloRecipe(resultItem, itemB.item(), (int) amountB));
+                philotransRecipes.add(new TransmutationManager.PhiloCraftTransmutation.PhilotransRecipe(resultItem, itemB.item(), (int) amountB));
 
                 resultItem = itemB.item();
                 resultItem.setAmount((int) amountB);
-                philoRecipes.add(new TransmutationManager.PhiloCraftTransmutation.PhiloRecipe(resultItem, itemA.item(), (int) amountA));
+                philotransRecipes.add(new TransmutationManager.PhiloCraftTransmutation.PhilotransRecipe(resultItem, itemA.item(), (int) amountA));
             }
 
-            return philoRecipes;
+            return philotransRecipes;
         }
     }
 
@@ -73,11 +71,11 @@ public class PhiloCraftTransmutationBuilder {
             if (itemAAmount < 1 || itemAAmount > 8 || itemBAmount < 1 || itemBAmount > 8)
                 throw new ProjectEException.YAMLKeyOrValueErrorException();
 
-            this.register(itemA, itemAAmount, itemB, itemBAmount);
+            this.registerConversion(itemA, itemAAmount, itemB, itemBAmount);
         }
     }
 
-    public PhiloCraftTransmutationBuilder register(
+    public PhiloCraftTransmutationBuilder registerConversion(
         ItemWrapper.TransmutableItem itemA, long amountA,
         ItemWrapper.TransmutableItem itemB, long amountB
     ) {

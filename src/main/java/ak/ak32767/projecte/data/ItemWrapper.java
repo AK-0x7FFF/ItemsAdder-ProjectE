@@ -30,6 +30,26 @@ public class ItemWrapper {
         return new MaterialItem(item.material());
     }
 
+    public static boolean isMaterialItem(ItemStack item) {
+        return !item.hasItemMeta();
+    }
+
+    public static boolean isIAItem(ItemStack item) {
+        if (!item.hasItemMeta())
+            return false;
+
+        CustomStack iaItem = CustomStack.byItemStack(item);
+        return iaItem != null;
+    }
+
+    public static boolean isExactItem(ItemStack item) {
+        if (!item.hasItemMeta())
+            return false;
+
+        CustomStack iaItem = CustomStack.byItemStack(item);
+        return iaItem == null;
+    }
+
 
     public interface TransmutableItem {
         @Override

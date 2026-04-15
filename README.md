@@ -3,8 +3,6 @@
 
 ## 電子寵物
 <img src="https://stone.professorlee.work/api/stone/AK-0x7FFF/ItemsAdder-ProjectE" width="128">
-<img src="https://stone.professorlee.work/api/stone/AK-0x7FFF/ItemsAdder-ProjectE" width="128">
-<img src="https://stone.professorlee.work/api/stone/AK-0x7FFF/ItemsAdder-ProjectE" width="128">
 
 ## 戰績展示
 ### 轉化桌

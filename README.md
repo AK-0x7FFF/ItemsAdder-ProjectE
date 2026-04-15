@@ -9,7 +9,8 @@
 <img src=".github/assets/trans_table_preview.png" width="512">
 
 ### 賢者之石
-<img src=".github/assets/philostone_craft_preview.png" width="512">
+<img src=".github/assets/philostone_trans_preview.png" width="512">
+<img src=".github/assets/philostone_smelt_preview.png" width="512">
 
 
 ## 許願池

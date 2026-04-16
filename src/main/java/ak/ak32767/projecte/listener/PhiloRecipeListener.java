@@ -19,7 +19,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static ak.ak32767.projecte.manager.TransmutationManager.PhiloCraftTransmutation.*;
+import static ak.ak32767.projecte.data.PhilosmeltRecipe.PHILOSMELT_RECIPE_NAMESPACE;
+import static ak.ak32767.projecte.data.PhilotransRecipe.PHILOTRANS_RECIPE_NAMESPACE;
+import static ak.ak32767.projecte.manager.TransmutationManager.PhiloCraftTransmutation.isPhilostoneItem;
 
 public class PhiloRecipeListener implements Listener {
     private ProjectE plugin;
@@ -58,9 +60,10 @@ public class PhiloRecipeListener implements Listener {
 
         List<ItemStack> matrix = Arrays.stream(matrixRaw)
             .filter(Objects::nonNull)
+            .filter(item -> !isPhilostoneItem(item))
             .collect(Collectors.toCollection(ObjectArrayList::new));
 
-        ItemStack result = null;
+        ItemStack result;
         event.getInventory().setResult(null);
         if (namespace.equalsIgnoreCase(PHILOTRANS_RECIPE_NAMESPACE)) {
             result = this.manager.getPhilotransResult(matrix);
@@ -81,9 +84,6 @@ public class PhiloRecipeListener implements Listener {
         Recipe recipe = event.getRecipe();
         if (!(recipe instanceof Keyed))
             return;
-
-//        if (!keyed.getKey().getNamespace().equalsIgnoreCase(PHILO_RECIPE_NAMESPACE))
-//            return;
 
         CraftingInventory inventory = event.getInventory();
         ItemStack[] matrix = inventory.getMatrix();

@@ -3,35 +3,19 @@ package ak.ak32767.projecte.emcsys;
 import ak.ak32767.projecte.ProjectE;
 import ak.ak32767.projecte.ProjectEException;
 import ak.ak32767.projecte.data.ItemWrapper;
-import ak.ak32767.projecte.manager.TransmutationManager;
 import ak.ak32767.projecte.utils.YAMLLoader;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class PhiloCraftTransmutationBuilder {
     public record PhiloCraftTransmutationData(
         ItemWrapper.TransmutableItem itemA, long amountA,
         ItemWrapper.TransmutableItem itemB, long amountB
-    ) {
-        public Set<TransmutationManager.PhiloCraftTransmutation.PhilotransRecipe> toPhilotransRecipes() {
-            Set<TransmutationManager.PhiloCraftTransmutation.PhilotransRecipe> philotransRecipes = new ObjectLinkedOpenHashSet<>(2);
-
-            ItemStack resultItem; {
-                resultItem = itemA.item();
-                resultItem.setAmount((int) amountA);
-                philotransRecipes.add(new TransmutationManager.PhiloCraftTransmutation.PhilotransRecipe(resultItem, itemB.item(), (int) amountB));
-
-                resultItem = itemB.item();
-                resultItem.setAmount((int) amountB);
-                philotransRecipes.add(new TransmutationManager.PhiloCraftTransmutation.PhilotransRecipe(resultItem, itemA.item(), (int) amountA));
-            }
-
-            return philotransRecipes;
-        }
-    }
+    ) {}
 
     private final ProjectE plugin;
     private final Set<PhiloCraftTransmutationData> conversions;

@@ -58,19 +58,19 @@ public class PhiloRecipeListener implements Listener {
             return;
         }
 
-        List<ItemStack> matrix = Arrays.stream(matrixRaw)
-            .filter(Objects::nonNull)
-            .filter(item -> !isPhilostoneItem(item))
-            .collect(Collectors.toCollection(ObjectArrayList::new));
-
-        ItemStack result;
+        ItemStack result = null;
         event.getInventory().setResult(null);
+
         if (namespace.equalsIgnoreCase(PHILOTRANS_RECIPE_NAMESPACE)) {
+            List<ItemStack> matrix = Arrays.stream(matrixRaw)
+                .filter(Objects::nonNull)
+                .filter(item -> !isPhilostoneItem(item))
+                .collect(Collectors.toCollection(ObjectArrayList::new));
             result = this.manager.getPhilotransResult(matrix);
-        } else {
+        } else if  (namespace.equalsIgnoreCase(PHILOSMELT_RECIPE_NAMESPACE)) {
 //            plugin.logger.info(recipe.getResult().toString());
 //            plugin.logger.info(matrix.toString());
-            result = this.manager.getPhilosmeltResult(recipe, matrix);
+            result = this.manager.getPhilosmeltResult(recipe);
         }
 
         if (result == null)

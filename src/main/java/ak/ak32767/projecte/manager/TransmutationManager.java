@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -54,7 +55,7 @@ public class TransmutationManager {
         private final ProjectE plugin;
         private final PhiloCraftTransmutationBuilder builder;
         private final Set<PhilotransRecipe> registeredPhilotransRecipes;
-        private final Map<Recipe, PhilosmeltRecipe> registeredPhilosmeltRecipes;
+        private final Map<NamespacedKey, PhilosmeltRecipe> registeredPhilosmeltRecipes;
 
         private PhiloCraftTransmutation(ProjectE plugin) {
             this.plugin = plugin;
@@ -116,7 +117,7 @@ public class TransmutationManager {
                 return null;
 
             PhilotransRecipe targetRecipe = targetRecipeFind.get();
-            plugin.logger.info("RESULT: " + targetRecipe.getResult().toString());
+            plugin.logger.info("RESULT: " + targetRecipe.getResult());
             plugin.logger.info("NEEEED: (" + targetRecipe.getIngredientAmount() + ") " + targetRecipe.getIngredientItem().toString());
             return targetRecipe.getResult();
         }
@@ -140,13 +141,44 @@ public class TransmutationManager {
 
                 Bukkit.removeRecipe(philoRecipe.getKey());
                 Bukkit.addRecipe(philoRecipe);
-                this.registeredPhilosmeltRecipes.put(philoRecipe, philosmeltRecipe);
+                this.registeredPhilosmeltRecipes.put(philosmeltRecipe.getKey(), philosmeltRecipe);
             }
 
             this.plugin.logger.info(this.registeredPhilosmeltRecipes.size() + " Philosmelt Recipes been Registered.");
         }
 
-        public @Nullable ItemStack getPhilosmeltResult(Recipe recipe, List<ItemStack> items) {
+        public @Nullable ItemStack getPhilosmeltResult(Recipe recipe) {
+//        public @Nullable ItemStack getPhilosmeltResult(Recipe recipe, List<ItemStack> items) {
+//            PhilosmeltRecipe philoRecipe = this.registeredPhilosmeltRecipes.get(((ShapelessRecipe) recipe).getKey());
+//            if (philoRecipe == null)
+//                return null;
+//
+//            ItemStack b = null;
+//            RecipeChoice a = philoRecipe.getIngredient();
+//            if (a instanceof RecipeChoice.MaterialChoice)
+//                b = ((RecipeChoice.MaterialChoice) a).getItemStack();
+//            else if (a instanceof RecipeChoice.ExactChoice)
+//                b = ((RecipeChoice.ExactChoice) a).getItemStack();
+//            if (b == null)
+//                return null;
+//            ItemStack fb = b;
+//
+//            Optional<ItemStack> fuelItemFind = items.stream()
+//                .filter(item -> !isPhilostoneItem(item) && !fb.isSimilar(item))
+//                .findFirst();
+//            if (fuelItemFind.isEmpty())
+//                return null;
+//
+//            ItemStack fuelItem = fuelItemFind.get();
+//
+//            plugin.logger.info(fuelItem + " " + philoRecipe.getBurnableFuels());
+//            if (!philoRecipe.getBurnableFuels().contains(fuelItem))
+//                return null;
+//
+////            for (ItemStack item : items) {
+////                \
+////            }
+
             return recipe.getResult().clone();
         }
     }

@@ -372,8 +372,8 @@ fixed:
   - type: MATERIAL
     name: TURTLE_EGG
     value: 192
-  - type: TAG
-    name: SNAPS_GOAT_HORN
+  - type: MATERIAL
+    name: GOAT_HORN
     value: 192
   - type: MATERIAL
     name: FEATHER

@@ -7,8 +7,11 @@ import ak.ak32767.projecte.event.EMCPreCalculateEvent;
 import ak.ak32767.projecte.utils.YAMLLoader;
 import dev.lone.itemsadder.api.ItemsAdder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Keyed;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.*;
 import org.jetbrains.annotations.NotNull;
@@ -22,19 +25,25 @@ import java.util.stream.Collectors;
 import static ak.ak32767.projecte.emcsys.ItemConversionBuilder.BLANK;
 
 public class EMCBuilder {
-    private static final boolean IAItemTracker = false;
     private static final String IA_FAKE_RECIPE_PREFIX = "zzzfake";
 
     private final ProjectE plugin;
-//    private final EMCManager manager;
     private final Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, BigDecimal> fixedValues;
     private final Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, BigDecimal> emcValues;
     private final ArrayList<ItemConversionBuilder> conversions;
 
+    // DEBUG
+    private static final boolean DEBUG_emcBuildLogger = false;
+    private static final boolean DEBUG_iaItemTracker = false;
+    private final Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, List<ItemEMCCalcStep>> emcCalcLogger;
+    public record ItemEMCCalcStep(BigDecimal prev, BigDecimal now, List<ItemEMCSnap> itemEMCSnap) {};
+    public record ItemEMCSnap(ItemWrapper.TransmutableItem item, long amount, BigInteger emc) {}
+    public Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, List<ItemEMCCalcStep>> getEMCCalcLogger() {
+        return emcCalcLogger;
+    }
 
     public EMCBuilder(ProjectE plugin) {
         this.plugin = plugin;
-//        this.manager = manager;
         this.conversions = new ArrayList<>();
 
         this.fixedValues = new Object2ObjectOpenHashMap<>();
@@ -42,6 +51,8 @@ public class EMCBuilder {
 
         this.emcValues = new Object2ObjectOpenHashMap<>();
         this.emcValues.defaultReturnValue(BigDecimal.ZERO);
+
+        this.emcCalcLogger = new Object2ObjectOpenHashMap<>();
     }
 
     public Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, BigInteger> build() {
@@ -98,7 +109,9 @@ public class EMCBuilder {
 
             for (ItemConversionBuilder conversion : this.conversions) {
                 ItemWrapper.TransmutableItem target = conversion.getResult();
-                boolean iaTracker = IAItemTracker && target instanceof ItemWrapper.IAItem;
+
+                // DEBUG
+                boolean DEBUG_iaTracker = DEBUG_iaItemTracker && target instanceof ItemWrapper.IAItem;
 
                 // 硬編碼跳過
                 if (target instanceof ItemWrapper.MaterialItem && this.getFixedItemEmc(target).compareTo(BigDecimal.ZERO) > 0)
@@ -107,10 +120,8 @@ public class EMCBuilder {
                 BigDecimal cost = BigDecimal.ZERO;
                 boolean calcable = true;
 
-                if (iaTracker)
-                    this.plugin.logger.info("[EMCBuilder:IAItemTracker] Calculating BGN: " + ((ItemWrapper.IAItem) target).namespacedID());
-
                 // 遍歷原料
+                List<ItemEMCSnap> DEBUG_snaps = new ObjectArrayList<>();
                 for (var entry : conversion.getIngredients().object2LongEntrySet()) {
                     Set<ItemWrapper.TransmutableItem> choices = entry.getKey();
                     long amount = entry.getLongValue();
@@ -118,36 +129,37 @@ public class EMCBuilder {
                     // 佔位符處理
                     if (choices == BLANK) {
                         cost = cost.add(BigDecimal.valueOf(amount));
-                        if (iaTracker)
+                        if (DEBUG_iaTracker)
                             this.plugin.logger.info("[EMCBuilder:IAItemTracker]  - ADD_HARD: " + amount + " -> " + cost);
                         continue;
                     }
 
                     // 跳過賢者之石
                     if (choices.stream().anyMatch(
-                            obj -> obj instanceof ItemWrapper.IAItem &&
-                                    ((ItemWrapper.IAItem) obj).namespacedID().equals("projecte:philosophers_stone")
+                        obj -> obj instanceof ItemWrapper.IAItem &&
+                            ((ItemWrapper.IAItem) obj).namespacedID().equals("projecte:philosophers_stone")
                     ))
                         continue;
 
-                    if (iaTracker)
-                        this.plugin.logger.info("[EMCBuilder:IAItemTracker]  - CHOICES: " +
-                            choices.stream()
-                                .map(choice -> {
-                                    if (choice instanceof ItemWrapper.MaterialItem)
-                                        return "MATERIAL:" + choice;
-
-                                    if (choice instanceof ItemWrapper.ExactItem)
-                                        return "EXACT_ITEM:" + ((ItemWrapper.ExactItem) choice).material() + "->" + ((ItemWrapper.ExactItem) choice).meta().toString();
-
-                                    if (choice instanceof ItemWrapper.IAItem)
-                                        return "IAITEM:" + ((ItemWrapper.IAItem) choice).namespacedID().toUpperCase();
-
-                                    return "NUL";
-                                }).toList()
-                        );
+//                    if (iaTracker)
+//                        this.plugin.logger.info("[EMCBuilder:IAItemTracker]  - CHOICES: " +
+//                            choices.stream()
+//                                .map(choice -> {
+//                                    if (choice instanceof ItemWrapper.MaterialItem)
+//                                        return "MATERIAL:" + choice;
+//
+//                                    if (choice instanceof ItemWrapper.ExactItem)
+//                                        return "EXACT_ITEM:" + ((ItemWrapper.ExactItem) choice).material() + "->" + ((ItemWrapper.ExactItem) choice).meta().toString();
+//
+//                                    if (choice instanceof ItemWrapper.IAItem)
+//                                        return "IAITEM:" + ((ItemWrapper.IAItem) choice).namespacedID().toUpperCase();
+//
+//                                    return "NUL";
+//                                }).toList()
+//                        );
 
                     BigDecimal minEmc = null;
+                    ItemWrapper.TransmutableItem DEBUG_minEMCItem = null;
                     for (ItemWrapper.TransmutableItem item : choices) {
                         BigDecimal curr = this.getEMCRaw(item);
 
@@ -165,8 +177,10 @@ public class EMCBuilder {
                             }
                         }
 
-                        if (minEmc == null || curr.compareTo(minEmc) < 0)
+                        if (minEmc == null || curr.compareTo(minEmc) < 0) {
                             minEmc = curr;
+                            if (DEBUG_emcBuildLogger | DEBUG_iaTracker) DEBUG_minEMCItem = item;
+                        }
                     }
 
                     if (minEmc == null) {
@@ -176,11 +190,10 @@ public class EMCBuilder {
 
                     minEmc = minEmc.multiply(BigDecimal.valueOf(amount));
                     cost = cost.add(minEmc);
-                    if (iaTracker)
-                        this.plugin.logger.info("[EMCBuilder:IAItemTracker]  - ADD: +" + minEmc + " -> " + cost);
+                    if (DEBUG_emcBuildLogger || DEBUG_iaTracker)
+                        DEBUG_snaps.add(new ItemEMCSnap(DEBUG_minEMCItem, amount, minEmc.toBigInteger()));
                 }
-                if (iaTracker)
-                    this.plugin.logger.info("[EMCBuilder:IAItemTracker] Calculating END");
+//                if (iaTracker) this.plugin.logger.info("[EMCBuilder:IAItemTracker] Calculating END");
 
                 if (!calcable || cost.compareTo(BigDecimal.ZERO) <= 0)
                     continue;
@@ -195,6 +208,18 @@ public class EMCBuilder {
 
                 this.emcValues.put(target, itemEmc);
                 changed++;
+
+                if (DEBUG_iaTracker) {
+                    this.plugin.logger.info("    TRACKING IA_ITEM: " + ((ItemWrapper.IAItem) target).toString());
+                    this.plugin.logger.info("        " + prevItemEmc + " -> " + itemEmc);
+                    for (var snap : DEBUG_snaps)
+                        this.plugin.logger.info("          +" + snap.emc() + " (x" + snap.amount() + "): " + snap.item());
+                }
+
+                if (DEBUG_emcBuildLogger) {
+                    this.emcCalcLogger.computeIfAbsent(target, k -> new ObjectArrayList<>())
+                    .add(new ItemEMCCalcStep(prevItemEmc, itemEmc, DEBUG_snaps));
+                }
             }
             this.plugin.logger.info("   Depth: " + depth + ", Changed: +" + changed);
         }

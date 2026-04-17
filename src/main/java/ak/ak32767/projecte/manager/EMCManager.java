@@ -5,6 +5,7 @@ import ak.ak32767.projecte.data.ItemWrapper;
 import ak.ak32767.projecte.emcsys.EMCBuilder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -14,6 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -23,6 +25,9 @@ public class EMCManager {
     private final NamespacedKey emcKey;
     private Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, BigInteger> emcValues;
     private final Object2ObjectMap<UUID, BigInteger> playersEMCMap;
+
+    // DEBUG
+    private Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, List<EMCBuilder.ItemEMCCalcStep>> emcCalcLogger;
 
     public EMCManager(ProjectE plugin) {
         this.plugin = plugin;
@@ -40,6 +45,28 @@ public class EMCManager {
     public void build() {
         EMCBuilder builder = new EMCBuilder(plugin);
         this.emcValues = builder.build();
+        this.emcCalcLogger = builder.getEMCCalcLogger();
+        this.emcCalcLogger.defaultReturnValue(new ObjectArrayList<>());
+        plugin.logger.info(this.emcCalcLogger.size() + "");
+    }
+
+    public List<String> getItemEMCCalcLog(ItemStack item) {
+        List<String> output = new ObjectArrayList<>();
+
+        if (item == null || item.isEmpty())
+            return output;
+
+        var itemWrapped = ItemWrapper.of(item);
+        var steps = this.emcCalcLogger.get(itemWrapped);
+
+        for (var step : steps) {
+            output.add(step.prev() + " -> " + step.now());
+            for (var snap : step.itemEMCSnap()) {
+                output.add("    +" + snap.emc() + " (x" + snap.amount() + "): " + snap.item());
+            }
+        }
+
+        return output;
     }
 
     public boolean isItemHasEMC(ItemStack item) {
@@ -47,6 +74,9 @@ public class EMCManager {
     }
 
     public BigInteger getItemEMC(ItemStack item) {
+        if (item == null || item.isEmpty())
+            return BigInteger.ZERO;
+
         ItemWrapper.TransmutableItem itemWrapped = ItemWrapper.of(item);
         BigInteger emc = this.emcValues.get(itemWrapped);
 

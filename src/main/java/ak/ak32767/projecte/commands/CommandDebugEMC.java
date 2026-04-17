@@ -59,6 +59,12 @@ public class CommandDebugEMC {
             }
 
             sender.sendMessage("Material [" + name + "] EMC: " + this.plugin.getEmcManager().getItemEMC(item).toString());
+            var log = this.plugin.getEmcManager().getItemEMCCalcLog(item);
+            if (log == null)
+                return true;
+
+            for (String s : log)
+                sender.sendMessage("    " + s);
             return true;
         }
     }

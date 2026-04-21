@@ -1,3 +1,5 @@
+<img src=".github/assets/icon.png" width="256">
+
 # 我在 91% 的 Gemini 中混進了一些史
  - ### 開發中，請主人把 BUG Report 狠狠地塞進我的 Issue 里 🥵
 

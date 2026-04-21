@@ -8,12 +8,9 @@ depend:
   - ItemsAdder
 
 commands:
-  getemc:
-    usage: /<command> [material]
-  calcemc:
-    usage: /<c0mmand>
-  getplayeremc:
-    usage: /<command>
-  setplayeremc:
-    usage: /<command> [value]
-  dgui:
+  projecte: {}
+  getemc: {}
+  calcemc: {}
+  getplayeremc: {}
+  setplayeremc: {}
+  dgui: {}

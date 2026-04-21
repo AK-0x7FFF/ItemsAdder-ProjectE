@@ -1,0 +1,21 @@
+info:
+  namespace: projecte
+recipes:
+  crafting_table:
+    philosophers_stone:
+      enabled: true
+      pattern_1:
+        - GRG
+        - RDR
+        - GRG
+      pattern_2:
+        - RGR
+        - GDG
+        - RGR
+      ingredients:
+        D: DIAMOND
+        G: GLOWSTONE_DUST
+        R: REDSTONE
+      result:
+        item: projecte:philosophers_stone
+        amount: 1

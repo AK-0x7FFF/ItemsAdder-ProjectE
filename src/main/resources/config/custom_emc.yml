@@ -1,0 +1,19 @@
+fixed:
+# Ex: Set OBSIDIAN EMC value to 64 and immutable
+# 例：將 黑曜石 的 EMC 設置為 64 且不可改變
+#  - type: MATERIAL
+#    name: OBSIDIAN
+#    value: 64
+conversion:
+# Ex: Add the conversion for the LAVA_BUCKET (EMC = BUCKET x1 + OBSIDIAN x1) to the EMC calculation
+# 例：將 岩漿桶 EMC = 鐵桶x1 + 黑曜石x1 轉換律加入 EMC 計算
+#  - type: MATERIAL
+#    name: LAVA_BUCKET
+#    amount: 1
+#    ingredient:
+#      - type: MATERIAL
+#        name: BUCKET
+#        amount: 1
+#      - type: MATERIAL
+#        name: OBSIDIAN
+#        amount: 1

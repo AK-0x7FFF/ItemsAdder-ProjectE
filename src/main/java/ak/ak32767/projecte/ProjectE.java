@@ -2,30 +2,33 @@ package ak.ak32767.projecte;
 
 import ak.ak32767.projecte.commands.CommandDebugEMC;
 import ak.ak32767.projecte.commands.CommandDebugGUI;
+import ak.ak32767.projecte.commands.CommandProjectE;
 import ak.ak32767.projecte.listener.*;
 import ak.ak32767.projecte.listener.itemsadder.IABlockBreakListener;
 import ak.ak32767.projecte.listener.itemsadder.IABlockInteractListener;
 import ak.ak32767.projecte.listener.itemsadder.IABlockPlaceListener;
 import ak.ak32767.projecte.listener.itemsadder.IAItemInteractListener;
+import ak.ak32767.projecte.manager.ConfigManager;
 import ak.ak32767.projecte.manager.EMCManager;
 import ak.ak32767.projecte.manager.KnowledgeManager;
 import ak.ak32767.projecte.manager.TransmutationManager;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
 import java.util.logging.Logger;
 
 public final class ProjectE extends JavaPlugin {
     public final Logger logger = this.getLogger();
+
+    private ConfigManager configManager;
     private TransmutationManager transmutationManager;
     private EMCManager emcManager;
     private KnowledgeManager knowledgeManager;
 
     @Override
     public void onEnable() {
-        File folder = this.getDataFolder();
-        if (!folder.exists()) folder.mkdirs();
+        this.configManager = new ConfigManager(this);
         PluginManager pluginManager = getServer().getPluginManager();
 
         this.transmutationManager = new TransmutationManager(this);
@@ -47,6 +50,12 @@ public final class ProjectE extends JavaPlugin {
         pluginManager.registerEvents(new IABlockInteractListener(this), this);
 
         // command register
+        PluginCommand peCommand = getCommand("projecte");
+        if (peCommand != null) {
+            peCommand.setExecutor(new CommandProjectE.Executor(this));
+            peCommand.setTabCompleter(new CommandProjectE.Completer(this));
+        }
+
         getCommand("getemc").setExecutor(new CommandDebugEMC.GetEMC(this));
         getCommand("calcemc").setExecutor(new CommandDebugEMC.CalcEMC(this));
         getCommand("getplayeremc").setExecutor(new CommandDebugEMC.GetPlayerEMC(this));
@@ -59,6 +68,10 @@ public final class ProjectE extends JavaPlugin {
     public void onDisable() {
         this.emcManager.saveAllPlayerEMCMap2PDC();
         this.knowledgeManager.saveAllPlayerKnowledgeMap2PDC();
+    }
+
+    public ConfigManager getConfigManager() {
+        return this.configManager;
     }
 
     public EMCManager getEmcManager() {

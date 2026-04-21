@@ -10,8 +10,11 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -21,16 +24,32 @@ import java.util.List;
 import java.util.Map;
 
 public class YAMLLoader {
-    public static FileConfiguration load(Plugin plugin, String location) throws FileNotFoundException {
+    public static FileConfiguration loadResource(Plugin plugin, String location) throws FileNotFoundException {
         InputStream fileStream = plugin.getResource(location);
-        if  (fileStream == null)
+
+        if (fileStream == null)
             throw new FileNotFoundException(location + " file not found!");
 
         InputStreamReader reader = new InputStreamReader(fileStream, StandardCharsets.UTF_8);
         return YamlConfiguration.loadConfiguration(reader);
     }
 
-    public record ItemYAMLWrapper(String name, String type) {
+    public static FileConfiguration loadConfig(Plugin plugin, String location) throws FileNotFoundException {
+        File file = new File(plugin.getDataFolder(), location);
+
+        if (!file.exists())
+            throw new FileNotFoundException(location + " file not found!");
+
+        return YamlConfiguration.loadConfiguration(file);
+    }
+
+
+
+//    private static FileConfiguration load(InputStream fileStream) {
+//
+//    }
+
+    public record ItemYAMLWrapper(String name, String type, @Nullable String meta) {
         public static List<ItemWrapper.TransmutableItem> of(Map<?, ?> entry) throws ProjectEException.YAMLKeyOrValueErrorException {
             if (entry == null)
                 throw new ProjectEException.YAMLKeyOrValueErrorException("Entry is null");
@@ -41,7 +60,11 @@ public class YAMLLoader {
             String name = String.valueOf(entry.get("name")).toUpperCase();
             String type = String.valueOf(entry.get("type")).toUpperCase();
 
-            return new ItemYAMLWrapper(name, type).get();
+            String meta = null;
+            if (entry.containsKey("meta"))
+                meta = (String) entry.get("meta");
+
+            return new ItemYAMLWrapper(name, type, meta).get();
         }
 
         private List<ItemWrapper.TransmutableItem> get() throws ProjectEException.YAMLKeyOrValueErrorException {
@@ -55,6 +78,24 @@ public class YAMLLoader {
                         throw new ProjectEException.YAMLKeyOrValueErrorException("type is null");
 
                     yield ObjectArrayList.of(new ItemWrapper.MaterialItem(material));
+                }
+                case "EXACTITEM" -> {
+                    if (meta == null)
+                        throw new ProjectEException.YAMLKeyOrValueErrorException("meta is null");
+
+                    Material material = Material.getMaterial(name);
+                    if (material == null)
+                        throw new ProjectEException.YAMLKeyOrValueErrorException("type is null");
+
+                    ItemStack item;
+                    try {
+                        String input = material.getKey().getNamespace() + ":" + material.getKey().getKey() + meta;
+                        item = Bukkit.getItemFactory().createItemStack(input);
+                    } catch (Exception e) {
+                        throw new ProjectEException.YAMLKeyOrValueErrorException();
+                    }
+
+                    yield ObjectArrayList.of(new ItemWrapper.ExactItem(item));
                 }
                 case "IAITEM" -> {
                     CustomStack instance = CustomStack.getInstance(name.toLowerCase());

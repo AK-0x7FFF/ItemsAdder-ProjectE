@@ -1,0 +1,17 @@
+info:
+  namespace: projecte
+recipes:
+  crafting_table:
+    transmutation_tablet:
+      enabled: true
+      pattern_1:
+        - OSO
+        - STS
+        - OSO
+      ingredients:
+        O: OBSIDIAN
+        S: STONE
+        T: projecte:philosophers_stone
+      result:
+        item: projecte:transmutation_tablet
+        amount: 1

@@ -4,6 +4,7 @@ plugins {
     id("java-library")
     id("xyz.jpenilla.run-paper") version "2.3.1"
     id("com.github.johnrengelman.shadow") version "8.1.1"
+//    id("io.papermc.paperweight.userdev") version "1.7.5"
 }
 
 repositories {
@@ -16,6 +17,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT")
+//    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.21.5-R0.1-SNAPSHOT")
     compileOnly("dev.lone:api-itemsadder:4.0.10")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")
     implementation("net.wesjd:anvilgui:1.10.11-SNAPSHOT")

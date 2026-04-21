@@ -142,7 +142,7 @@ public class TransTableManager {
         if (b64 == null)
             return new ObjectArrayList<>(Collections.nCopies(9, new ItemStack(Material.AIR)));
 
-        List<ItemStack> storage = ItemBase64Converter.base642Item(b64);
+        List<ItemStack> storage = ItemBase64Converter.base642Items(b64);
         while (storage.size() < 9) {
             storage.add(new ItemStack(Material.AIR));
         }
@@ -151,7 +151,7 @@ public class TransTableManager {
     }
 
     public void saveStorageItem(List<ItemStack> storage) {
-        String b64 = ItemBase64Converter.item2Base64(storage);
+        String b64 = ItemBase64Converter.items2Base64(storage);
         this.player.getPersistentDataContainer().set(this.STORAGE_KEY, PersistentDataType.STRING, b64);
     }
 
@@ -172,11 +172,11 @@ public class TransTableManager {
     }
 
     public boolean transmuteItem(ItemStack item) {
-        if (!this.knowledgeManager.isLearnable(item)) {
+        if (!this.emcManager.isTransmutable(item)) {
             return false;
         }
 
-        if (this.tryLearnItem(item))
+        if (this.knowledgeManager.isLearnable(item) && this.tryLearnItem(item))
             this.player.playSound(this.player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1f, 1.4f);
 
         this.emcManager.addPlayerEMC(player, this.emcManager.getItemEMC(item).multiply(BigInteger.valueOf(item.getAmount())));
@@ -221,7 +221,6 @@ public class TransTableManager {
         List<ItemStack> items = this.knowledgeManager.getKnowledgeItemEMCSorted(this.player);
 
         // EMC 過濾
-
         items = items.stream()
             .filter(item -> this.emcManager.getItemEMC(item).compareTo(finalMaxEMC) <= 0)
             .collect(Collectors.toCollection(ObjectArrayList::new));

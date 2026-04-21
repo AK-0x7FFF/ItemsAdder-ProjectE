@@ -4,18 +4,21 @@ import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
 import it.unimi.dsi.fastutil.io.FastByteArrayOutputStream;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Base64;
 import java.util.List;
 
 public class ItemBase64Converter {
     private ItemBase64Converter() {}
 
-    public static String item2Base64(List<ItemStack> items) {
+    public static String items2Base64(List<ItemStack> items) {
         try (FastByteArrayOutputStream bytesStream = new FastByteArrayOutputStream(1024);
-             BukkitObjectOutputStream data = new BukkitObjectOutputStream(bytesStream)) {
+             ObjectOutputStream data = new BukkitObjectOutputStream(bytesStream)) {
 
             data.writeInt(items.size());
             for (ItemStack item : items)
@@ -28,12 +31,12 @@ public class ItemBase64Converter {
         }
     }
 
-    public static List<ItemStack> base642Item(String b64) {
+    public static List<ItemStack> base642Items(String b64) {
         if (b64 == null || b64.isEmpty())
             return new ObjectArrayList<>();
 
         try (FastByteArrayInputStream byteStream = new FastByteArrayInputStream(Base64.getDecoder().decode(b64));
-             BukkitObjectInputStream data = new BukkitObjectInputStream(byteStream)) {
+             ObjectInputStream data = new BukkitObjectInputStream(byteStream)) {
 
             int length = data.readInt();
 //            ItemStack[] items = new ItemStack[length];
@@ -48,4 +51,27 @@ public class ItemBase64Converter {
         }
     }
 
+    public static String meta2Base64(ItemMeta meta) {
+        try (FastByteArrayOutputStream bytesStream = new FastByteArrayOutputStream();
+             ObjectOutputStream data = new BukkitObjectOutputStream(bytesStream)) {
+
+            data.writeObject(meta);
+            data.flush();
+            return Base64.getEncoder().encodeToString(bytesStream.array);
+
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public static ItemMeta base642Meta(String b64) {
+        try (FastByteArrayInputStream byteStream = new FastByteArrayInputStream(Base64.getDecoder().decode(b64));
+             ObjectInputStream data = new BukkitObjectInputStream(byteStream)) {
+
+            return (ItemMeta) data.readObject();
+
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
 }

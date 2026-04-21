@@ -1,0 +1,5 @@
+philostone:
+  craft_transmutation:
+    enable: true
+  world_transmutation:
+    enable: true

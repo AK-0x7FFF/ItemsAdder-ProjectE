@@ -12,44 +12,6 @@ import org.jetbrains.annotations.NotNull;
 public class ItemWrapper {
     private ItemWrapper() {}
 
-    public static TransmutableItem of(ItemStack item) {
-        Material material = item.getType();
-
-        if (!item.hasItemMeta())
-            return new MaterialItem(material);
-
-        CustomStack iaItem = CustomStack.byItemStack(item);
-        if (iaItem != null)
-            return new IAItem(material, iaItem.getNamespacedID());
-
-        return new ExactItem(material, item.getItemMeta());
-    }
-
-    public static MaterialItem toMaterialItemWrapper(TransmutableItem item) {
-        return new MaterialItem(item.material());
-    }
-
-    public static boolean isMaterialItem(ItemStack item) {
-        return !item.hasItemMeta();
-    }
-
-    public static boolean isIAItem(ItemStack item) {
-        if (!item.hasItemMeta())
-            return false;
-
-        CustomStack iaItem = CustomStack.byItemStack(item);
-        return iaItem != null;
-    }
-
-    public static boolean isExactItem(ItemStack item) {
-        if (!item.hasItemMeta())
-            return false;
-
-        CustomStack iaItem = CustomStack.byItemStack(item);
-        return iaItem == null;
-    }
-
-
     public interface TransmutableItem {
         @Override
         boolean equals(Object other);
@@ -61,6 +23,69 @@ public class ItemWrapper {
         ItemStack item();
     }
 
+    public enum Transmutable {
+        MATERIAL_ITEM,
+        EXACT_ITEM,
+        IAITEM;
+
+        public static Transmutable get(ItemStack item) {
+            if (!item.hasItemMeta())
+                return MATERIAL_ITEM;
+
+            if (CustomStack.byItemStack(item) != null)
+                return IAITEM;
+
+            return EXACT_ITEM;
+        }
+
+        public boolean is(ItemStack item) {
+            return switch (this) {
+                case MATERIAL_ITEM -> !item.hasItemMeta();
+
+                case EXACT_ITEM -> {
+                    if (!item.hasItemMeta())
+                        yield false;
+
+                    CustomStack iaItem = CustomStack.byItemStack(item);
+                    yield iaItem == null;
+                }
+
+                case IAITEM -> {
+                    if (!item.hasItemMeta())
+                        yield false;
+
+                    CustomStack iaItem = CustomStack.byItemStack(item);
+                    yield iaItem != null;
+                }
+            };
+        }
+
+        public boolean is(TransmutableItem item) {
+            return switch (this) {
+                case MATERIAL_ITEM -> item instanceof MaterialItem;
+                case EXACT_ITEM -> item instanceof ExactItem;
+                case IAITEM -> item instanceof IAItem;
+            };
+        }
+    }
+
+    public static TransmutableItem of(ItemStack item) {
+        Material material = item.getType();
+
+        return switch (Transmutable.get(item)) {
+            case Transmutable.MATERIAL_ITEM ->
+                new MaterialItem(material);
+            case Transmutable.EXACT_ITEM ->
+                new ExactItem(material, item.getItemMeta());
+            case Transmutable.IAITEM ->
+                new IAItem(material, CustomStack.byItemStack(item).getNamespacedID());
+        };
+    }
+
+    public static MaterialItem toMaterialItemWrapper(TransmutableItem item) {
+        return new MaterialItem(item.material());
+    }
+
     public record MaterialItem(Material material) implements TransmutableItem {
         public MaterialItem(ItemStack item) {
             this(item.getType());
@@ -68,6 +93,8 @@ public class ItemWrapper {
 
         @Override
         public ItemStack item() {
+            if (!this.material.isItem())
+                return ItemStack.empty();
             return ItemStack.of(this.material);
         }
     }
@@ -105,6 +132,9 @@ public class ItemWrapper {
         }
 
         public ItemStack item() {
+            if (!this.material.isItem())
+                return ItemStack.empty();
+
             ItemStack item = ItemStack.of(this.material);
 
             if (this.meta != null)
@@ -125,12 +155,12 @@ public class ItemWrapper {
         }
     }
 
-    public record IAItem(@NotNull Material material, @NotNull String namespacedID) implements TransmutableItem {
-        public IAItem(@NotNull ItemStack item) {
+    public record IAItem(Material material, String namespacedID) implements TransmutableItem {
+        public IAItem(ItemStack item) {
             this(item.getType(), CustomStack.byItemStack(item).getNamespacedID());
         }
 
-        public IAItem(@NotNull CustomStack iaItem) {
+        public IAItem(CustomStack iaItem) {
             this(iaItem.getItemStack());
         }
 

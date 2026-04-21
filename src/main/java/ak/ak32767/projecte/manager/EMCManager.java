@@ -23,7 +23,7 @@ public class EMCManager {
     private final ProjectE plugin;
 
     private final NamespacedKey emcKey;
-    private Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, BigInteger> emcValues;
+    private final Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, BigInteger> emcValues;
     private final Object2ObjectMap<UUID, BigInteger> playersEMCMap;
 
     // DEBUG
@@ -44,10 +44,9 @@ public class EMCManager {
 
     public void build() {
         EMCBuilder builder = new EMCBuilder(plugin);
-        this.emcValues = builder.build();
+        this.emcValues.putAll(builder.build());
         this.emcCalcLogger = builder.getEMCCalcLogger();
         this.emcCalcLogger.defaultReturnValue(new ObjectArrayList<>());
-        plugin.logger.info(this.emcCalcLogger.size() + "");
     }
 
     public List<String> getItemEMCCalcLog(ItemStack item) {
@@ -69,18 +68,29 @@ public class EMCManager {
         return output;
     }
 
-    public boolean isItemHasEMC(ItemStack item) {
-        return this.getItemEMC(item).compareTo(BigInteger.ZERO) > 0;
+
+    public boolean isTransmutable(ItemStack item) {
+        return this.isTransmutable(item, false);
+    }
+    public boolean isTransmutable(ItemStack item, boolean exact) {
+        return this.getItemEMC(item, exact).compareTo(BigInteger.ZERO) > 0;
     }
 
     public BigInteger getItemEMC(ItemStack item) {
+        return this.getItemEMC(item, false);
+    }
+    public BigInteger getItemEMC(ItemStack item, boolean exact) {
         if (item == null || item.isEmpty())
             return BigInteger.ZERO;
 
         ItemWrapper.TransmutableItem itemWrapped = ItemWrapper.of(item);
         BigInteger emc = this.emcValues.get(itemWrapped);
 
-        if (itemWrapped instanceof ItemWrapper.ExactItem && (emc == null || emc.compareTo(BigInteger.ZERO) <= 0)) {
+        if (
+            !exact &&
+            ItemWrapper.Transmutable.EXACT_ITEM.is(itemWrapped) &&
+            (emc == null || emc.compareTo(BigInteger.ZERO) <= 0)
+        ) {
             // 取 Material 的 EMC
             ItemWrapper.MaterialItem material = ItemWrapper.toMaterialItemWrapper(itemWrapped);
             emc = this.emcValues.get(material);
@@ -107,6 +117,10 @@ public class EMCManager {
         return emc;
     }
 
+    public Map<ItemWrapper.TransmutableItem, BigInteger> getAllItemsEMC() {
+        return this.emcValues;
+    }
+
 //    public BigInteger getItemEMCTotal(ItemStack item) {
 //        return this.getItemEMC(item).multiply(BigInteger.valueOf(item.getAmount()));
 //    }
@@ -114,7 +128,6 @@ public class EMCManager {
     public BigInteger getPlayerEMC(Player player) {
         return this.getPlayerEMC(player.getUniqueId());
     }
-
     public BigInteger getPlayerEMC(UUID uuid) {
         BigInteger value = this.playersEMCMap.get(uuid);
         if (value != null)
@@ -133,43 +146,42 @@ public class EMCManager {
         return value;
     }
 
-    public void setPlayerEMC(Player player, BigInteger value) {
-        this.setPlayerEMC(player.getUniqueId(), value);
+    public BigInteger setPlayerEMC(Player player, BigInteger value) {
+        return this.setPlayerEMC(player.getUniqueId(), value);
     }
-
-    public void setPlayerEMC(UUID uuid, BigInteger value) {
+    public BigInteger setPlayerEMC(UUID uuid, BigInteger value) {
         if (value.compareTo(BigInteger.ZERO) < 0)
             value = BigInteger.ZERO;
 
         this.playersEMCMap.put(uuid, value);
+        return value;
     }
 
-    public void addPlayerEMC(Player player, BigInteger value) {
-        this.addPlayerEMC(player.getUniqueId(), value);
+    public BigInteger addPlayerEMC(Player player, BigInteger value) {
+        return this.addPlayerEMC(player.getUniqueId(), value);
     }
-
-    public void addPlayerEMC(UUID uuid, BigInteger value) {
+    public BigInteger addPlayerEMC(UUID uuid, BigInteger value) {
         BigInteger newValue = getPlayerEMC(uuid).add(value);
         if (newValue.compareTo(BigInteger.ZERO) < 0)
             newValue = BigInteger.ZERO;
 
-        setPlayerEMC(uuid, newValue);
+        return setPlayerEMC(uuid, newValue);
     }
 
-    public void savePlayerEMCMap2PDC(Player player) {
-        this.savePlayerEMCMap2PDC(player.getUniqueId());
+    public boolean savePlayerEMCMap2PDC(Player player) {
+        return this.savePlayerEMCMap2PDC(player.getUniqueId());
     }
-
-    public void savePlayerEMCMap2PDC(UUID uuid) {
+    public boolean savePlayerEMCMap2PDC(UUID uuid) {
         BigInteger value = this.getPlayerEMC(uuid);
 
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) {
             this.plugin.logger.warning("FAILED Save EMC to PDC: " + uuid);
-            return;
+            return false;
         }
 
         player.getPersistentDataContainer().set(this.emcKey, PersistentDataType.STRING, value.toString());
+        return true;
     }
 
     public void saveAllPlayerEMCMap2PDC() {
@@ -190,7 +202,6 @@ public class EMCManager {
     public void unloadPlayerOnEMCMap(Player player) {
         this.unloadPlayerOnEMCMap(player.getUniqueId());
     }
-
     public void unloadPlayerOnEMCMap(UUID uuid) {
         this.playersEMCMap.remove(uuid);
     }

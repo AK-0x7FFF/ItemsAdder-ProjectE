@@ -1,8 +1,8 @@
 package ak.ak32767.projecte.event;
 
 import ak.ak32767.projecte.data.ItemWrapper;
-import ak.ak32767.projecte.emcsys.ItemConversionBuilder;
 import ak.ak32767.projecte.emcsys.EMCBuilder;
+import ak.ak32767.projecte.emcsys.ItemConversionBuilder;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
@@ -31,7 +31,7 @@ public class EMCPreCalculateEvent extends Event {
     }
 
     public boolean conversionRecipe(Recipe recipe) {
-        return this.builder.addConversionByRecipe(recipe);
+        return this.builder.conversionByRecipe(recipe);
     }
 
     public ItemConversionBuilder conversionItemBuilder(ItemStack item) {
@@ -39,7 +39,7 @@ public class EMCPreCalculateEvent extends Event {
     }
 
     public ItemConversionBuilder conversionItemBuilder(ItemStack item, long amount) {
-        return this.builder.register(item, amount);
+        return this.builder.conversion(item, amount);
     }
 
     @Override

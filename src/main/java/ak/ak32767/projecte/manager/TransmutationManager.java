@@ -91,8 +91,8 @@ public class TransmutationManager {
         public void conversionsRegister(EMCBuilder emcBuilder) {
             for (var data : this.builder.getConversions()) {
                 emcBuilder
-                    .register(data.itemA(), data.amountA()).addIngredient(data.itemB(),  data.amountB()).end()
-                    .register(data.itemB(), data.amountB()).addIngredient(data.itemA(),  data.amountA()).end();
+                    .conversion(data.itemA(), data.amountA()).addIngredient(data.itemB(),  data.amountB()).end()
+                    .conversion(data.itemB(), data.amountB()).addIngredient(data.itemA(),  data.amountA()).end();
             }
         }
 
@@ -101,6 +101,7 @@ public class TransmutationManager {
                 for (PhilotransRecipe philoRecipe : PhilotransRecipe.of(data)) {
                     ShapelessRecipe recipe = philoRecipe.toRecipe();
 
+                    Bukkit.removeRecipe(recipe.getKey());
                     Bukkit.addRecipe(recipe);
                     this.registeredPhilotransRecipes.add(philoRecipe);
                 }
@@ -200,10 +201,10 @@ public class TransmutationManager {
         @Override
         public void conversionsRegister(EMCBuilder emcBuilder) {
             for (var node: this.builder.getConversions()) {
-                emcBuilder.register(node.resultForward(), 1).addIngredient(node.origin()).end();
+                emcBuilder.conversion(node.resultForward(), 1).addIngredient(node.origin()).end();
 
                 if (!node.resultForward().equals(node.resultBackward()))
-                    emcBuilder.register(node.resultBackward(), 1).addIngredient(node.origin()).end();
+                    emcBuilder.conversion(node.resultBackward(), 1).addIngredient(node.origin()).end();
             }
         }
     }

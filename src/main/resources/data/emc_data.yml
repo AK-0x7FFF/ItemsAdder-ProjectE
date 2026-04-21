@@ -374,6 +374,38 @@ fixed:
     value: 192
   - type: MATERIAL
     name: GOAT_HORN
+    value: 96
+  - type: EXACTITEM
+    name: GOAT_HORN
+    meta: '[instrument="minecraft:ponder_goat_horn"]'
+    value: 96
+  - type: EXACTITEM
+    name: GOAT_HORN
+    meta: '[instrument="minecraft:sing_goat_horn"]'
+    value: 96
+  - type: EXACTITEM
+    name: GOAT_HORN
+    meta: '[instrument="minecraft:seek_goat_horn"]'
+    value: 96
+  - type: EXACTITEM
+    name: GOAT_HORN
+    meta: '[instrument="minecraft:feel_goat_horn"]'
+    value: 96
+  - type: EXACTITEM
+    name: GOAT_HORN
+    meta: '[instrument="minecraft:admire_goat_horn"]'
+    value: 192
+  - type: EXACTITEM
+    name: GOAT_HORN
+    meta: '[instrument="minecraft:call_goat_horn"]'
+    value: 192
+  - type: EXACTITEM
+    name: GOAT_HORN
+    meta: '[instrument="minecraft:yearn_goat_horn"]'
+    value: 192
+  - type: EXACTITEM
+    name: GOAT_HORN
+    meta: '[instrument="minecraft:dream_goat_horn"]'
     value: 192
   - type: MATERIAL
     name: FEATHER

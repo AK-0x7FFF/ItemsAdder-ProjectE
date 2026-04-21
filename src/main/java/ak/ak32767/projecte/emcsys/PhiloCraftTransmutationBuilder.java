@@ -31,7 +31,7 @@ public class PhiloCraftTransmutationBuilder {
 
     public boolean build() {
         try {
-            FileConfiguration config = YAMLLoader.load(this.plugin, "data/transmutation_data.yml");
+            FileConfiguration config = YAMLLoader.loadResource(this.plugin, "data/transmutation_data.yml");
             buildByYAML(config.getMapList("philocraft"));
         } catch (Exception e) {
             e.printStackTrace();

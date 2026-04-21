@@ -56,9 +56,23 @@ public class EMCBuilder {
     }
 
     public Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, BigInteger> build() {
-        // 從 .yml 構建
+        // 從 emc_data.yml 構建
         try {
-            FileConfiguration config = YAMLLoader.load(this.plugin, "data/emc_data.yml");
+            FileConfiguration config = YAMLLoader.loadResource(this.plugin, "data/emc_data.yml");
+            {
+                List<Map<?, ?>> fixed = config.getMapList("fixed");
+                fixedByYAML(fixed);
+
+                List<Map<?, ?>> conversions = config.getMapList("conversion");
+                conversionByYAML(conversions);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+//        // 從 emc_data.yml 構建
+        try {
+            FileConfiguration config = YAMLLoader.loadConfig(this.plugin, "custom_emc.yml");
             {
                 List<Map<?, ?>> fixed = config.getMapList("fixed");
                 fixedByYAML(fixed);
@@ -73,7 +87,7 @@ public class EMCBuilder {
         // 從 合成表 構建
         for (Iterator<Recipe> recipes = Bukkit.recipeIterator(); recipes.hasNext(); ) {
             Recipe recipe = recipes.next();
-            addConversionByRecipe(recipe);
+            conversionByRecipe(recipe);
         }
 
         // 從 事件 構建
@@ -102,9 +116,8 @@ public class EMCBuilder {
     public void calculateEMC() {
         this.plugin.logger.info("EMCs Calculate BGN");
 
-        int changed = 1;
         short depth = 0;
-        for (; changed > 0 && depth < Byte.MAX_VALUE; depth++) {
+        for (int changed = 1; changed > 0 && depth < Byte.MAX_VALUE; depth++) {
             changed = 0;
 
             for (ItemConversionBuilder conversion : this.conversions) {
@@ -129,8 +142,8 @@ public class EMCBuilder {
                     // 佔位符處理
                     if (choices == BLANK) {
                         cost = cost.add(BigDecimal.valueOf(amount));
-                        if (DEBUG_iaTracker)
-                            this.plugin.logger.info("[EMCBuilder:IAItemTracker]  - ADD_HARD: " + amount + " -> " + cost);
+                        if (DEBUG_emcBuildLogger)
+                            DEBUG_snaps.add(new ItemEMCSnap(new ItemWrapper.MaterialItem(Material.AIR), 1, BigInteger.valueOf(amount)));
                         continue;
                     }
 
@@ -140,23 +153,6 @@ public class EMCBuilder {
                             ((ItemWrapper.IAItem) obj).namespacedID().equals("projecte:philosophers_stone")
                     ))
                         continue;
-
-//                    if (iaTracker)
-//                        this.plugin.logger.info("[EMCBuilder:IAItemTracker]  - CHOICES: " +
-//                            choices.stream()
-//                                .map(choice -> {
-//                                    if (choice instanceof ItemWrapper.MaterialItem)
-//                                        return "MATERIAL:" + choice;
-//
-//                                    if (choice instanceof ItemWrapper.ExactItem)
-//                                        return "EXACT_ITEM:" + ((ItemWrapper.ExactItem) choice).material() + "->" + ((ItemWrapper.ExactItem) choice).meta().toString();
-//
-//                                    if (choice instanceof ItemWrapper.IAItem)
-//                                        return "IAITEM:" + ((ItemWrapper.IAItem) choice).namespacedID().toUpperCase();
-//
-//                                    return "NUL";
-//                                }).toList()
-//                        );
 
                     BigDecimal minEmc = null;
                     ItemWrapper.TransmutableItem DEBUG_minEMCItem = null;
@@ -259,7 +255,7 @@ public class EMCBuilder {
         return BigDecimal.ZERO;
     }
 
-    public boolean addConversionByRecipe(Recipe recipe) {
+    public boolean conversionByRecipe(Recipe recipe) {
         // 跳過IA假配方
         if (((Keyed) recipe).getKey().getNamespace().startsWith(IA_FAKE_RECIPE_PREFIX))
             return false;
@@ -288,7 +284,7 @@ public class EMCBuilder {
         if (choices.isEmpty())
             return false;
 
-        ItemConversionBuilder conversion = this.register(resultItem, resultAmount);
+        ItemConversionBuilder conversion = this.conversion(resultItem, resultAmount);
 
         for (RecipeChoice choice : choices) {
             // 常規選物
@@ -313,8 +309,8 @@ public class EMCBuilder {
         return true;
     }
 
-    private void fixedByYAML(@NotNull List<Map<?, ?>> fixeds) throws ProjectEException.YAMLKeyOrValueErrorException {
-        for (Map<?, ?> entry : fixeds) {
+    private void fixedByYAML(@NotNull List<Map<?, ?>> fixeds) {
+        for (Map<?, ?> entry : fixeds) { try {
             String valueRaw = String.valueOf(entry.get("value"));
             if (valueRaw == null)
                 throw new ProjectEException.YAMLKeyOrValueErrorException();
@@ -324,11 +320,14 @@ public class EMCBuilder {
 
             for (ItemWrapper.TransmutableItem item : items)
                 this.fixed(item, value);
-        }
+
+        } catch (ProjectEException.YAMLKeyOrValueErrorException e) {
+            this.plugin.logger.severe("Skip fixed, Can't load: " + entry);
+        }}
     }
 
     private void conversionByYAML(List<Map<?, ?>> conversions) throws ProjectEException.YAMLKeyOrValueErrorException {
-        for (Map<?, ?> conversion : conversions) {
+        for (Map<?, ?> conversion : conversions) { try {
             long resultAmount = ((Number) conversion.get("amount")).longValue();
             List<Map<?, ?>> ingredients = (List<Map<?, ?>>) conversion.get("ingredient");
 
@@ -337,7 +336,7 @@ public class EMCBuilder {
                 throw new ProjectEException.YAMLKeyOrValueErrorException();
 
 
-            List<ItemConversionBuilder> cbs = resultItems.stream().map(item -> this.register(item, resultAmount)).toList();
+            List<ItemConversionBuilder> cbs = resultItems.stream().map(item -> this.conversion(item, resultAmount)).toList();
             for (Map<?, ?> ingredient : ingredients) {
                 String type = String.valueOf(ingredient.get("type")).toUpperCase();
 
@@ -355,7 +354,9 @@ public class EMCBuilder {
 
                 cbs.forEach(ItemConversionBuilder::end);
             }
-        }
+        } catch (ProjectEException.YAMLKeyOrValueErrorException e) {
+            this.plugin.logger.severe("Skip conversion, Can't load: " + conversion);
+        }}
     }
 
     public EMCBuilder fixed(ItemWrapper.TransmutableItem item, BigDecimal value) {
@@ -363,12 +364,12 @@ public class EMCBuilder {
         return this;
     }
 
-    public ItemConversionBuilder register(ItemStack item, long amount) {
+    public ItemConversionBuilder conversion(ItemStack item, long amount) {
         ItemWrapper.TransmutableItem itemWrapped = ItemWrapper.of(item);
-        return this.register(itemWrapped, amount);
+        return this.conversion(itemWrapped, amount);
     }
 
-    public ItemConversionBuilder register(ItemWrapper.TransmutableItem item, long amount) {
+    public ItemConversionBuilder conversion(ItemWrapper.TransmutableItem item, long amount) {
         ItemConversionBuilder builder = new ItemConversionBuilder(this, item, amount);
         this.conversions.add(builder);
         return builder;

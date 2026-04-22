@@ -62,14 +62,16 @@ public class TransTableManager {
         return knowledgeManager;
     }
 
-    private record ResultTakeItemCalc(BigInteger emcNeed, int itemAmount) {}
+    public @Nullable ItemStack extractItem(ItemStack item, int amount, boolean skipPerm) {
+        if (!skipPerm && !PermissionManager.TRANSTABLE_EXTRACT.check(this.player))
+            return null;
 
-    public ResultTakeItemCalc takeItemCalc(ItemStack item, int amount) {
+        item = item.clone();
         BigInteger playerEMC = this.emcManager.getPlayerEMC(this.player);
         BigInteger emcNeedSingle = this.emcManager.getItemEMC(item);
 
         if (playerEMC.compareTo(emcNeedSingle) < 0)
-            return new ResultTakeItemCalc(BigInteger.ZERO, 0);
+            return null;
 
         BigInteger emcNeed = emcNeedSingle.multiply(BigInteger.valueOf(amount));
         if (playerEMC.compareTo(emcNeed) < 0) {
@@ -77,29 +79,17 @@ public class TransTableManager {
             emcNeed = emcNeedSingle.multiply(BigInteger.valueOf(amount));
         }
 
-        return new ResultTakeItemCalc(emcNeed, amount);
-    }
-
-    public @Nullable ItemStack extractItem(ItemStack item, int amount, boolean skipPerm) {
-        if (!skipPerm && !PermissionManager.TRANSTABLE_EXTRACT.check(this.player))
-            return null;
-
-        item = item.clone();
-        ResultTakeItemCalc takeItemCalc = this.takeItemCalc(item, amount);
-        amount = takeItemCalc.itemAmount();
-
         // 餘額不足，請充值 :(
         if (amount == 0)
             return null;
 
-        BigInteger emcNeed = takeItemCalc.emcNeed();
         emcManager.addPlayerEMC(this.player, emcNeed.negate());
 
         item.setAmount(amount);
         return item;
     }
 
-    public boolean giveItem2Inventory(ItemStack item, int amount) {
+    public boolean extractItem2Inventory(ItemStack item, int amount) {
         ItemStack result = this.extractItem(item, amount, false);
         if  (result == null)
             return false;
@@ -118,7 +108,7 @@ public class TransTableManager {
         return true;
     }
 
-    public boolean giveItem2Cursor(ItemStack item, int amount, boolean isNew) {
+    public boolean extractItem2Cursor(ItemStack item, int amount, boolean isNew) {
         ItemStack result = this.extractItem(item, amount, false);
         if (result == null)
             return false;
@@ -144,7 +134,7 @@ public class TransTableManager {
         return true;
     }
 
-    public boolean dropItem(ItemStack item, int amount) {
+    public boolean extractItemDrop(ItemStack item, int amount) {
         ItemStack result = this.extractItem(item, amount, false);
         if (result == null)
             return false;

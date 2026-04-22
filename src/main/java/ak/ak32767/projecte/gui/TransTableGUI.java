@@ -191,7 +191,7 @@ public class TransTableGUI extends GUIBase {
             ) {
                 int giveAmount = 1;
                 if (clickType == ClickType.SHIFT_LEFT || clickType == ClickType.SHIFT_RIGHT) {
-                        if (this.transTableManager.giveItem2Inventory(givenItem, givenItem.getMaxStackSize())) {
+                        if (this.transTableManager.extractItem2Inventory(givenItem, givenItem.getMaxStackSize())) {
                             this.updateEMCCheckerItem();
                             this.player.playSound(this.player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 0.5f, 1.2f);
                             return;
@@ -214,7 +214,7 @@ public class TransTableGUI extends GUIBase {
                 if (cursorItemAmount + giveAmount > givenItem.getMaxStackSize())
                     return;
 
-                if (this.transTableManager.giveItem2Cursor(givenItem, giveAmount, cursorItem.isEmpty()))
+                if (this.transTableManager.extractItem2Cursor(givenItem, giveAmount, cursorItem.isEmpty()))
                     this.player.playSound(this.player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 0.5f, 1.2f);
                 else
                     this.player.playSound(this.player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.5f, 1f);
@@ -229,7 +229,7 @@ public class TransTableGUI extends GUIBase {
                 if (clickType == ClickType.CONTROL_DROP)
                     dropAmount = givenItem.getMaxStackSize();
 
-                if (this.transTableManager.dropItem(givenItem, dropAmount))
+                if (this.transTableManager.extractItemDrop(givenItem, dropAmount))
                     this.player.playSound(this.player.getLocation(), Sound.ENTITY_ITEM_PICKUP, 0.5f, 1.2f);
                 else
                     this.player.playSound(this.player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.5f, 1f);

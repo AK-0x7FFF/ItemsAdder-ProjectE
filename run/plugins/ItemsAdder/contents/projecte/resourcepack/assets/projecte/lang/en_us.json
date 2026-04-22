@@ -1,9 +1,13 @@
 {
   "misc.projecte.mod_name": "ProjectE",
   "item.projecte.philosophers_stone": "Philosopher's Stone",
+  "item.projecte.transmutation_tablet": "Transmutation Tablet",
   "item.projecte.alchemical_coal": "Alchemical Coal",
   "item.projecte.mobius_fuel": "Mobius Fuel",
   "item.projecte.aeternalis_fuel": "Aeternalis Fuel",
+  "item.projecte.low_covalence_dust": "Low Covalence Dust",
+  "item.projecte.medium_covalence_dust": "Medium Covalence Dust",
+  "item.projecte.high_covalence_dust": "High Covalence Dust",
   "item.projecte.dark_matter": "Dark Matter",
   "item.projecte.red_matter": "Red Matter",
 

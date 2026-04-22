@@ -8,3 +8,4 @@ items:
       textures:
         - projecte:item/transmutation_tablet.png
       material: PHANTOM_MEMBRANE
+    max_stack_size: 1

@@ -1,0 +1,69 @@
+info:
+  namespace: projecte
+recipes:
+  crafting_table:
+    low_covalence_dust:
+      enabled: true
+      pattern_1:
+        - CSS
+        - SSS
+        - SSS
+      pattern_2:
+        - SCS
+        - SSS
+        - SSS
+      pattern_3:
+        - SSC
+        - SSS
+        - SSS
+      pattern_4:
+        - SSS
+        - CSS
+        - SSS
+      pattern_5:
+        - SSS
+        - SCS
+        - SSS
+      pattern_6:
+        - SSS
+        - SSC
+        - SSS
+      pattern_7:
+        - SSS
+        - SSS
+        - CSS
+      pattern_8:
+        - SSS
+        - SSS
+        - SCS
+      pattern_9:
+        - SSS
+        - SSS
+        - SSC
+      ingredients:
+        C: CHARCOAL
+        S: COBBLESTONE
+      result:
+        item: projecte:low_covalence_dust
+        amount: 40
+
+    medium_covalence_dust:
+      enabled: true
+      shapeless: true
+      ingredients:
+        A: IRON_INGOT
+        B: REDSTONE
+      result:
+        item: projecte:medium_covalence_dust
+        amount: 40
+
+    high_covalence_dust:
+      enabled: true
+      shapeless: true
+      ingredients:
+        A: DIAMOND
+        B: COAL
+      result:
+        item: projecte:high_covalence_dust
+        amount: 40
+

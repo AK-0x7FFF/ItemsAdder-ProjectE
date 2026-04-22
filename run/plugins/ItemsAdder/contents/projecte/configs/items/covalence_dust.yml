@@ -1,0 +1,24 @@
+info:
+  namespace: projecte
+items:
+  low_covalence_dust:
+    variant_of: projecte:regular_item_template
+    display_name: <lang:item.projecte.low_covalence_dust>
+    resource:
+      textures:
+        - projecte:item/covalence_dust/low.png
+
+  medium_covalence_dust:
+    variant_of: projecte:regular_item_template
+    display_name: <lang:item.projecte.medium_covalence_dust>
+    resource:
+      textures:
+        - projecte:item/covalence_dust/medium.png
+
+  high_covalence_dust:
+    variant_of: projecte:regular_item_template
+    display_name: <lang:item.projecte.high_covalence_dust>
+    resource:
+      textures:
+        - projecte:item/covalence_dust/high.png
+

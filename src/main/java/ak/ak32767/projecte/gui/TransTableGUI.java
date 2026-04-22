@@ -46,6 +46,7 @@ public class TransTableGUI extends GUIBase {
     private static final int NEXT_PAGE_SLOT = 52;
     private static final Set<Integer> ALLOWED_SLOTS = new HashSet<>(); static {
         ALLOWED_SLOTS.add(EMC_FILTER_SLOT);
+        ALLOWED_SLOTS.add(EMC_CHECKER_SLOT);
         ALLOWED_SLOTS.add(UNLEARN_SLOT);
         ALLOWED_SLOTS.add(TRANSMUTE_SLOT);
         ALLOWED_SLOTS.add(PREV_PAGE_SLOT);
@@ -64,6 +65,7 @@ public class TransTableGUI extends GUIBase {
     private ItemStack searcherItem;
     private Map<ItemStack, ItemStack> emcTaggedItemMap;
     private int page;
+    private boolean showEMCDetail;
 
     public TransTableGUI(ProjectE plugin, Player player) {
         super(plugin, player);
@@ -84,6 +86,7 @@ public class TransTableGUI extends GUIBase {
         this.emcTaggedItemMap = new Object2ObjectOpenHashMap<>();
 
         // EMC查看欄
+        this.showEMCDetail = false;
         this.emcCheckerItem = ItemStack.of(Material.PLAYER_HEAD); {
             SkullMeta playerHeadMeta = (SkullMeta) emcCheckerItem.getItemMeta();
             playerHeadMeta.setOwningPlayer(player);
@@ -267,6 +270,15 @@ public class TransTableGUI extends GUIBase {
             this.updateExtractionRing();
             this.player.playSound(this.player.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 0.5f, 1.2f);
 
+        // 玩家 EMC 查看欄
+        } else if (slot == EMC_CHECKER_SLOT) {
+            if (clickType == ClickType.DOUBLE_CLICK)
+                return;
+
+            this.showEMCDetail = !this.showEMCDetail;
+            this.player.playSound(this.player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5f, 1f);
+            this.updateEMCCheckerItem();
+
         // EMC 過濾欄
         } else if (slot == EMC_FILTER_SLOT) {
 //            if (clickType == ClickType.DOUBLE_CLICK)
@@ -402,8 +414,12 @@ public class TransTableGUI extends GUIBase {
         BigInteger emc = this.plugin.getEmcManager().getPlayerEMC(this.player);
 
         String emcStr = EMCFormatter.commaFormat(emc);
-        if (emc.compareTo(BigInteger.valueOf(1_000_000)) >= 0) {
-            lore.add(Component.text("Detail: ", NamedTextColor.GRAY));
+
+        if (this.showEMCDetail) {
+//            lore.addFirst(
+//                Component.text("Click ME to collapse EMC detail", NamedTextColor.GRAY)
+//                .decoration(TextDecoration.ITALIC, false)
+//            );
 
             String[] emcStrSplit = emcStr.split(",");
             StringBuilder emcStrPart = new StringBuilder();
@@ -414,13 +430,22 @@ public class TransTableGUI extends GUIBase {
                 emcStrPart.insert(0, emcStrSplit[i]);
 
                 if ((emcStrSplit.length - i) % 9 == 0 || i == 0) {
-                    lore.add(1, Component.text(emcStrPart.toString(), NamedTextColor.GRAY));
+                    lore.addFirst(
+                        Component.text(emcStrPart.toString(), NamedTextColor.GRAY)
+                        .decoration(TextDecoration.ITALIC, false)
+                    );
                     emcStrPart.setLength(0);
                 }
             }
+        } else
+            lore.addFirst(
+                Component.text("Click ME to expend EMC detail", NamedTextColor.GRAY)
+                .decoration(TextDecoration.ITALIC, false)
+            );
 
+        if (emc.compareTo(BigInteger.valueOf(1_000_000)) >= 0)
             emcStr = EMCFormatter.numberNameFormat(emc);
-        }
+
         meta.displayName(
             Component.text()
             .append(Component.text(this.player.getName() + "'s EMC: ", NamedTextColor.YELLOW))

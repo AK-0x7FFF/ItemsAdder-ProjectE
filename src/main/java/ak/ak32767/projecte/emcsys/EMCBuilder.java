@@ -70,7 +70,7 @@ public class EMCBuilder {
             e.printStackTrace();
         }
 
-//        // 從 emc_data.yml 構建
+        // 從 custom_emc.yml 構建
         try {
             FileConfiguration config = YAMLLoader.loadConfig(this.plugin, "custom_emc.yml");
             {

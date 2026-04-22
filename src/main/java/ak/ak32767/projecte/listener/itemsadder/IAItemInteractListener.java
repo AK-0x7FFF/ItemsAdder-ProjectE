@@ -12,30 +12,47 @@ import org.bukkit.inventory.ItemStack;
 
 public class IAItemInteractListener implements Listener {
     private final ProjectE plugin;
+
     public IAItemInteractListener(ProjectE plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (!event.getAction().isRightClick())
-            return;
-
         ItemStack item = event.getItem();
         if (item == null)
             return;
 
-        CustomStack iaStack = CustomStack.byItemStack(item);
-        if (iaStack == null)
+        CustomStack iaItem = CustomStack.byItemStack(item);
+        if (iaItem == null)
             return;
 
-        String id = iaStack.getNamespacedID();
-        if (id.equals("projecte:transmutation_tablet")) {
-            Player player = event.getPlayer();
-            player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 0.4f, .85f);
+        if (event.getAction().isLeftClick()) {
+            this.LeftClickInteract(iaItem, event);
+            return;
+        }
 
-            TransTableGUI gui = new TransTableGUI(this.plugin, event.getPlayer());
-            gui.openInventory();
+        if (event.getAction().isRightClick()) {
+            this.RightClickInteract(iaItem, event);
+            return;
+        }
+    }
+
+    private void LeftClickInteract(CustomStack iaItem, PlayerInteractEvent event) {
+
+    }
+
+    private void RightClickInteract(CustomStack iaItem, PlayerInteractEvent event) {
+        String id = iaItem.getNamespacedID();
+
+        switch (id) {
+            case "projecte:transmutation_tablet" -> {
+                Player player = event.getPlayer();
+                player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 0.4f, .85f);
+
+                TransTableGUI gui = new TransTableGUI(this.plugin, player);
+                gui.openInventory();
+            }
         }
     }
 }

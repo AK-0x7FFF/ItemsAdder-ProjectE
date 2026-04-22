@@ -106,24 +106,46 @@ public class KnowledgeManager {
             .compareTo(BigInteger.ZERO) > 0;
     }
 
-    public void learn(Player player, ItemStack item) {
-        this.learn(player.getUniqueId(), item);
+    public boolean learn(Player player, ItemStack item) {
+        return this.learn(player, item, false);
     }
-    public void learn(UUID uuid, ItemStack item) {
+    public boolean learn(UUID uuid, ItemStack item) {
+        return this.learn(uuid, item, false);
+    }
+    public boolean learn(Player player, ItemStack item, boolean skipPerm) {
+        return this.learn(player.getUniqueId(), item, skipPerm);
+    }
+    public boolean learn(UUID uuid, ItemStack item, boolean skipPerm) {
+        if (!skipPerm && !PermissionManager.TRANSTABLE_LEARN.check(uuid))
+            return false;
+
         if (item.isEmpty())
-            return;
+            return false;
 
         this.getPlayerKnowledge(uuid).add(this.item2KnowledgeFormat(item));
+        return true;
     }
 
-    public void unlearn(Player player, ItemStack item) {
-        this.unlearn(player.getUniqueId(), item);
+
+
+    public boolean unlearn(Player player, ItemStack item) {
+        return this.unlearn(player, item, false);
     }
-    public void unlearn(UUID uuid, ItemStack item) {
+    public boolean unlearn(UUID uuid, ItemStack item) {
+        return this.unlearn(uuid, item, false);
+    }
+    public boolean unlearn(Player player, ItemStack item, boolean skipPerm) {
+        return this.unlearn(player.getUniqueId(), item, skipPerm);
+    }
+    public boolean unlearn(UUID uuid, ItemStack item, boolean skipPerm) {
+        if (!skipPerm && !PermissionManager.TRANSTABLE_UNLEARN.check(uuid))
+            return false;
+
         if (item.isEmpty())
-            return;
+            return false;
 
         this.getPlayerKnowledge(uuid).remove(this.item2KnowledgeFormat(item));
+        return true;
     }
 
     public List<ItemStack> getKnowledgeItem(UUID uuid) {

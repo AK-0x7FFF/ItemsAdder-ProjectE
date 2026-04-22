@@ -27,7 +27,7 @@ public class EMCManager {
     private final Object2ObjectMap<UUID, BigInteger> playersEMCMap;
 
     // DEBUG
-    private Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, List<EMCBuilder.ItemEMCCalcStep>> emcCalcLogger;
+    private final Object2ObjectOpenHashMap<ItemWrapper.TransmutableItem, List<EMCBuilder.ItemEMCCalcStep>> emcCalcLogger;
 
     public EMCManager(ProjectE plugin) {
         this.plugin = plugin;
@@ -38,15 +38,20 @@ public class EMCManager {
         this.playersEMCMap = new Object2ObjectOpenHashMap<>();
         this.playersEMCMap.defaultReturnValue(null);
 
+        // DEBUG
+        this.emcCalcLogger = new Object2ObjectOpenHashMap<>();
+        this.emcCalcLogger.defaultReturnValue(new ObjectArrayList<>());
+
         // 定時儲存
         Bukkit.getScheduler().runTaskTimer(plugin, this::saveAllPlayerEMCMap2PDC, 6000L, 6000L);
     }
 
     public void build() {
         EMCBuilder builder = new EMCBuilder(plugin);
+        this.emcValues.clear();
         this.emcValues.putAll(builder.build());
-        this.emcCalcLogger = builder.getEMCCalcLogger();
-        this.emcCalcLogger.defaultReturnValue(new ObjectArrayList<>());
+        this.emcCalcLogger.clear();
+        this.emcCalcLogger.putAll(builder.getEMCCalcLogger());
     }
 
     public List<String> getItemEMCCalcLog(ItemStack item) {

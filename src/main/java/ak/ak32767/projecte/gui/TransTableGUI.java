@@ -1,7 +1,7 @@
 package ak.ak32767.projecte.gui;
 
 import ak.ak32767.projecte.ProjectE;
-import ak.ak32767.projecte.manager.TransTableManager;
+import ak.ak32767.projecte.gameobjects.TransTableManager;
 import ak.ak32767.projecte.utils.EMCFormatter;
 import dev.lone.itemsadder.api.CustomStack;
 import dev.lone.itemsadder.api.FontImages.FontImageWrapper;

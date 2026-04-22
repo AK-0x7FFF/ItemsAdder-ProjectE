@@ -14,3 +14,24 @@ commands:
   getplayeremc: {}
   setplayeremc: {}
   dgui: {}
+
+  permissions:
+    projecte.admin:
+      default: op
+    projecte.reload:
+      default: op
+
+    projecte.transtable.learn:
+      default: true
+    projecte.transtable.unlearn:
+      default: true
+    projecte.transtable.transmute:
+      default: true
+    projecte.transtable.extract:
+      default: true
+
+    projecte.philostone.transitem:
+      default: true
+    projecte.philostone.transblock:
+      default: true
+

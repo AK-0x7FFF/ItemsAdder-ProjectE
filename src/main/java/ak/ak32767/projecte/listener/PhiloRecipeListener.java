@@ -1,6 +1,7 @@
 package ak.ak32767.projecte.listener;
 
 import ak.ak32767.projecte.ProjectE;
+import ak.ak32767.projecte.manager.PermissionManager;
 import ak.ak32767.projecte.manager.TransmutationManager;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.bukkit.Bukkit;
@@ -43,6 +44,9 @@ public class PhiloRecipeListener implements Listener {
 
         String namespace = keyed.getKey().getNamespace();
         if (!namespace.equalsIgnoreCase(PHILOTRANS_RECIPE_NAMESPACE) && !namespace.equalsIgnoreCase(PHILOSMELT_RECIPE_NAMESPACE))
+            return;
+
+        if (!PermissionManager.PHILOSTONE_TRANSITEM.check(event.getView().getPlayer()))
             return;
 
         boolean havePhiloStone = false;

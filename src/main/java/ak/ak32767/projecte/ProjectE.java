@@ -8,10 +8,7 @@ import ak.ak32767.projecte.listener.itemsadder.IABlockBreakListener;
 import ak.ak32767.projecte.listener.itemsadder.IABlockInteractListener;
 import ak.ak32767.projecte.listener.itemsadder.IABlockPlaceListener;
 import ak.ak32767.projecte.listener.itemsadder.IAItemInteractListener;
-import ak.ak32767.projecte.manager.ConfigManager;
-import ak.ak32767.projecte.manager.EMCManager;
-import ak.ak32767.projecte.manager.KnowledgeManager;
-import ak.ak32767.projecte.manager.TransmutationManager;
+import ak.ak32767.projecte.manager.*;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,8 +25,9 @@ public final class ProjectE extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.configManager = new ConfigManager(this);
         PluginManager pluginManager = getServer().getPluginManager();
+        PermissionManager.register(pluginManager);
+        this.configManager = new ConfigManager(this);
 
         this.transmutationManager = new TransmutationManager(this);
 

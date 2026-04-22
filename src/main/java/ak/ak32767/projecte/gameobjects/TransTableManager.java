@@ -1,7 +1,10 @@
-package ak.ak32767.projecte.manager;
+package ak.ak32767.projecte.gameobjects;
 
 import ak.ak32767.projecte.ProjectE;
 import ak.ak32767.projecte.gui.TransTableGUI;
+import ak.ak32767.projecte.manager.EMCManager;
+import ak.ak32767.projecte.manager.KnowledgeManager;
+import ak.ak32767.projecte.manager.PermissionManager;
 import ak.ak32767.projecte.utils.EMCFormatter;
 import ak.ak32767.projecte.utils.ItemBase64Converter;
 import com.google.common.collect.Lists;
@@ -77,63 +80,77 @@ public class TransTableManager {
         return new ResultTakeItemCalc(emcNeed, amount);
     }
 
-    public boolean giveItem2Inventory(ItemStack item, int amount) {
-        item = item.clone();
+    public @Nullable ItemStack extractItem(ItemStack item, int amount, boolean skipPerm) {
+        if (!skipPerm && !PermissionManager.TRANSTABLE_EXTRACT.check(this.player))
+            return null;
 
+        item = item.clone();
         ResultTakeItemCalc takeItemCalc = this.takeItemCalc(item, amount);
-        BigInteger emcNeed = takeItemCalc.emcNeed();
         amount = takeItemCalc.itemAmount();
 
+        // 餘額不足，請充值 :(
         if (amount == 0)
-            return false;
+            return null;
+
+        BigInteger emcNeed = takeItemCalc.emcNeed();
+        emcManager.addPlayerEMC(this.player, emcNeed.negate());
 
         item.setAmount(amount);
-        Map<Integer, ItemStack> leakedItems = this.player.getInventory().addItem(item);
+        return item;
+    }
 
+    public boolean giveItem2Inventory(ItemStack item, int amount) {
+        ItemStack result = this.extractItem(item, amount, false);
+        if  (result == null)
+            return false;
+
+        item = result;
+        Map<Integer, ItemStack> leakedItems = this.player.getInventory().addItem(item);
         // 背包溢出處理
         for (ItemStack leakedItem : leakedItems.values()) {
             int leakedCount = leakedItem.getAmount();
-            emcNeed = emcNeed.subtract(this.emcManager.getItemEMC(item).multiply(BigInteger.valueOf(leakedCount)));
+            emcManager.addPlayerEMC(
+                this.player,
+                this.emcManager.getItemEMC(item).multiply(BigInteger.valueOf(leakedCount))
+            );
         }
 
-        emcManager.addPlayerEMC(this.player, emcNeed.negate());
         return true;
     }
 
     public boolean giveItem2Cursor(ItemStack item, int amount, boolean isNew) {
-        item = item.clone();
-
-        ResultTakeItemCalc takeItemCalc = this.takeItemCalc(item, amount);
-        BigInteger emcNeed = takeItemCalc.emcNeed();
-        amount = takeItemCalc.itemAmount();
-
-        // 餘額不足，請充值 :(
-        if (amount == 0)
+        ItemStack result = this.extractItem(item, amount, false);
+        if (result == null)
             return false;
 
-        item.setAmount(isNew ? amount : item.getAmount() + amount);
+        amount = item.getAmount();
+        item = result;
+        if (!isNew)
+            item.setAmount(item.getAmount() + amount);
+
+//        item = item.clone();
+//
+//        ResultTakeItemCalc takeItemCalc = this.takeItemCalc(item, amount);
+//        BigInteger emcNeed = takeItemCalc.emcNeed();
+//        amount = takeItemCalc.itemAmount();
+//
+//        // 餘額不足，請充值 :(
+//        if (amount == 0)
+//            return false;
+//
+//        item.setAmount(isNew ? amount : item.getAmount() + amount);
         this.player.setItemOnCursor(item);
         this.player.updateInventory();
-
-        emcManager.addPlayerEMC(this.player, emcNeed.negate());
         return true;
     }
 
     public boolean dropItem(ItemStack item, int amount) {
-        item = item.clone();
-
-        ResultTakeItemCalc takeItemCalc = this.takeItemCalc(item, amount);
-        BigInteger emcNeed = takeItemCalc.emcNeed();
-        amount = takeItemCalc.itemAmount();
-
-        // 餘額不足，請充值 :(
-        if (amount == 0)
+        ItemStack result = this.extractItem(item, amount, false);
+        if (result == null)
             return false;
 
-        item.setAmount(amount);
+        item = result;
         this.player.getWorld().dropItemNaturally(this.player.getEyeLocation(), item);
-
-        emcManager.addPlayerEMC(this.player, emcNeed.negate());
         return true;
     }
 
@@ -159,19 +176,26 @@ public class TransTableManager {
         if (item.isEmpty())
             return false;
 
-        if (!this.knowledgeManager.isLearnable(item)) {
+        if (!this.knowledgeManager.isLearnable(item))
             return false;
-        }
 
         if (this.knowledgeManager.isLearned(this.player, item))
             return false;
 
-        this.knowledgeManager.learn(this.player, item);
+        if (!this.knowledgeManager.learn(this.player, item))
+            return false;
+
         this.updatePagesForce();
         return true;
     }
 
     public boolean transmuteItem(ItemStack item) {
+        return this.transmuteItem(item, false);
+    }
+    public boolean transmuteItem(ItemStack item, boolean skipPerm) {
+        if (!skipPerm && !PermissionManager.TRANSTABLE_TRANSMUTE.check(this.player))
+            return false;
+
         if (!this.emcManager.isTransmutable(item)) {
             return false;
         }
@@ -209,8 +233,7 @@ public class TransTableManager {
         if (!this.knowledgeManager.isLearned(player, item))
             return false;
 
-        this.knowledgeManager.unlearn(player, item);
-        return true;
+        return this.knowledgeManager.unlearn(player, item);
     }
 
     public void updatePagesForce() {

@@ -19,9 +19,9 @@ public class ConfigManager {
         plugin.saveDefaultConfig();
         this.config = plugin.getConfig();
 
-        this.setupConfig();
+        this.setupConfigs();
     }
-    public void setupConfig() {
+    public void setupConfigs() {
         String[] fileNames = new String[]{"custom_emc.yml"};
         for (String name : fileNames) {
             File file = new File(plugin.getDataFolder(), name);
